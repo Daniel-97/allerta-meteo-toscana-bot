@@ -1,0 +1,24 @@
+{
+  "name": "allertameteotoscanabot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://daniele97@bitbucket.org/daniele97/allertameteotoscanabot.git"
+  },
+  "author": "Daniele Zeolla",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/daniele97/allertameteotoscanabot#readme",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "mysql": "^2.16.0",
+    "node-cron": "^2.0.3",
+    "node-schedule": "^1.3.1",
+    "telegraf": "^3.25.5",
+    "xml2js": "^0.4.19"
+  }
+}

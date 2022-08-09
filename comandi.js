@@ -1,0 +1,1 @@
+module.exports = ["Aggiorna allerta","Aggiorna meteo","Imposta comune","Credits&Info"];
