@@ -9,17 +9,25 @@ export type ParteGiorno = "mattina" | "pomeriggio" | "sera";
 
 export type LivelloAllerta = "VERDE" | "GIALLO" | "ARANCIONE" | "ROSSO";
 
+export type LivelloRischio =
+  | "ASSENTE"
+  | "BASSO"
+  | "MODERATO"
+  | "ELEVATO"
+  | "MOLTO ELEVATO"
+  | string;
+
 export interface DatiMeteo {
   comune: string;
   aggiornamento: string;
   allerta: LivelloAllerta;
   rischi: {
-    idraulico: string;
-    idrogeologico: string;
-    temporali: string;
-    vento: string;
-    neve: string;
-    ghiaccio: string;
+    idraulico: LivelloRischio;
+    idrogeologico: LivelloRischio;
+    temporali: LivelloRischio;
+    vento: LivelloRischio;
+    neve: LivelloRischio;
+    ghiaccio: LivelloRischio;
   };
   temperatura: { min: number; max: number };
   umidita: number;
