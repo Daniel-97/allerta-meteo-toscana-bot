@@ -1,0 +1,1116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pages>
+<url_base><![CDATA[http://www.lamma.rete.toscana.it/previ/ita/xml/comuni_web/dati/]]></url_base>
+<link>
+<title>Firenze</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>firenze</url>
+</link>
+<link>
+<title>Scandicci</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>scandicci</url></link>
+<link>
+<title>Sesto Fiorentino</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>FI</provincia>
+<url>sestofiorentino</url></link>
+<link>
+<title>Lastra a Signa</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>lastraasigna</url></link>
+<link>
+<title>Signa</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>FI</provincia>
+<url>signa</url></link>
+<link>
+<title>Vinci</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>FI</provincia>
+<url>vinci</url></link>
+<link>
+<title>Bagno a Ripoli</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>bagnoaripoli</url></link>
+<link>
+<title>Calenzano</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>FI</provincia>
+<url>calenzano</url></link>
+<link>
+<title>Campi Bisenzio</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>FI</provincia>
+<url>campibisenzio</url></link>
+<link>
+<title>Capraia e Limite</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>FI</provincia>
+<url>capraiaelimite</url></link>
+<link>
+<title>Castelfiorentino</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>FI</provincia>
+<url>castelfiorentino</url></link>
+<link>
+<title>Cerreto Guidi</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>cerretoguidi</url></link>
+<link>
+<title>Empoli</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>FI</provincia>
+<url>empoli</url></link>
+<link>
+<title>Fiesole</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>fiesole</url></link>
+<link>
+<title>Montelupo Fiorentino</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>FI</provincia>
+<url>montelupofiorentino</url></link>
+<link>
+<title>Pelago</title>
+<url>pelago</url></link>
+<link>
+<title>Pontassieve</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>pontassieve</url></link>
+<link>
+<title>Borgo San Lorenzo</title>
+<url>borgosanlorenzo</url></link>
+<link>
+<title>Dicomano</title>
+<url>dicomano</url></link>
+<link>
+<title>Barberino di Mugello</title>
+<url>barberinodimugello</url></link>
+<link>
+<title>Vagli di Sotto</title>
+<url>vaglidisotto</url></link>
+<link>
+<title>Vaglia</title>
+<url>vaglia</url></link>
+<link>
+<title>Vicchio</title>
+<url>vicchio</url></link>
+<link>
+<title>San Piero a Sieve</title>
+<url>sanpieroasieve</url></link>
+<link>
+<title>Rufina</title>
+<url>rufina</url></link>
+<link>
+<title>Londa</title>
+<url>londa</url></link>
+<link>
+<title>Scarperia</title>
+<url>scarperia</url></link>
+<link>
+<title>San Godenzo</title>
+<url>sangodenzo</url></link>
+<link>
+<title>Firenzuola</title>
+<url>firenzuola</url></link>
+<link>
+<title>Marradi</title>
+<url>marradi</url></link>
+<link>
+<title>Palazzuolo sul Senio</title>
+<url>palazzuolosulsenio</url></link>
+<link>
+<title>Tavarnelle Val di Pesa</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>tavarnellevaldipesa</url></link>
+<link>
+<title>Certaldo</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>FI</provincia>
+<url>certaldo</url></link>
+<link>
+<title>San Casciano Val di Pesa</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>sancascianovaldipesa</url></link>
+<link>
+<title>Impruneta</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>impruneta</url></link>
+<link>
+<title>Montespertoli</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>FI</provincia>
+<url>montespertoli</url></link>
+<link>
+<title>Greve in Chianti</title>
+<zona>A3 - Arno-Firenze</zona>
+<provincia>FI</provincia>
+<url>greveinchianti</url></link>
+<link>
+<title>Barberino Val d'Elsa</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>FI</provincia>
+<url>barberinovaldelsa</url></link>
+<link>
+<title>San Gimignano</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>SI</provincia>
+<url>sangimignano</url></link>
+<link>
+<title>Colle Val d'Elsa</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>SI</provincia>
+<url>collevaldelsa</url></link>
+<link>
+<title>Poggibonsi</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>SI</provincia>
+<url>poggibonsi</url></link>
+<link>
+<title>Radda in Chianti</title>
+<url>raddainchianti</url></link>
+<link>
+<title>Castellina in Chianti</title>
+<url>castellinainchianti</url></link>
+<link>
+<title>Gaiole in Chianti</title>
+<url>gaioleinchianti</url></link>
+<link>
+<title>Figline Valdarno</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>FI</provincia>
+<url>figlinevaldarno</url></link>
+<link>
+<title>Terranuova Bracciolini</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>AR</provincia>
+<url>terranuovabracciolini</url></link>
+<link>
+<title>Reggello</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>FI</provincia>
+<url>reggello</url></link>
+<link>
+<title>San Giovanni Valdarno</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>AR</provincia>
+<url>sangiovannivaldarno</url></link>
+<link>
+<title>Montevarchi</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>FI</provincia>
+<url>montevarchi</url></link>
+<link>
+<title>Rignano sull'Arno</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>FI</provincia>
+<url>rignanosullarno</url></link>
+<link>
+<title>Incisa in Val d'Arno</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>FI</provincia>
+<url>incisainvaldarno</url></link>
+<link>
+<title>Cavriglia</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>AR</provincia>
+<url>cavriglia</url></link>
+<link>
+<title>Loro Ciuffenna</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>AR</provincia>
+<url>lorociuffenna</url></link>
+<link>
+<title>Pian di Sco'</title>
+<url>piandisco</url></link>
+<link>
+<title>Castelfranco di Sopra</title>
+<url>castelfrancodisopra</url></link>
+<link>
+<title>Laterina</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>AR</provincia>
+<url>laterina</url></link>
+<link>
+<title>Bucine</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>AR</provincia>
+<url>bucine</url></link>
+<link>
+<title>Castiglion Fibocchi</title>
+<zona>A2 - Arno-Valdarno Sup.</zona>
+<provincia>AR</provincia>
+<url>castiglionfibocchi</url></link>
+<link>
+<title>Arezzo</title>
+<zona>C - Valdichiana</zona>
+<provincia>AR</provincia>
+<url>arezzo</url></link>
+<link>
+<title>Castiglion Fiorentino</title>
+<zona>C - Valdichiana</zona>
+<provincia>AR</provincia>
+<url>castiglionfiorentino</url></link>
+<link>
+<title>Subbiano</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>subbiano</url></link>
+<link>
+<title>Capolona</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>capolona</url></link>
+<link>
+<title>Civitella in Val di Chiana</title>
+<zona>C - Valdichiana</zona>
+<provincia>AR</provincia>
+<url>civitellainvaldichiana</url></link>
+<link>
+<title>Cortona</title>
+<zona>C - Valdichiana</zona>
+<provincia>AR</provincia>
+<url>cortona</url></link>
+<link>
+<title>Foiano della Chiana</title>
+<zona>C - Valdichiana</zona>
+<provincia>AR</provincia>
+<url>foianodellachiana</url></link>
+<link>
+<title>Lucignano</title>
+<zona>C - Valdichiana</zona>
+<provincia>AR</provincia>
+<url>lucignano</url></link>
+<link>
+<title>Marciano della Chiana</title>
+<zona>C - Valdichiana</zona>
+<provincia>AR</provincia>
+<url>marcianodellachiana</url></link>
+<link>
+<title>Monte San Savino</title>
+<zona>C - Valdichiana</zona>
+<provincia>AR</provincia>
+<url>montesansavino</url></link>
+<link>
+<title>Pergine Valdarno</title>
+<url>perginevaldarno</url></link>
+<link>
+<title>Sinalunga</title>
+<zona>C - Valdichiana</zona>
+<provincia>SI</provincia>
+<url>sinalunga</url></link>
+<link>
+<title>Trequanda</title>
+<url>trequanda</url></link>
+<link>
+<title>Sansepolcro</title>
+<url>sansepolcro</url></link>
+<link>
+<title>Monterchi</title>
+<url>monterchi</url></link>
+<link>
+<title>Sestino</title>
+<url>sestino</url></link>
+<link>
+<title>Badia Tedalda</title>
+<url>badiatedalda</url></link>
+<link>
+<title>Caprese Michelangelo</title>
+<url>capresemichelangelo</url></link>
+<link>
+<title>Anghiari</title>
+<url>anghiari</url></link>
+<link>
+<title>Pieve Santo Stefano</title>
+<url>pievesantostefano</url></link>
+<link>
+<title>Lucca</title>
+<url>lucca</url></link>
+<link>
+<title>Altopascio</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>LU</provincia>
+<url>altopascio</url></link>
+<link>
+<title>Pescia</title>
+<url>pescia</url></link>
+<link>
+<title>Marliana</title>
+<url>marliana</url></link>
+<link>
+<title>Montecarlo</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>LU</provincia>
+<url>montecarlo</url></link>
+<link>
+<title>Villa Basilica</title>
+<url>villabasilica</url></link>
+<link>
+<title>Uzzano</title>
+<url>uzzano</url></link>
+<link>
+<title>Chiesina Uzzanese</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PT</provincia>
+<url>chiesinauzzanese</url></link>
+<link>
+<title>Ponte Buggianese</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PT</provincia>
+<url>pontebuggianese</url></link>
+<link>
+<title>Buggiano</title>
+<url>buggiano</url></link>
+<link>
+<title>Monsummano Terme</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PT</provincia>
+<url>monsummanoterme</url></link>
+<link>
+<title>Larciano</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PT</provincia>
+<url>larciano</url></link>
+<link>
+<title>Lamporecchio</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PT</provincia>
+<url>lamporecchio</url></link>
+<link>
+<title>Montecatini Terme</title>
+<url>montecatiniterme</url></link>
+<link>
+<title>Pieve a Nievole</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PT</provincia>
+<url>pieveanievole</url></link>
+<link>
+<title>Capannori</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>LU</provincia>
+<url>capannori</url></link>
+<link>
+<title>Porcari</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>LU</provincia>
+<url>porcari</url></link>
+<link>
+<title>Stazzema</title>
+<url>stazzema</url></link>
+<link>
+<title>Pescaglia</title>
+<url>pescaglia</url></link>
+<link>
+<title>Fosdinovo</title>
+<url>fosdinovo</url></link>
+<link>
+<title>Minucciano</title>
+<url>minucciano</url></link>
+<link>
+<title>Fabbriche di Vallico</title>
+<url>fabbrichedivallico</url></link>
+<link>
+<title>Vergemoli</title>
+<url>vergemoli</url></link>
+<link>
+<title>Castelnuovo Garfagnana</title>
+<url>castelnuovogarfagnana</url></link>
+<link>
+<title>Castelnuovo di Garfagnana</title>
+<url>castelnuovogarfagnana</url></link>
+<link>
+<title>Sillano</title>
+<url>sillano</url></link>
+<link>
+<title>Giuncugnano</title>
+<url>giuncugnano</url></link>
+<link>
+<title>Piazza al Serchio</title>
+<url>piazzaalserchio</url></link>
+<link>
+<title>San Romano in Garfagnana</title>
+<url>sanromanoingarfagnana</url></link>
+<link>
+<title>Villa Collemandina</title>
+<url>villacollemandina</url></link>
+<link>
+<title>Camporgiano</title>
+<url>camporgiano</url></link>
+<link>
+<title>Castiglione di Garfagnana</title>
+<url>castiglionegarfagnana</url></link>
+<link>
+<title>Careggine</title>
+<url>careggine</url></link>
+<link>
+<title>Pieve Fosciana</title>
+<url>pievefosciana</url></link>
+<link>
+<title>Fosciandora</title>
+<url>fosciandora</url></link>
+<link>
+<title>Molazzana</title>
+<url>molazzana</url></link>
+<link>
+<title>Barga</title>
+<url>barga</url></link>
+<link>
+<title>Coreglia Antelminelli</title>
+<url>coregliaantelminelli</url></link>
+<link>
+<title>Bagni di Lucca</title>
+<url>bagnidilucca</url></link>
+<link>
+<title>Borgo a Mozzano</title>
+<url>borgoamozzano</url></link>
+<link>
+<title>Gallicano</title>
+<url>gallicano</url></link>
+<link>
+<title>Livorno</title>
+<zona>A6 - Arno-Costa</zona>
+<provincia>LI</provincia>
+<url>livorno</url></link>
+<link>
+<title>Rosignano Marittimo</title>
+<zona>A6 - Arno-Costa</zona>
+<provincia>LI</provincia>
+<url>rosignanomarittimo</url></link>
+<link>
+<title>San Vincenzo</title>
+<url>sanvincenzo</url></link>
+<link>
+<title>Campiglia Marittima</title>
+<zona>E1 - Etruria</zona>
+<provincia>LI</provincia>
+<url>campigliamarittima</url></link>
+<link>
+<title>Castagneto Carducci</title>
+<url>castagnetocarducci</url></link>
+<link>
+<title>Guardistallo</title>
+<zona>E1 - Etruria</zona>
+<provincia>PI</provincia>
+<url>guardistallo</url></link>
+<link>
+<title>Cecina</title>
+<url>cecina</url></link>
+<link>
+<title>Montescudaio</title>
+<url>montescudaio</url></link>
+<link>
+<title>Bibbona</title>
+<url>bibbona</url></link>
+<link>
+<title>Casale Marittimo</title>
+<zona>E1 - Etruria</zona>
+<provincia>PI</provincia>
+<url>casalemarittimo</url></link>
+<link>
+<title>Piombino</title>
+<url>piombino</url></link>
+<link>
+<title>Siena</title>
+<url>siena</url></link>
+<link>
+<title>Torrita di Siena</title>
+<zona>C - Valdichiana</zona>
+<provincia>SI</provincia>
+<url>torritadisiena</url></link>
+<link>
+<title>Asciano</title>
+<url>asciano</url></link>
+<link>
+<title>Murlo</title>
+<url>murlo</url></link>
+<link>
+<title>Monticiano</title>
+<url>monticiano</url></link>
+<link>
+<title>Buonconvento</title>
+<url>buonconvento</url></link>
+<link>
+<title>San Giovanni d'Asso</title>
+<url>sangiovannidasso</url></link>
+<link>
+<title>Casole d'Elsa</title>
+<url>casoledelsa</url></link>
+<link>
+<title>Castelnuovo Berardenga</title>
+<url>castelnuovoberardenga</url></link>
+<link>
+<title>Monteriggioni</title>
+<url>monteriggioni</url></link>
+<link>
+<title>Monteroni d'Arbia</title>
+<url>monteronidarbia</url></link>
+<link>
+<title>Rapolano Terme</title>
+<url>rapolanoterme</url></link>
+<link>
+<title>Sovicille</title>
+<url>sovicille</url></link>
+<link>
+<title>Pisa</title>
+<zona>A6 - Arno-Costa</zona>
+<provincia>PI</provincia>
+<url>pisa</url></link>
+<link>
+<title>Bientina</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>bientina</url></link>
+<link>
+<title>Calcinaia</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>calcinaia</url></link>
+<link>
+<title>Cascina</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>cascina</url></link>
+<link>
+<title>Fucecchio</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>FI</provincia>
+<url>fucecchio</url></link>
+<link>
+<title>Castelfranco di Sotto</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>castelfrancodisotto</url></link>
+<link>
+<title>Lari</title>
+<url>lari</url></link>
+<link>
+<title>Fauglia</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>fauglia</url></link>
+<link>
+<title>Crespina</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>crespina</url></link>
+<link>
+<title>Capannoli</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>capannoli</url></link>
+<link>
+<title>Montopoli Valdarno</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>montopolivaldarno</url></link>
+<link>
+<title>Ponsacco</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>ponsacco</url></link>
+<link>
+<title>Pontedera</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>pontedera</url></link>
+<link>
+<title>Palaia</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>PI</provincia>
+<url>palaia</url></link>
+<link>
+<title>San Giuliano Terme</title>
+<url>sangiulianoterme</url></link>
+<link>
+<title>San Miniato</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>sanminiato</url></link>
+<link>
+<title>Collesalvetti</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>LI</provincia>
+<url>collesalvetti</url></link>
+<link>
+<title>Santa Croce sull'Arno</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>santacrocesullarno</url></link>
+<link>
+<title>Santa Maria a Monte</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>santamariaamonte</url></link>
+<link>
+<title>Vecchiano</title>
+<url>vecchiano</url></link>
+<link>
+<title>Calci</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>calci</url></link>
+<link>
+<title>Buti</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>buti</url></link>
+<link>
+<title>Vicopisano</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>vicopisano</url></link>
+<link>
+<title>Carrara</title>
+<url>carrara</url></link>
+<link>
+<title>Camaiore</title>
+<url>camaiore</url></link>
+<link>
+<title>Massa</title>
+<url>massa</url></link>
+<link>
+<title>Forte dei Marmi</title>
+<url>fortedeimarmi</url></link>
+<link>
+<title>Massarosa</title>
+<url>massarosa</url></link>
+<link>
+<title>Montignoso</title>
+<url>montignoso</url></link>
+<link>
+<title>Pietrasanta</title>
+<url>pietrasanta</url></link>
+<link>
+<title>Seravezza</title>
+<url>seravezza</url></link>
+<link>
+<title>Viareggio</title>
+<url>viareggio</url></link>
+<link>
+<title>Pistoia</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PT</provincia>
+<url>pistoia</url></link>
+<link>
+<title>Agliana</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PT</provincia>
+<url>agliana</url></link>
+<link>
+<title>Montale</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PT</provincia>
+<url>montale</url></link>
+<link>
+<title>Quarrata</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PT</provincia>
+<url>quarrata</url></link>
+<link>
+<title>Serravalle Pistoiese</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PT</provincia>
+<url>serravallepistoiese</url></link>
+<link>
+<title>Grosseto</title>
+<url>grosseto</url></link>
+<link>
+<title>Castiglione della Pescaia</title>
+<url>castiglionedellapescaia</url></link>
+<link>
+<title>Scarlino</title>
+<url>scarlino</url></link>
+<link>
+<title>Civitella Paganico</title>
+<url>civitellapaganico</url></link>
+<link>
+<title>Cinigiano</title>
+<url>cinigiano</url></link>
+<link>
+<title>Campagnatico</title>
+<url>campagnatico</url></link>
+<link>
+<title>Follonica</title>
+<url>follonica</url></link>
+<link>
+<title>Gavorrano</title>
+<zona>E1 - Etruria</zona>
+<provincia>GR</provincia>
+<url>gavorrano</url></link>
+<link>
+<title>Roccastrada</title>
+<url>roccastrada</url></link>
+<link>
+<title>Scansano</title>
+<url>scansano</url></link>
+<link>
+<title>Isola del Giglio</title>
+<url>isoladelgiglio</url></link>
+<link>
+<title>Magliano in Toscana</title>
+<url>maglianointoscana</url></link>
+<link>
+<title>Argentario</title>
+<url>argentario</url></link>
+<link>
+<title>Orbetello</title>
+<url>orbetello</url></link>
+<link>
+<title>Manciano</title>
+<url>manciano</url></link>
+<link>
+<title>Capalbio</title>
+<url>capalbio</url></link>
+<link>
+<title>Massa Marittima</title>
+<zona>E1 - Etruria</zona>
+<provincia>GR</provincia>
+<url>massamarittima</url></link>
+<link>
+<title>Sassetta</title>
+<url>sassetta</url></link>
+<link>
+<title>Monteverdi Marittimo</title>
+<url>monteverdimarittimo</url></link>
+<link>
+<title>Castelnuovo Val di Cecina</title>
+<zona>E1 - Etruria</zona>
+<provincia>PI</provincia>
+<url>castelnuovovaldicecina</url></link>
+<link>
+<title>Radicondoli</title>
+<url>radicondoli</url></link>
+<link>
+<title>Monterotondo Marittimo</title>
+<zona>E1 - Etruria</zona>
+<provincia>GR</provincia>
+<url>monterotondomarittimo</url></link>
+<link>
+<title>Chiusdino</title>
+<url>chiusdino</url></link>
+<link>
+<title>Montieri</title>
+<url>montieri</url></link>
+<link>
+<title>Suvereto</title>
+<url>suvereto</url></link>
+<link>
+<title>Pontremoli</title>
+<url>pontremoli</url></link>
+<link>
+<title>Aulla</title>
+<url>aulla</url></link>
+<link>
+<title>Filattiera</title>
+<url>filattiera</url></link>
+<link>
+<title>Mulazzo</title>
+<url>mulazzo</url></link>
+<link>
+<title>Comano</title>
+<url>comano</url></link>
+<link>
+<title>Podenzana</title>
+<url>podenzana</url></link>
+<link>
+<title>Tresana</title>
+<url>tresana</url></link>
+<link>
+<title>Zeri</title>
+<url>zeri</url></link>
+<link>
+<title>Casola in Lunigiana</title>
+<url>casolainlunigiana</url></link>
+<link>
+<title>Bagnone</title>
+<url>bagnone</url></link>
+<link>
+<title>Fivizzano</title>
+<url>fivizzano</url></link>
+<link>
+<title>Licciana Nardi</title>
+<url>licciananardi</url></link>
+<link>
+<title>Villafranca in Lunigiana</title>
+<url>villafrancainlunigiana</url></link>
+<link>
+<title>Portoferraio</title>
+<url>portoferraio</url></link>
+<link>
+<title>Campo nell'Elba</title>
+<url>camponellelba</url></link>
+<link>
+<title>Capoliveri</title>
+<url>capoliveri</url></link>
+<link>
+<title>Marciana</title>
+<url>marciana</url></link>
+<link>
+<title>Marciana Marina</title>
+<url>marcianamarina</url></link>
+<link>
+<title>Porto Azzurro</title>
+<url>portoazzurro</url></link>
+<link>
+<title>Rio Marina</title>
+<url>riomarina</url></link>
+<link>
+<title>Rio nell'Elba</title>
+<url>rionellelba</url></link>
+<link>
+<title>Capraia Isola</title>
+<url>capraiaisola</url></link>
+<link>
+<title>Prato</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PO</provincia>
+<url>prato</url></link>
+<link>
+<title>Carmignano</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PO</provincia>
+<url>carmignano</url></link>
+<link>
+<title>Montemurlo</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PO</provincia>
+<url>montemurlo</url></link>
+<link>
+<title>Poggio a Caiano</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PO</provincia>
+<url>poggioacaiano</url></link>
+<link>
+<title>Vaiano</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PO</provincia>
+<url>vaiano</url></link>
+<link>
+<title>Vernio</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PO</provincia>
+<url>vernio</url></link>
+<link>
+<title>Volterra</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>PI</provincia>
+<url>volterra</url></link>
+<link>
+<title>Orciano Pisano</title>
+<url>orcianopisano</url></link>
+<link>
+<title>Lorenzana</title>
+<url>lorenzana</url></link>
+<link>
+<title>Casciana Terme</title>
+<zona>A4 - Valdarno Inf.</zona>
+<provincia>PI</provincia>
+<url>cascianaterme</url></link>
+<link>
+<title>Terricciola</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>PI</provincia>
+<url>terricciola</url></link>
+<link>
+<title>Peccioli</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>PI</provincia>
+<url>peccioli</url></link>
+<link>
+<title>Montaione</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>FI</provincia>
+<url>montaione</url></link>
+<link>
+<title>Gambassi Terme</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>FI</provincia>
+<url>gambassiterme</url></link>
+<link>
+<title>Santa Luce</title>
+<url>santaluce</url></link>
+<link>
+<title>Chianni</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>PI</provincia>
+<url>chianni</url></link>
+<link>
+<title>Lajatico</title>
+<zona>A5 - Valdelsa-Valdera</zona>
+<provincia>PI</provincia>
+<url>lajatico</url></link>
+<link>
+<title>Riparbella</title>
+<url>riparbella</url></link>
+<link>
+<title>Montecatini Val di Cecina</title>
+<zona>E1 - Etruria</zona>
+<provincia>PI</provincia>
+<url>montecatinivaldicecina</url></link>
+<link>
+<title>Castellina Marittima</title>
+<zona>E1 - Etruria</zona>
+<provincia>PI</provincia>
+<url>castellinamarittima</url></link>
+<link>
+<title>Pomarance</title>
+<url>pomarance</url></link>
+<link>
+<title>Abetone</title>
+<url>abetone</url></link>
+<link>
+<title>Cutigliano</title>
+<url>cutigliano</url></link>
+<link>
+<title>Cantagallo</title>
+<zona>B - Bisenzio e Ombrone Pt</zona>
+<provincia>PO</provincia>
+<url>cantagallo</url></link>
+<link>
+<title>Piteglio</title>
+<url>piteglio</url></link>
+<link>
+<title>Sambuca Pistoiese  </title>
+<url>sambucapistoiese</url></link>
+<link>
+<title>San Marcello Pistoiese</title>
+<url>sanmarcellopistoiese</url></link>
+<link>
+<title>Santa Fiora</title>
+<url>santafiora</url></link>
+<link>
+<title>Roccalbegna</title>
+<url>roccalbegna</url></link>
+<link>
+<title>Sorano</title>
+<url>sorano</url></link>
+<link>
+<title>Pitigliano</title>
+<url>pitigliano</url></link>
+<link>
+<title>Arcidosso</title>
+<url>arcidosso</url></link>
+<link>
+<title>Castel del Piano</title>
+<url>casteldelpiano</url></link>
+<link>
+<title>Piancastagnaio</title>
+<url>piancastagnaio</url></link>
+<link>
+<title>Semproniano</title>
+<url>semproniano</url></link>
+<link>
+<title>Castell'Azzara</title>
+<url>castellazzara</url></link>
+<link>
+<title>Chiusi della Verna</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>chiusidellaverna</url></link>
+<link>
+<title>Chitignano</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>chitignano</url></link>
+<link>
+<title>Poppi</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>poppi</url></link>
+<link>
+<title>Bibbiena</title>
+<url>bibbiena</url>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+</link>
+<link>
+<title>Pratovecchio</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>pratovecchio</url></link>
+<link>
+<title>Stia</title>
+<url>stia</url></link>
+<link>
+<title>Castel Focognano</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url> castelfocognano</url></link>
+<link>
+<title>Montemignaio</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>montemignaio</url></link>
+<link>
+<title>Talla</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>talla</url></link>
+<link>
+<title>Castel San Niccolò</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>castelsanniccolo</url></link>
+<link>
+<title>Ortignano Raggiolo</title>
+<zona>A1 - Arno-Casentino</zona>
+<provincia>AR</provincia>
+<url>ortignanoraggiolo</url></link>
+<link>
+<title>Montalcino</title>
+<url>montalcino</url></link>
+<link>
+<title>San Quirico d'Orcia</title>
+<url>sanquiricodorcia</url></link>
+<link>
+<title>Pienza</title>
+<url>pienza</url></link>
+<link>
+<title>Castiglione d'Orcia</title>
+<url>castiglionedorcia</url></link>
+<link>
+<title>Seggiano</title>
+<url>seggiano</url></link>
+<link>
+<title>Abbadia San Salvatore</title>
+<url>abbadiasansalvatore</url></link>
+<link>
+<title>Radicofani</title>
+<url>radicofani</url></link>
+<link>
+<title>San Casciano dei Bagni</title>
+<url>sancascianodeibagni</url></link>
+<link>
+<title>Chiusi</title>
+<zona>C - Valdichiana</zona>
+<provincia>SI</provincia>
+<url>chiusi</url></link>
+<link>
+<title>Cetona</title>
+<url>cetona</url></link>
+<link>
+<title>Sarteano</title>
+<url>sarteano</url></link>
+<link>
+<title>Chianciano Terme</title>
+<zona>C - Valdichiana</zona>
+<provincia>SI</provincia>
+<url>chiancianoterme</url></link>
+<link>
+<title>Abetone</title>
+<url>abetone</url></link>
+<link>
+<title>Massa e Cozzile</title>
+<url>massaecozzile</url></link>
+</pages>
