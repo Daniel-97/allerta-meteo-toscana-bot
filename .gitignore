@@ -1,6 +1,8 @@
 node_modules/
 dist/
 data/bot.db
+data/*.db-shm
+data/*.db-wal
 .env
 log/
 *.js.map
