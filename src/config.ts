@@ -1,10 +1,11 @@
 import "dotenv/config";
 import { z } from "zod";
 
-const envSchema = z.object({
+export const envSchema = z.object({
   TELEGRAM_BOT_TOKEN: z.string().min(1, "TELEGRAM_BOT_TOKEN è obbligatorio"),
   ADMIN_CHAT_ID: z.string().min(1, "ADMIN_CHAT_ID è obbligatorio"),
-  DATABASE_PATH: z.string().default("data/bot.db"),
+  TURSO_DATABASE_URL: z.string().min(1, "TURSO_DATABASE_URL è obbligatorio"),
+  TURSO_AUTH_TOKEN: z.string().min(1, "TURSO_AUTH_TOKEN è obbligatorio"),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
 });
 
