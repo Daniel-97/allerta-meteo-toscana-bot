@@ -19,6 +19,7 @@
 - **Test DB harness out of scope:** niente `createTestDb()`/migrazioni-in-test ora. Solo smoke test minimale `:memory:` + e2e Turso.
 - **Module system:** ESM NodeNext, import path con estensione `.js`.
 - **envSchema resta in `src/config.ts`** (niente split in file separato, come da scelta utente). Il test usa dynamic import + mock di `process.env` in `beforeAll` per evitare `process.exit(1)` durante i test.
+- **Typecheck baseline (pre-esistente):** il branch `redesign-typescript` ha 2 errori `TS6059` pre-esistenti in `tsconfig.json` (rootDir `src` in conflitto con `include: ["src/**/*", "tests/**/*", "drizzle.config.ts"]`). Verificato al baseline `80d5965`. Tutti gli step `npx tsc --noEmit` di questo piano si intendono come "0 errori nuovi introdotti dal task", non "0 errori assoluti". Il fix di `tsconfig.json` è fuori scope e va tracciato come follow-up separato.
 
 ## File Structure
 
@@ -224,9 +225,11 @@ Expected: 0 errori. (Nessun riferimento residuo a `better-sqlite3`, `DATABASE_PA
 
 Run:
 ```bash
-npx tsx -e "(async () => { const { createClient } = await import('@libsql/client'); const { drizzle } = await import('drizzle-orm/libsql'); const { sql } = await import('drizzle-orm'); const c = createClient({ url: ':memory:' }); const d = drizzle(c); const r = await d.execute(sql\`SELECT 1 AS n\`); console.log('smoke OK', JSON.stringify(r.rows[0])); })()"
+npx tsx -e "(async () => { const { createClient } = await import('@libsql/client'); const { drizzle } = await import('drizzle-orm/libsql'); const { sql } = await import('drizzle-orm'); const c = createClient({ url: ':memory:' }); const d = drizzle(c); const r = await d.all(sql\`SELECT 1 AS n\`); console.log('smoke OK', JSON.stringify(r[0])); })()"
 ```
 Expected: `smoke OK {"n":1}`
+
+Nota: Drizzle 0.45 con adapter `drizzle-orm/libsql` espone `.all()` / `.get()` / `.run()` per le raw SQL query, non `.execute()` (l'API `.execute()` esiste solo per i query builder dei driver sync come D1/workers).
 
 - [ ] **Step 10: Commit**
 
@@ -328,9 +331,11 @@ Expected: `utenti  utenti_comuni  sessioni` (più eventuali `libsql_*` / `_cf_KV
 
 Run:
 ```bash
-npx tsx -e "(async () => { const { db } = await import('./src/db/index.js'); const { sql } = await import('drizzle-orm'); const r = await db.execute(sql\`SELECT 1 AS n\`); console.log('Turso OK', JSON.stringify(r.rows[0])); })()"
+npx tsx -e "(async () => { const { db } = await import('./src/db/index.js'); const { sql } = await import('drizzle-orm'); const r = await db.all(sql\`SELECT 1 AS n\`); console.log('Turso OK', JSON.stringify(r[0])); })()"
 ```
 Expected: `Turso OK {"n":1}` (prova che config + client + credenziali + connessione di rete a Turso funzionano end-to-end).
+
+Nota: stesso caveat di Task 2 Step 9 — usare `.all()` non `.execute()`.
 
 - [ ] **Step 5: Verifica finale**
 
