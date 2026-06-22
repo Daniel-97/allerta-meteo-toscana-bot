@@ -10,7 +10,7 @@ const XML_FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
     <sole_sorge>05:30</sole_sorge>
     <sole_tramonta>21:00</sole_tramonta>
   </almanacco>
-  <previsione>
+  <previsione ora="giorno">
     <allerta value="VERDE">Allerta Verde</allerta>
     <rischio value="ASSENTE">Idraulico</rischio>
     <rischio value="BASSO">Idrogeologico</rischio>
@@ -18,24 +18,24 @@ const XML_FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
     <rischio value="ELEVATO">Vento</rischio>
     <rischio value="ASSENTE">Neve</rischio>
     <rischio value="ASSENTE">Ghiaccio</rischio>
-    <temp>15</temp>
-    <temp>28</temp>
+    <temp temp_type="min">15</temp>
+    <temp temp_type="max">28</temp>
   </previsione>
-  <previsione>
-    <temp>22</temp>
-    <temp>21</temp>
+  <previsione ora="mattina">
+    <temp temp_type="">22</temp>
+    <temp temp_type="perc">21</temp>
     <um>45</um>
     <prob_rain>10</prob_rain>
   </previsione>
-  <previsione>
-    <temp>26</temp>
-    <temp>25</temp>
+  <previsione ora="pomeriggio">
+    <temp temp_type="">26</temp>
+    <temp temp_type="perc">25</temp>
     <um>40</um>
     <prob_rain>5</prob_rain>
   </previsione>
-  <previsione>
-    <temp>18</temp>
-    <temp>17</temp>
+  <previsione ora="sera">
+    <temp temp_type="">18</temp>
+    <temp temp_type="perc">17</temp>
     <um>50</um>
     <prob_rain>20</prob_rain>
   </previsione>
@@ -43,9 +43,10 @@ const XML_FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
 
 describe("createMeteoService", () => {
   const originalFetch = globalThis.fetch;
+  let mockFetch: ReturnType<typeof vi.fn>;
 
   beforeAll(() => {
-    const mockFetch = async (url: string) => {
+    mockFetch = vi.fn(async (url: string) => {
       if (url.includes("firenze")) {
         return { ok: true, text: async () => XML_FIXTURE } as Response;
       }
@@ -56,7 +57,7 @@ describe("createMeteoService", () => {
         throw new Error("Network failure");
       }
       return { ok: false, status: 404, text: async () => "Not Found" } as Response;
-    };
+    });
     vi.stubGlobal("fetch", mockFetch);
   });
 
@@ -70,6 +71,9 @@ describe("createMeteoService", () => {
     expect(dati.comune).toBe("Firenze");
     expect(dati.aggiornamento).toBe("22/06/2026 12:00");
     expect(dati.allerta).toBe("VERDE");
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringMatching(/firenze\.xml$/)
+    );
   });
 
   it("fetchDatiMeteo popola correttamente i rischi", async () => {

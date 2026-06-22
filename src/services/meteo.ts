@@ -27,7 +27,7 @@ export function createMeteoService(): MeteoService {
 
   return {
     fetchDatiMeteo: async (comuneUrl) => {
-      const url = `http://www.lamma.rete.toscana.it/previ/ita/xml/comuni_web/dati/${comuneUrl}`;
+      const url = `https://www.lamma.toscana.it/previ/ita/xml/comuni_web/dati/${comuneUrl}.xml`;
       const res = await fetch(url);
       if (!res.ok) {
         throw new Error(
@@ -45,42 +45,45 @@ export function createMeteoService(): MeteoService {
       }
 
       const parteGiorno = calcolaParteGiorno();
-      const idx = parteGiorno === "mattina" ? 1 : parteGiorno === "pomeriggio" ? 2 : 3;
+      const previsioni = root.previsione;
+      const findPrev = (ora: string) => previsioni.find((p) => p.ora === ora);
+      const giornoPrev = findPrev("giorno") ?? previsioni[0];
+      const subPrev = findPrev(parteGiorno);
 
       return {
         comune: String(root.comune ?? ""),
         aggiornamento: String(root.aggiornamento ?? ""),
         allerta: String(
-          root.previsione[0]?.allerta?.value ?? ""
+          giornoPrev?.allerta?.value ?? ""
         ) as LivelloAllerta,
         rischi: {
           idraulico: String(
-            root.previsione[0]?.rischio?.[0]?.value ?? ""
+            giornoPrev?.rischio?.[0]?.value ?? ""
           ) as LivelloRischio,
           idrogeologico: String(
-            root.previsione[0]?.rischio?.[1]?.value ?? ""
+            giornoPrev?.rischio?.[1]?.value ?? ""
           ) as LivelloRischio,
           temporali: String(
-            root.previsione[0]?.rischio?.[2]?.value ?? ""
+            giornoPrev?.rischio?.[2]?.value ?? ""
           ) as LivelloRischio,
           vento: String(
-            root.previsione[0]?.rischio?.[3]?.value ?? ""
+            giornoPrev?.rischio?.[3]?.value ?? ""
           ) as LivelloRischio,
           neve: String(
-            root.previsione[0]?.rischio?.[4]?.value ?? ""
+            giornoPrev?.rischio?.[4]?.value ?? ""
           ) as LivelloRischio,
           ghiaccio: String(
-            root.previsione[0]?.rischio?.[5]?.value ?? ""
+            giornoPrev?.rischio?.[5]?.value ?? ""
           ) as LivelloRischio,
         },
         temperatura: {
-          min: Number(root.previsione[0]?.temp?.[0] ?? 0),
-          max: Number(root.previsione[0]?.temp?.[1] ?? 0),
+          min: Number(giornoPrev?.temp?.[0]?._ ?? 0),
+          max: Number(giornoPrev?.temp?.[1]?._ ?? 0),
         },
-        temperaturaAttuale: Number(root.previsione[idx]?.temp?.[0] ?? 0),
-        temperaturaPercepita: Number(root.previsione[idx]?.temp?.[1] ?? 0),
-        umidita: Number(root.previsione[idx]?.um ?? 0),
-        probabilitaPioggia: Number(root.previsione[idx]?.prob_rain ?? 0),
+        temperaturaAttuale: Number(subPrev?.temp?.[0]?._ ?? 0),
+        temperaturaPercepita: Number(subPrev?.temp?.[1]?._ ?? 0),
+        umidita: Number(subPrev?.um ?? 0),
+        probabilitaPioggia: Number(subPrev?.prob_rain ?? 0),
         alba: String(root.almanacco?.sole_sorge ?? ""),
         tramonto: String(root.almanacco?.sole_tramonta ?? ""),
         parteGiorno,

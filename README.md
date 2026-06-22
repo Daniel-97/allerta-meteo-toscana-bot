@@ -1,6 +1,6 @@
 # Allerta Meteo Toscana Bot
 
-Bot Telegram per allerte meteo della Toscana, basato sui dati resi disponibili dal [Consorzio LAMMA](http://www.lamma.rete.toscana.it/).
+Bot Telegram per allerte meteo della Toscana, basato sui dati resi disponibili dal [Consorzio LAMMA](https://www.lamma.toscana.it/).
 
 ## Architettura
 

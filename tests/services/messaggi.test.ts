@@ -101,7 +101,7 @@ describe("ottieniUrlImmagine", () => {
   it("ritorna URL corretto per mattina", () => {
     const url = ottieniUrlImmagine("mattina", "12345");
     expect(url).toBe(
-      "http://www.lamma.rete.toscana.it/previ/ita/immagini/image_1_M.jpg?v=12345"
+      "https://www.lamma.toscana.it/previ/ita/immagini/image_1_M.jpg?v=12345"
     );
   });
 

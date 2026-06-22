@@ -61,7 +61,7 @@ export function ottieniUrlImmagine(
   parteGiorno: ParteGiorno,
   timeMs: string
 ): string {
-  const base = "http://www.lamma.rete.toscana.it/previ/ita/immagini/image_1_";
+  const base = "https://www.lamma.toscana.it/previ/ita/immagini/image_1_";
   const suffix = parteGiorno === "mattina" ? "M" : parteGiorno === "pomeriggio" ? "P" : "S";
   return `${base}${suffix}.jpg?v=${timeMs}`;
 }
