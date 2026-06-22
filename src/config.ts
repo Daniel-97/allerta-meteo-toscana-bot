@@ -9,12 +9,16 @@ export const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production"]).default("development"),
 });
 
-const parsed = envSchema.safeParse(process.env);
+export type Config = z.infer<typeof envSchema>;
 
-if (!parsed.success) {
-  console.error("❌ Variabili d'ambiente mancanti o non valide:");
-  console.error(parsed.error.flatten().fieldErrors);
-  process.exit(1);
+export function createConfig(env: Record<string, string | undefined>): Config {
+  const parsed = envSchema.safeParse(env);
+  if (!parsed.success) {
+    console.error("❌ Variabili d'ambiente mancanti o non valide:");
+    console.error(parsed.error.flatten().fieldErrors);
+    process.exit(1);
+  }
+  return parsed.data;
 }
 
-export const config = parsed.data;
+export const config = createConfig(process.env);
