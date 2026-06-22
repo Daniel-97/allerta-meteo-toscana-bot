@@ -15,7 +15,7 @@ export function createMeteoService(): MeteoService {
     attributeNamePrefix: "",
     textNodeName: "_",
     ignoreAttributes: false,
-    isArray: (name) => ["previsione", "rischio"].includes(name),
+    isArray: (name) => ["previsione", "rischio", "temp"].includes(name),
   });
 
   function calcolaParteGiorno(): ParteGiorno {

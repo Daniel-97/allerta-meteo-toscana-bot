@@ -42,13 +42,18 @@ const XML_FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
 </dati>`;
 
 describe("createMeteoService", () => {
+  const originalFetch = globalThis.fetch;
+
   beforeAll(() => {
     const mockFetch = async (url: string) => {
       if (url.includes("firenze")) {
-        return {
-          ok: true,
-          text: async () => XML_FIXTURE,
-        } as Response;
+        return { ok: true, text: async () => XML_FIXTURE } as Response;
+      }
+      if (url.includes("malformed")) {
+        return { ok: true, text: async () => "not xml" } as Response;
+      }
+      if (url.includes("network-error")) {
+        throw new Error("Network failure");
       }
       return { ok: false, status: 404, text: async () => "Not Found" } as Response;
     };
@@ -56,7 +61,7 @@ describe("createMeteoService", () => {
   });
 
   afterAll(() => {
-    vi.stubGlobal("fetch", undefined);
+    vi.stubGlobal("fetch", originalFetch);
   });
 
   it("fetchDatiMeteo restituisce DatiMeteo per comune valido", async () => {
@@ -107,5 +112,19 @@ describe("createMeteoService", () => {
     await expect(service.fetchDatiMeteo("comune-inesistente")).rejects.toThrow(
       "Errore HTTP 404"
     );
+  });
+
+  it("fetchDatiMeteo lancia errore per XML malformato", async () => {
+    const service = createMeteoService();
+    await expect(
+      service.fetchDatiMeteo("malformed")
+    ).rejects.toThrow("XML LAMMA malformato");
+  });
+
+  it("fetchDatiMeteo lancia errore per errore di rete", async () => {
+    const service = createMeteoService();
+    await expect(
+      service.fetchDatiMeteo("network-error")
+    ).rejects.toThrow("Network failure");
   });
 });
