@@ -4,3 +4,4 @@ dist/
 log/
 *.js.map
 .wrangler
+src/db/migrations/
