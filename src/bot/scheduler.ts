@@ -1,6 +1,6 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
-import { formattaAllerta, formattaCompleto } from "../services/messaggi.js";
+import { messages } from "./messages.js";
 
 export async function broadcastNotifiche(
   bot: Bot,
@@ -14,8 +14,8 @@ export async function broadcastNotifiche(
       try {
         const dati = await services.meteo.fetchDatiMeteo(comune.url);
         const msg = comune.notificheMeteo
-          ? formattaCompleto(dati)
-          : formattaAllerta(dati);
+          ? messages.completo(dati)
+          : messages.allerta(dati);
         await bot.api.sendMessage(user.idTelegram, msg);
         inviati++;
       } catch {

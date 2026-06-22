@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  formattaAllerta,
-  formattaPrevisioni,
-  formattaCompleto,
-  ottieniUrlImmagine,
-} from "../../src/services/messaggi.js";
+import { messages, ottieniUrlImmagine } from "../../src/bot/messages.js";
 import type { DatiMeteo } from "../../src/types/index.js";
 
 const datiFixture: DatiMeteo = {
@@ -29,70 +24,70 @@ const datiFixture: DatiMeteo = {
   parteGiorno: "mattina",
 };
 
-describe("formattaAllerta", () => {
+describe("messages.allerta", () => {
   it("include comune e aggiornamento", () => {
-    const msg = formattaAllerta(datiFixture);
+    const msg = messages.allerta(datiFixture);
     expect(msg).toContain("Firenze");
     expect(msg).toContain("22/06/2026");
   });
 
   it("include livello allerta", () => {
-    const msg = formattaAllerta(datiFixture);
-    expect(msg).toContain("Allerta: GIALLO");
+    const msg = messages.allerta(datiFixture);
+    expect(msg).toContain("GIALLO");
   });
 
   it("include tutti i 6 rischi", () => {
-    const msg = formattaAllerta(datiFixture);
-    expect(msg).toContain("Rischio idraulico: MODERATO");
-    expect(msg).toContain("Rischio idrogeologico: BASSO");
-    expect(msg).toContain("Rischio temporali: ASSENTE");
-    expect(msg).toContain("Rischio vento: ELEVATO");
-    expect(msg).toContain("Rischio neve: ASSENTE");
-    expect(msg).toContain("Rischio ghiaccio: ASSENTE");
+    const msg = messages.allerta(datiFixture);
+    expect(msg).toContain("Idraulico: MODERATO");
+    expect(msg).toContain("Idrogeologico: BASSO");
+    expect(msg).toContain("Temporali: ASSENTE");
+    expect(msg).toContain("Vento: ELEVATO");
+    expect(msg).toContain("Neve: ASSENTE");
+    expect(msg).toContain("Ghiaccio: ASSENTE");
   });
 
   it("NON include informazioni meteo", () => {
-    const msg = formattaAllerta(datiFixture);
+    const msg = messages.allerta(datiFixture);
     expect(msg).not.toContain("Temperatura");
-    expect(msg).not.toContain("Umidita");
+    expect(msg).not.toContain("Umidità");
   });
 });
 
-describe("formattaPrevisioni", () => {
+describe("messages.previsioni", () => {
   it("include dati meteo base", () => {
-    const msg = formattaPrevisioni(datiFixture);
+    const msg = messages.previsioni(datiFixture);
     expect(msg).toContain("Firenze");
     expect(msg).toContain("mattina");
-    expect(msg).toContain("Umidita': 45%");
-    expect(msg).toContain("Probabilita' pioggia: 10%");
+    expect(msg).toContain("Umidità: 45%");
+    expect(msg).toContain("Pioggia: 10%");
   });
 
   it("include alba e tramonto", () => {
-    const msg = formattaPrevisioni(datiFixture);
-    expect(msg).toContain("Sole sorge: 05:30");
-    expect(msg).toContain("Sole tramonta: 21:00");
+    const msg = messages.previsioni(datiFixture);
+    expect(msg).toContain("Alba: 05:30");
+    expect(msg).toContain("Tramonto: 21:00");
   });
 
   it("include temperature attuale e percepita", () => {
-    const msg = formattaPrevisioni(datiFixture);
+    const msg = messages.previsioni(datiFixture);
     expect(msg).toContain("Temperatura: 22°");
-    expect(msg).toContain("Temperatura percepita: 21°");
+    expect(msg).toContain("Percepita: 21°");
   });
 
   it("NON include rischi", () => {
-    const msg = formattaPrevisioni(datiFixture);
-    expect(msg).not.toContain("Allerta:");
-    expect(msg).not.toContain("Rischio idraulico");
+    const msg = messages.previsioni(datiFixture);
+    expect(msg).not.toContain("Allerta");
+    expect(msg).not.toContain("Idraulico");
   });
 });
 
-describe("formattaCompleto", () => {
+describe("messages.completo", () => {
   it("include allerta e previsioni", () => {
-    const msg = formattaCompleto(datiFixture);
+    const msg = messages.completo(datiFixture);
     expect(msg).toContain("Allerta: GIALLO");
-    expect(msg).toContain("Rischio idraulico: MODERATO");
+    expect(msg).toContain("Idraulico: MODERATO");
     expect(msg).toContain("mattina");
-    expect(msg).toContain("Umidita': 45%");
+    expect(msg).toContain("Umidità: 45%");
     expect(msg).toContain("Temperatura: 22°");
   });
 });

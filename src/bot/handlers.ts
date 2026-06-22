@@ -3,8 +3,7 @@ import { GrammyError } from "grammy";
 import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
-import { formattaAllerta, formattaPrevisioni } from "../services/messaggi.js";
-import { strings } from "./strings.js";
+import { messages } from "./messages.js";
 import { mainMenuKeyboard, comuniInlineKeyboard, confermaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
@@ -29,15 +28,15 @@ async function handleAllerta(ctx: Context, services: BotServices) {
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
   if (!user) {
-    await ctx.reply(strings.nonIscritto, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.nonIscritto, { reply_markup: mainMenuKeyboard() });
     return;
   }
   for (const c of user.comuni) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
-      await ctx.reply(formattaAllerta(dati), { reply_markup: mainMenuKeyboard() });
+      await ctx.reply(messages.allerta(dati), { reply_markup: mainMenuKeyboard() });
     } catch {
-      await ctx.reply(strings.errore);
+      await ctx.reply(messages.errore);
     }
   }
 }
@@ -47,30 +46,30 @@ async function handlePrevisioni(ctx: Context, services: BotServices) {
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
   if (!user) {
-    await ctx.reply(strings.nonIscritto, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.nonIscritto, { reply_markup: mainMenuKeyboard() });
     return;
   }
   for (const c of user.comuni) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
-      await ctx.reply(formattaPrevisioni(dati), { reply_markup: mainMenuKeyboard() });
+      await ctx.reply(messages.previsioni(dati), { reply_markup: mainMenuKeyboard() });
     } catch {
-      await ctx.reply(strings.errore);
+      await ctx.reply(messages.errore);
     }
   }
 }
 
 export function registerHandlers(bot: Bot, services: BotServices) {
   bot.command("start", async (ctx) => {
-    await ctx.reply(strings.welcome, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
   });
 
   bot.command("credits", async (ctx) => {
-    await ctx.reply(strings.credits, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard() });
   });
 
   bot.command("annulla", async (ctx) => {
-    await ctx.reply("Operazione annullata.", { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.annulla, { reply_markup: mainMenuKeyboard() });
   });
 
   bot.hears("Aggiorna allerta", (ctx) => handleAllerta(ctx, services));
@@ -80,37 +79,33 @@ export function registerHandlers(bot: Bot, services: BotServices) {
   bot.command("previsioni", (ctx) => handlePrevisioni(ctx, services));
 
   bot.hears("Imposta comune", async (ctx) => {
-    await ctx.reply(strings.impostaPrompt);
+    await ctx.reply(messages.impostaPrompt);
   });
 
   bot.command("imposta", async (ctx) => {
     const text = ctx.match?.trim() ?? "";
     if (!text) {
-      await ctx.reply(strings.impostaPrompt);
+      await ctx.reply(messages.impostaPrompt);
       return;
     }
     const risultati = await services.comuni.searchByPrefix(text);
     if (risultati.length === 0) {
-      await ctx.reply(strings.impostaNonTrovato);
+      await ctx.reply(messages.impostaNonTrovato);
       return;
     }
-    await ctx.reply("Comuni trovati:", {
+    await ctx.reply(messages.comuniTrovati, {
       reply_markup: comuniInlineKeyboard(risultati),
     });
   });
 
   bot.hears("Credits&Info", async (ctx) => {
-    await ctx.reply(strings.credits, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard() });
   });
 
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services));
 
   bot.command("help", async (ctx) => {
-    await ctx.reply(
-      "Comandi disponibili:\n/allerta — Ricevi l'allerta meteo\n" +
-      "/previsioni — Ricevi le previsioni\n/imposta <nome> — Imposta un comune\n" +
-      "/credits — Info sul servizio\n/annulla — Annulla operazione"
-    );
+    await ctx.reply(messages.help);
   });
 }
 
@@ -124,7 +119,7 @@ export async function handleCallbackQuery(
 
   if (action === "sel") {
     const [, url, nome] = parts;
-    await safeEditMessageText(ctx, strings.impostaConferma(nome), {
+    await safeEditMessageText(ctx, messages.impostaConferma(nome), {
       reply_markup: confermaInlineKeyboard(url, nome),
     });
     return;
@@ -133,7 +128,7 @@ export async function handleCallbackQuery(
   if (action === "sub") {
     const [, url, nome, flagRaw] = parts;
     const notificheMeteo = flagRaw === "1";
-    await safeEditMessageText(ctx, strings.impostaPrompt, {
+    await safeEditMessageText(ctx, messages.impostaPrompt, {
       reply_markup: { inline_keyboard: [] },
     });
 
@@ -149,8 +144,8 @@ export async function handleCallbackQuery(
     });
 
     const msg = notificheMeteo
-      ? strings.impostaOkAllerta(nome)
-      : strings.impostaOk(nome);
+      ? messages.impostaOkAllerta(nome)
+      : messages.impostaOk(nome);
     await ctx.reply(msg, { reply_markup: mainMenuKeyboard() });
     return;
   }
