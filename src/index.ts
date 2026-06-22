@@ -1,0 +1,49 @@
+import type { BotServices } from "./bot/handlers.js";
+import { createConfig } from "./config.js";
+import { createDb } from "./db/index.js";
+import { createArchivioComuni } from "./services/comuni.js";
+import { createUsersRepository } from "./services/users.js";
+import { createMeteoService } from "./services/meteo.js";
+import { createBot } from "./bot/bot.js";
+import { broadcastNotifiche } from "./bot/scheduler.js";
+
+export interface Env extends Record<string, string | undefined> {
+  TELEGRAM_BOT_TOKEN: string;
+  ADMIN_CHAT_ID: string;
+  TURSO_DATABASE_URL: string;
+  TURSO_AUTH_TOKEN: string;
+  NODE_ENV: string;
+}
+
+let initialized: { bot: any; services: BotServices } | null = null;
+
+function getInitialized(env: Env) {
+  if (initialized) return initialized;
+  const config = createConfig(env);
+  const db = createDb(config) as any;
+  const services: BotServices = {
+    comuni: createArchivioComuni(db),
+    users: createUsersRepository(db),
+    meteo: createMeteoService(),
+  };
+  const bot = createBot(config, services);
+  initialized = { bot, services };
+  return initialized;
+}
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    if (request.method !== "POST") {
+      return new Response("Method not allowed", { status: 405 });
+    }
+    const { bot } = getInitialized(env);
+    const update = await request.json();
+    await bot.handleUpdate(update);
+    return new Response("OK");
+  },
+
+  async scheduled(_event: unknown, env: Env): Promise<void> {
+    const { bot, services } = getInitialized(env);
+    await broadcastNotifiche(bot, services);
+  },
+};
