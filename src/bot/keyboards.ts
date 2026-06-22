@@ -12,12 +12,12 @@ export function mainMenuKeyboard() {
 }
 
 export function comuniInlineKeyboard(
-  comuni: Array<{ nome: string; url: string; provincia: string }>
+  comuni: Array<{ nome: string; url: string; provincia: string | null }>
 ) {
   return {
     inline_keyboard: comuni.map((c) => [
       {
-        text: `${c.nome} (${c.provincia})`,
+        text: c.provincia ? `${c.nome} (${c.provincia})` : c.nome,
         callback_data: `sel:${c.url}:${c.nome}`,
       },
     ]),

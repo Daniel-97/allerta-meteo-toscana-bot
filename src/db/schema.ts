@@ -41,8 +41,8 @@ export const comuni = sqliteTable(
     id: integer("id").primaryKey({ autoIncrement: true }),
     nome: text("nome").notNull(),
     url: text("url").notNull(),
-    provincia: text("provincia").notNull(),
-    zona: text("zona").notNull(),
+    provincia: text("provincia"),
+    zona: text("zona"),
   },
   (t) => ({
     urlUnico: unique().on(t.url),

@@ -19,7 +19,7 @@ try {
 }
 
 const parser = new XMLParser({ isArray: (name) => name === "link" });
-let parsed: { pages: { link: Array<{ title: string; url: string; provincia: string; zona: string }> } };
+let parsed: { pages: { link: Array<{ title: string; url: string; provincia?: string; zona?: string }> } };
 try {
   parsed = parser.parse(xml);
 } catch (err) {
