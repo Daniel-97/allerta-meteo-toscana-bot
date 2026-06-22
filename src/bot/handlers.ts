@@ -1,4 +1,5 @@
-import type { Bot, Context } from "grammy";
+import type { Bot, Context, Filter } from "grammy";
+import { GrammyError } from "grammy";
 import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
@@ -10,6 +11,17 @@ export interface BotServices {
   comuni: ArchivioComuni;
   users: UsersRepository;
   meteo: MeteoService;
+}
+
+async function safeEditMessageText(ctx: Context, text: string, extra?: Record<string, unknown>) {
+  try {
+    await ctx.editMessageText(text, extra);
+  } catch (err) {
+    if (err instanceof GrammyError && err.description?.includes("message is not modified")) {
+      return;
+    }
+    throw err;
+  }
 }
 
 async function handleAllerta(ctx: Context, services: BotServices) {
@@ -91,42 +103,7 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     await ctx.reply(strings.credits, { reply_markup: mainMenuKeyboard() });
   });
 
-  bot.on("callback_query:data", async (ctx) => {
-    const data = ctx.callbackQuery.data;
-    const parts = data.split(":");
-    const action = parts[0];
-
-    if (action === "sel") {
-      const [, url, nome] = parts;
-      await ctx.editMessageText(strings.impostaConferma(nome), {
-        reply_markup: confermaInlineKeyboard(url, nome),
-      });
-      return;
-    }
-
-    if (action === "sub") {
-      const [, url, nome, flagRaw] = parts;
-      const notificheMeteo = flagRaw === "1";
-      await ctx.editMessageText(strings.impostaPrompt);
-
-      const idTelegram = ctx.from?.id;
-      if (!idTelegram) return;
-
-      await services.users.subscribe({
-        idTelegram,
-        usernameTelegram: ctx.from?.username ?? null,
-        nomeTelegram: ctx.from?.first_name ?? "",
-        comune: { nome, url },
-        notificheMeteo,
-      });
-
-      const msg = notificheMeteo
-        ? strings.impostaOkAllerta(nome)
-        : strings.impostaOk(nome);
-      await ctx.reply(msg, { reply_markup: mainMenuKeyboard() });
-      return;
-    }
-  });
+  bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services));
 
   bot.command("help", async (ctx) => {
     await ctx.reply(
@@ -135,4 +112,46 @@ export function registerHandlers(bot: Bot, services: BotServices) {
       "/credits — Info sul servizio\n/annulla — Annulla operazione"
     );
   });
+}
+
+export async function handleCallbackQuery(
+  ctx: Filter<Context, "callback_query:data">,
+  services: BotServices,
+) {
+  const data = ctx.callbackQuery.data;
+  const parts = data.split(":");
+  const action = parts[0];
+
+  if (action === "sel") {
+    const [, url, nome] = parts;
+    await safeEditMessageText(ctx, strings.impostaConferma(nome), {
+      reply_markup: confermaInlineKeyboard(url, nome),
+    });
+    return;
+  }
+
+  if (action === "sub") {
+    const [, url, nome, flagRaw] = parts;
+    const notificheMeteo = flagRaw === "1";
+    await safeEditMessageText(ctx, strings.impostaPrompt, {
+      reply_markup: { inline_keyboard: [] },
+    });
+
+    const idTelegram = ctx.from?.id;
+    if (!idTelegram) return;
+
+    await services.users.subscribe({
+      idTelegram,
+      usernameTelegram: ctx.from?.username ?? null,
+      nomeTelegram: ctx.from?.first_name ?? "",
+      comune: { nome, url },
+      notificheMeteo,
+    });
+
+    const msg = notificheMeteo
+      ? strings.impostaOkAllerta(nome)
+      : strings.impostaOk(nome);
+    await ctx.reply(msg, { reply_markup: mainMenuKeyboard() });
+    return;
+  }
 }
