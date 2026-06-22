@@ -66,8 +66,8 @@ const parser = new XMLParser({
 | `root.previsione[0].rischio[5].value` | `rischi.ghiaccio` | |
 | `root.previsione[0].temp[0]` (string) | `temperatura.min` | `Number()` |
 | `root.previsione[0].temp[1]` (string) | `temperatura.max` | `Number()` |
-| `root.previsione[parteGiorno].temp[0]` | (temp attuale) | `Number()`, non in DatiMeteo ma usato nel messaggio |
-| `root.previsione[parteGiorno].temp[1]` | (temp percepita) | `Number()` |
+| `root.previsione[parteGiorno].temp[0]` | `temperaturaAttuale` | `Number()`, temp corrente per fascia oraria |
+| `root.previsione[parteGiorno].temp[1]` | `temperaturaPercepita` | `Number()`, temp percepita |
 | `root.previsione[parteGiorno].um` (string) | `umidita` | `Number()` |
 | `root.previsione[parteGiorno].prob_rain` (string) | `probabilitaPioggia` | `Number()` |
 | `root.time_ms` | — | cache buster per URL immagine |

@@ -30,6 +30,8 @@ export interface DatiMeteo {
     ghiaccio: LivelloRischio;
   };
   temperatura: { min: number; max: number };
+  temperaturaAttuale: number;
+  temperaturaPercepita: number;
   umidita: number;
   probabilitaPioggia: number;
   alba: string;

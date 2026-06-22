@@ -54,8 +54,8 @@ export function formattaPrevisioni(dati: DatiMeteo): string {
         : "sera";
   return (
     `Dati meteo del ${dati.aggiornamento}. Comune di ${dati.comune} ${parteGiornoStr}\n\n` +
-    `- Temperatura: ${dati.temperatura.min}°\n` +
-    `- Temperatura percepita: ${dati.temperatura.max}°\n` +
+    `- Temperatura: ${dati.temperaturaAttuale}°\n` +
+    `- Temperatura percepita: ${dati.temperaturaPercepita}°\n` +
     `- Umidita': ${dati.umidita}%\n` +
     `- Probabilita' pioggia: ${dati.probabilitaPioggia}%\n` +
     `- Sole sorge: ${dati.alba}\n` +
@@ -81,8 +81,8 @@ export function formattaCompleto(dati: DatiMeteo): string {
     `- Rischio neve: ${dati.rischi.neve}\n` +
     `- Rischio ghiaccio: ${dati.rischi.ghiaccio}\n\n` +
     `Informazioni meteo ${parteGiornoStr}\n` +
-    `- Temperatura: ${dati.temperatura.min}°\n` +
-    `- Temperatura percepita: ${dati.temperatura.max}°\n` +
+    `- Temperatura: ${dati.temperaturaAttuale}°\n` +
+    `- Temperatura percepita: ${dati.temperaturaPercepita}°\n` +
     `- Umidita': ${dati.umidita}%\n` +
     `- Probabilita' pioggia: ${dati.probabilitaPioggia}%\n\n` +
     `Temp min: ${dati.temperatura.min}°         Temp max: ${dati.temperatura.max}°`
@@ -124,6 +124,8 @@ const datiFixture: DatiMeteo = {
     ghiaccio: "ASSENTE",
   },
   temperatura: { min: 15, max: 28 },
+  temperaturaAttuale: 22,
+  temperaturaPercepita: 21,
   umidita: 45,
   probabilitaPioggia: 10,
   alba: "05:30",
@@ -427,6 +429,8 @@ export function createMeteoService(): MeteoService {
           min: Number(root.previsione[0]?.temp?.[0] ?? 0),
           max: Number(root.previsione[0]?.temp?.[1] ?? 0),
         },
+        temperaturaAttuale: Number(root.previsione[idx]?.temp?.[0] ?? 0),
+        temperaturaPercepita: Number(root.previsione[idx]?.temp?.[1] ?? 0),
         umidita: Number(root.previsione[idx]?.um ?? 0),
         probabilitaPioggia: Number(root.previsione[idx]?.prob_rain ?? 0),
         alba: String(root.almanacco?.sole_sorge ?? ""),
