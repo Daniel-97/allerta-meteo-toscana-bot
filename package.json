@@ -18,7 +18,6 @@
   "author": "Daniele Zeolla",
   "license": "ISC",
   "dependencies": {
-    "@grammyjs/conversations": "^2.1.1",
     "@libsql/client": "^0.17.4",
     "dotenv": "^16.6.1",
     "drizzle-orm": "^0.45.2",
