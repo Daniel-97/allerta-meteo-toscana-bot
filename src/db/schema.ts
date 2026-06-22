@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 
 export const utenti = sqliteTable("utenti", {
   idTelegram: integer("id_telegram").primaryKey(),
@@ -34,3 +34,18 @@ export const sessioni = sqliteTable("sessioni", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
 });
+
+export const comuni = sqliteTable(
+  "comuni",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    nome: text("nome").notNull(),
+    url: text("url").notNull(),
+    provincia: text("provincia").notNull(),
+    zona: text("zona").notNull(),
+  },
+  (t) => ({
+    urlUnico: unique().on(t.url),
+    nomeIdx: index("comuni_nome_idx").on(t.nome),
+  })
+);
