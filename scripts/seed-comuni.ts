@@ -27,7 +27,13 @@ try {
   process.exit(1);
 }
 
-const rows = parsed.pages.link.map((link) => ({
+const links = parsed?.pages?.link;
+if (!links || links.length === 0) {
+  console.error("Errore: nessun comune trovato nel XML");
+  process.exit(1);
+}
+
+const rows = links.map((link) => ({
   nome: link.title,
   url: link.url,
   provincia: link.provincia,
@@ -38,5 +44,5 @@ console.log(`Trovati ${rows.length} comuni nel XML. Inserimento in corso...`);
 
 const result = await db.insert(comuni).values(rows).onConflictDoNothing();
 
-console.log(`Inseriti/saltati: ${result.rowsAffected} righe affette`);
+console.log(`Inseriti: ${result.rowsAffected} righe`);
 process.exit(0);
