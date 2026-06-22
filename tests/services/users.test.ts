@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, afterAll, beforeAll } from "vitest";
 import { createTestDb } from "../helpers/test-db.js";
 import {
   createUsersRepository,
@@ -10,6 +10,7 @@ import type { LibSQLDatabase } from "drizzle-orm/libsql";
 describe("UsersRepository", () => {
   let db: LibSQLDatabase;
   let repo: UsersRepository;
+  let cleanup: () => void;
 
   const utente1 = {
     idTelegram: 111,
@@ -25,8 +26,14 @@ describe("UsersRepository", () => {
   const comunePi = { nome: "Pisa", url: "pisa" };
 
   beforeAll(async () => {
-    db = await createTestDb();
+    const test = await createTestDb();
+    db = test.db;
+    cleanup = test.cleanup;
     repo = createUsersRepository(db);
+  });
+
+  afterAll(() => {
+    cleanup?.();
   });
 
   it("findByTelegramId ritorna undefined per utente inesistente", async () => {

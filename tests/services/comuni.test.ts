@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, afterAll, beforeAll } from "vitest";
 import { createTestDb } from "../helpers/test-db.js";
 import { createArchivioComuni } from "../../src/services/comuni.js";
 import { comuni } from "../../src/db/schema.js";
@@ -15,11 +15,18 @@ const FIXTURE = [
 describe("ArchivioComuni", () => {
   let db: LibSQLDatabase;
   let archivio: ArchivioComuni;
+  let cleanup: () => void;
 
   beforeAll(async () => {
-    db = await createTestDb();
+    const test = await createTestDb();
+    db = test.db;
+    cleanup = test.cleanup;
     await db.insert(comuni).values(FIXTURE);
     archivio = createArchivioComuni(db);
+  });
+
+  afterAll(() => {
+    cleanup?.();
   });
 
   it("searchByPrefix trovato (case-insensitive)", async () => {

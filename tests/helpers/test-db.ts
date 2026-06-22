@@ -1,4 +1,4 @@
-import { mkdtempSync } from "fs";
+import { mkdtempSync, rmSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { createClient } from "@libsql/client";
@@ -11,5 +11,10 @@ export async function createTestDb() {
   const client = createClient({ url: `file:${dir}/test.db` });
   const db = drizzle(client, { schema });
   await migrate(db, { migrationsFolder: "./src/db/migrations" });
-  return db;
+  return {
+    db,
+    cleanup: () => {
+      rmSync(dir, { recursive: true, force: true });
+    },
+  };
 }
