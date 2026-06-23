@@ -52,7 +52,7 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   for (const c of user.comuni) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
-      await ctx.reply(messages.previsioni(dati), { reply_markup: mainMenuKeyboard() });
+      await ctx.reply(messages.previsioni(dati), { reply_markup: mainMenuKeyboard(), link_preview_options: { is_disabled: true } });
       await ctx.replyWithMediaGroup(costruisciAlbumImmagini());
     } catch {
       await ctx.reply(messages.errore);

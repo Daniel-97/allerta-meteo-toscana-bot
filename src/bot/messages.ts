@@ -113,7 +113,8 @@ export const messages = {
     `🌧️ Pioggia: ${d.probabilitaPioggia}%\n` +
     `🌅 Alba: ${d.alba}\n` +
     `🌇 Tramonto: ${d.tramonto}\n\n` +
-    `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°`,
+    `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
+    `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`,
 
   completo: (d: DatiMeteo) =>
     `📊 <b>Dati meteo</b> — ${escHtml(d.comune)}\n` +
@@ -130,7 +131,8 @@ export const messages = {
     `🤒 Percepita: ${d.temperaturaPercepita}°\n` +
     `💧 Umidità: ${d.umidita}%\n` +
     `🌧️ Pioggia: ${d.probabilitaPioggia}%\n\n` +
-    `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°`,
+    `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
+    `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`,
 };
 
 export function ottieniUrlImmagine(

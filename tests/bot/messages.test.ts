@@ -79,6 +79,12 @@ describe("messages.previsioni", () => {
     expect(msg).toContain("Percepita: 21°");
   });
 
+  it("include link bollettino del giorno", () => {
+    const msg = messages.previsioni(datiFixture);
+    expect(msg).toContain("Bollettino del giorno");
+    expect(msg).toContain("https://www.lamma.toscana.it/previ/ita/bollettino.pdf");
+  });
+
   it("NON include rischi", () => {
     const msg = messages.previsioni(datiFixture);
     expect(msg).not.toContain("Allerta");
@@ -94,6 +100,12 @@ describe("messages.completo", () => {
     expect(msg).toContain("mattina");
     expect(msg).toContain("Umidità: 45%");
     expect(msg).toContain("Temperatura: 22°");
+  });
+
+  it("include link bollettino del giorno", () => {
+    const msg = messages.completo(datiFixture);
+    expect(msg).toContain("Bollettino del giorno");
+    expect(msg).toContain("https://www.lamma.toscana.it/previ/ita/bollettino.pdf");
   });
 });
 

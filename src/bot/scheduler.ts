@@ -16,7 +16,7 @@ export async function broadcastNotifiche(
         const msg = comune.notificheMeteo
           ? messages.completo(dati)
           : messages.allerta(dati);
-        await bot.api.sendMessage(user.idTelegram, msg);
+        await bot.api.sendMessage(user.idTelegram, msg, { link_preview_options: { is_disabled: true } });
         inviati++;
         if (comune.notificheMeteo) {
           await bot.api.sendMediaGroup(
