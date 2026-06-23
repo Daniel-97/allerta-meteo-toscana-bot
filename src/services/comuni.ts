@@ -14,8 +14,6 @@ export function createArchivioComuni(db: LibSQLDatabase): ArchivioComuni {
     return {
       nome: row.nome,
       url: row.url,
-      provincia: row.provincia,
-      zona: row.zona,
     };
   }
 

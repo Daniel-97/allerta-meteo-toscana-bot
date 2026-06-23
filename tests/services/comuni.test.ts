@@ -6,10 +6,10 @@ import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import type { ArchivioComuni } from "../../src/services/comuni.js";
 
 const FIXTURE = [
-  { nome: "Firenze", url: "firenze", provincia: "FI", zona: "A3 - Arno-Firenze" },
-  { nome: "Scandicci", url: "scandicci", provincia: "FI", zona: "A3 - Arno-Firenze" },
-  { nome: "Sesto Fiorentino", url: "sestofiorentino", provincia: "FI", zona: "B - Bisenzio e Ombrone Pt" },
-  { nome: "Pisa", url: "pisa", provincia: "PI", zona: "A1 - Basso corso Arno" },
+  { nome: "Firenze", url: "firenze" },
+  { nome: "Scandicci", url: "scandicci" },
+  { nome: "Sesto Fiorentino", url: "sestofiorentino" },
+  { nome: "Pisa", url: "pisa" },
 ];
 
 describe("ArchivioComuni", () => {
@@ -34,8 +34,6 @@ describe("ArchivioComuni", () => {
     expect(res).toHaveLength(1);
     expect(res[0].nome).toBe("Firenze");
     expect(res[0].url).toBe("firenze");
-    expect(res[0].provincia).toBe("FI");
-    expect(res[0].zona).toContain("Arno");
   });
 
   it("searchByPrefix multi-match ordinato", async () => {

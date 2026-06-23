@@ -59,12 +59,12 @@ export function confermaModificaInlineKeyboard(url: string, nome: string) {
 }
 
 export function comuniInlineKeyboard(
-  comuni: Array<{ nome: string; url: string; provincia: string | null }>
+  comuni: Array<{ nome: string; url: string }>
 ) {
   return {
     inline_keyboard: comuni.map((c) => [
       {
-        text: c.provincia ? `📍 ${c.nome} (${c.provincia})` : `📍 ${c.nome}`,
+        text: `📍 ${c.nome}`,
         callback_data: `sel:${c.url}:${c.nome}`,
       },
     ]),

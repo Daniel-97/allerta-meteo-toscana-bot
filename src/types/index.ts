@@ -1,8 +1,6 @@
 export interface Comune {
   nome: string;
   url: string;
-  provincia: string | null;
-  zona: string | null;
 }
 
 export type ParteGiorno = "mattina" | "pomeriggio" | "sera";
