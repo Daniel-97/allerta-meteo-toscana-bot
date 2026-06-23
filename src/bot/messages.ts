@@ -63,7 +63,7 @@ export const messages = {
   comuniTrovati: "📍 Comuni trovati:",
 
   impostaPrompt:
-    "🔍 Scrivi il nome del comune (es. /imposta pisa) oppure parte del nome per cercarlo.",
+    "🔍 Scrivi il nome del comune (es. /aggiungi pisa) oppure parte del nome per cercarlo.",
 
   impostaNonTrovato: "❌ Nessun comune trovato con quel nome. Riprova.",
 

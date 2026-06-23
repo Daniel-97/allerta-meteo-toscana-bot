@@ -167,6 +167,13 @@ export async function handleCallbackQuery(
   const parts = data.split(":");
   const action = parts[0];
 
+  if (action === "annulla") {
+    await safeEditMessageText(ctx, messages.annulla, {
+      reply_markup: { inline_keyboard: [] },
+    });
+    return;
+  }
+
   if (action === "sel") {
     const [, url, nome] = parts;
     await safeEditMessageText(ctx, messages.impostaConferma(nome), {
