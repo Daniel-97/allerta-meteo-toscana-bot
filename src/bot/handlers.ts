@@ -72,10 +72,10 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     await ctx.reply(messages.annulla, { reply_markup: mainMenuKeyboard() });
   });
 
-  bot.hears("Aggiorna allerta", (ctx) => handleAllerta(ctx, services));
+  bot.hears("🚨 Aggiorna allerta", (ctx) => handleAllerta(ctx, services));
   bot.command("allerta", (ctx) => handleAllerta(ctx, services));
 
-  bot.hears("Aggiorna meteo", (ctx) => handlePrevisioni(ctx, services));
+  bot.hears("🌤️ Aggiorna meteo", (ctx) => handlePrevisioni(ctx, services));
   bot.command("previsioni", (ctx) => handlePrevisioni(ctx, services));
 
   bot.command("aggiungi", async (ctx) => {
@@ -133,7 +133,7 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     });
   });
 
-  bot.hears("Gestisci comuni", async (ctx) => {
+  bot.hears("📋 Gestisci comuni", async (ctx) => {
     const id = ctx.from?.id;
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
@@ -146,11 +146,11 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     });
   });
 
-  bot.hears("Aggiungi", async (ctx) => {
+  bot.hears("➕ Aggiungi", async (ctx) => {
     await ctx.reply(messages.impostaPrompt);
   });
 
-  bot.hears("Elimina", async (ctx) => {
+  bot.hears("🗑️ Elimina", async (ctx) => {
     const id = ctx.from?.id;
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
@@ -163,7 +163,7 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     });
   });
 
-  bot.hears("Modifica", async (ctx) => {
+  bot.hears("✏️ Modifica", async (ctx) => {
     const id = ctx.from?.id;
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
@@ -176,7 +176,7 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     });
   });
 
-  bot.hears("Lista", async (ctx) => {
+  bot.hears("📋 Lista", async (ctx) => {
     const id = ctx.from?.id;
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
@@ -189,11 +189,11 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     });
   });
 
-  bot.hears("Indietro", async (ctx) => {
+  bot.hears("🔙 Indietro", async (ctx) => {
     await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
   });
 
-  bot.hears("Credits&Info", async (ctx) => {
+  bot.hears("ℹ️ Credits&Info", async (ctx) => {
     await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard() });
   });
 
