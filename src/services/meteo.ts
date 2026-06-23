@@ -46,7 +46,8 @@ export function createMeteoService(): MeteoService {
 
       const parteGiorno = calcolaParteGiorno();
       const previsioni = root.previsione;
-      const findPrev = (ora: string) => previsioni.find((p) => p.ora === ora);
+      const findPrev = (ora: string) =>
+        previsioni.find((p: { ora: string }) => p.ora === ora);
       const giornoPrev = findPrev("giorno") ?? previsioni[0];
       const subPrev = findPrev(parteGiorno);
 
