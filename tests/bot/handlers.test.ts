@@ -193,23 +193,6 @@ describe("manage callback", () => {
   });
 });
 
-describe("add callback", () => {
-  it("mostra prompt per cercare comune", async () => {
-    const editMessageText = vi.fn().mockResolvedValue(undefined);
-    const ctx = {
-      callbackQuery: { data: "add" },
-      editMessageText,
-    } as any;
-
-    await handleCallbackQuery(ctx, {} as any);
-
-    expect(editMessageText).toHaveBeenCalledWith(
-      expect.stringContaining("Scrivi il nome del comune"),
-      { reply_markup: { inline_keyboard: [] } },
-    );
-  });
-});
-
 describe("del callback", () => {
   it("mostra conferma eliminazione", async () => {
     const editMessageText = vi.fn().mockResolvedValue(undefined);

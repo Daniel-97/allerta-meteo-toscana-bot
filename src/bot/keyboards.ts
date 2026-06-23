@@ -11,17 +11,25 @@ export function mainMenuKeyboard() {
     .resized();
 }
 
-export function gestisciComuniKeyboard(
-  comuni: Array<{ url: string; nome: string }>
+export function gestisciSubMenuKeyboard() {
+  return new Keyboard()
+    .text("Modifica")
+    .text("Aggiungi")
+    .row()
+    .text("Elimina")
+    .text("Lista")
+    .resized();
+}
+
+export function comuniSelezioneInlineKeyboard(
+  comuni: Array<{ url: string; nome: string }>,
+  action: string
 ) {
-  const keyboard = comuni.map((c) => [
-    { text: `✏️ ${c.nome}`, callback_data: `mod:${c.url}:${c.nome}` },
-    { text: `🗑️ ${c.nome}`, callback_data: `del:${c.url}:${c.nome}` },
-  ]);
-  keyboard.push([
-    { text: "➕ Aggiungi comune", callback_data: "add" },
-  ]);
-  return { inline_keyboard: keyboard };
+  return {
+    inline_keyboard: comuni.map((c) => [
+      { text: c.nome, callback_data: `${action}:${c.url}:${c.nome}` },
+    ]),
+  };
 }
 
 export function confermaEliminaInlineKeyboard(url: string, nome: string) {

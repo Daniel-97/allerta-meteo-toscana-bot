@@ -50,6 +50,10 @@ export const messages = {
   modificato: (nome: string, stato: string) =>
     `✅ Notifiche meteo per ${escHtml(nome)}: ${stato}.`,
 
+  selezionaComuneDaEliminare: "📍 Seleziona il comune che vuoi eliminare:",
+
+  selezionaComuneDaModificare: "📍 Seleziona il comune che vuoi modificare:",
+
   gestisciComuni: (comuni: { nome: string; notificheMeteo: boolean }[]) => {
     const items = comuni.map(
       (c) =>

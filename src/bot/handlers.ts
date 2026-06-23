@@ -4,7 +4,7 @@ import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
 import { messages } from "./messages.js";
-import { mainMenuKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciComuniKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
+import { mainMenuKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
@@ -102,8 +102,8 @@ export function registerHandlers(bot: Bot, services: BotServices) {
       await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
       return;
     }
-    await ctx.reply(messages.gestisciComuni(user.comuni), {
-      reply_markup: gestisciComuniKeyboard(user.comuni),
+    await ctx.reply(messages.selezionaComuneDaEliminare, {
+      reply_markup: comuniSelezioneInlineKeyboard(user.comuni, "del"),
     });
   });
 
@@ -115,8 +115,8 @@ export function registerHandlers(bot: Bot, services: BotServices) {
       await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
       return;
     }
-    await ctx.reply(messages.gestisciComuni(user.comuni), {
-      reply_markup: gestisciComuniKeyboard(user.comuni),
+    await ctx.reply(messages.selezionaComuneDaModificare, {
+      reply_markup: comuniSelezioneInlineKeyboard(user.comuni, "mod"),
     });
   });
 
@@ -129,7 +129,7 @@ export function registerHandlers(bot: Bot, services: BotServices) {
       return;
     }
     await ctx.reply(messages.gestisciComuni(user.comuni), {
-      reply_markup: mainMenuKeyboard(),
+      reply_markup: gestisciSubMenuKeyboard(),
     });
   });
 
@@ -138,13 +138,54 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
     if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, {
-        reply_markup: { inline_keyboard: [[{ text: "➕ Aggiungi comune", callback_data: "add" }]] },
-      });
+      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
       return;
     }
     await ctx.reply(messages.gestisciComuni(user.comuni), {
-      reply_markup: gestisciComuniKeyboard(user.comuni),
+      reply_markup: gestisciSubMenuKeyboard(),
+    });
+  });
+
+  bot.hears("Aggiungi", async (ctx) => {
+    await ctx.reply(messages.impostaPrompt);
+  });
+
+  bot.hears("Elimina", async (ctx) => {
+    const id = ctx.from?.id;
+    if (!id) return;
+    const user = await services.users.findByTelegramId(id);
+    if (!user || user.comuni.length === 0) {
+      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
+      return;
+    }
+    await ctx.reply(messages.selezionaComuneDaEliminare, {
+      reply_markup: comuniSelezioneInlineKeyboard(user.comuni, "del"),
+    });
+  });
+
+  bot.hears("Modifica", async (ctx) => {
+    const id = ctx.from?.id;
+    if (!id) return;
+    const user = await services.users.findByTelegramId(id);
+    if (!user || user.comuni.length === 0) {
+      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
+      return;
+    }
+    await ctx.reply(messages.selezionaComuneDaModificare, {
+      reply_markup: comuniSelezioneInlineKeyboard(user.comuni, "mod"),
+    });
+  });
+
+  bot.hears("Lista", async (ctx) => {
+    const id = ctx.from?.id;
+    if (!id) return;
+    const user = await services.users.findByTelegramId(id);
+    if (!user || user.comuni.length === 0) {
+      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
+      return;
+    }
+    await ctx.reply(messages.gestisciComuni(user.comuni), {
+      reply_markup: gestisciSubMenuKeyboard(),
     });
   });
 
@@ -213,18 +254,11 @@ export async function handleCallbackQuery(
     const user = await services.users.findByTelegramId(id);
     if (!user || user.comuni.length === 0) {
       await safeEditMessageText(ctx, messages.nessunComune, {
-        reply_markup: { inline_keyboard: [[{ text: "➕ Aggiungi comune", callback_data: "add" }]] },
+        reply_markup: { inline_keyboard: [] },
       });
       return;
     }
     await safeEditMessageText(ctx, messages.gestisciComuni(user.comuni), {
-      reply_markup: gestisciComuniKeyboard(user.comuni),
-    });
-    return;
-  }
-
-  if (action === "add") {
-    await safeEditMessageText(ctx, messages.impostaPrompt, {
       reply_markup: { inline_keyboard: [] },
     });
     return;
