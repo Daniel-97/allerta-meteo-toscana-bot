@@ -1,3 +1,4 @@
+import { InputMediaBuilder } from "grammy";
 import type { DatiMeteo, ParteGiorno } from "../types/index.js";
 
 const EMOJI_ALLERTA: Record<string, string> = {
@@ -133,10 +134,24 @@ export const messages = {
 };
 
 export function ottieniUrlImmagine(
+  giorno: number,
   parteGiorno: ParteGiorno,
-  timeMs: string,
 ): string {
-  const base = "https://www.lamma.toscana.it/previ/ita/immagini/image_1_";
+  const base = "https://www.lamma.toscana.it/previ/ita/immagini/image_";
   const suffix = parteGiorno === "mattina" ? "M" : parteGiorno === "pomeriggio" ? "P" : "S";
-  return `${base}${suffix}.jpg?v=${timeMs}`;
+  return `${base}${giorno}_${suffix}.jpg`;
+}
+
+export function costruisciAlbumImmagini(): ReturnType<typeof InputMediaBuilder.photo>[] {
+  const fasce: ParteGiorno[] = ["mattina", "pomeriggio", "sera"];
+  const album: ReturnType<typeof InputMediaBuilder.photo>[] = [];
+
+  for (let giorno = 1; giorno <= 3; giorno++) {
+    for (const fascia of fasce) {
+      const url = ottieniUrlImmagine(giorno, fascia);
+      album.push(InputMediaBuilder.photo(url));
+    }
+  }
+
+  return album;
 }
