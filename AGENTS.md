@@ -44,6 +44,13 @@ il README.md di conseguenza (sezioni "Comandi bot", "Menu a bottoni", "Pannello 
 - Admin handlers filtrati da middleware che controlla `ADMIN_CHAT_ID`
 - Gestione errori: `safeEditMessageText` per GrammyError, catch generici per notifiche, `process.exit(1)` per config mancante in dev
 
+## URL immagini meteo
+
+Pattern: `https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg`
+- `N` = 1 (oggi), 2 (domani), 3 (dopodomani)
+- `F` = M (mattina ~8), P (pomeriggio ~14), S (sera ~20)
+- Il bot invia album di 9 immagini (3×3) dopo il testo delle previsioni
+
 ## Errori comuni da evitare
 
 - Dimenticare `.js` negli import (TypeScript con `NodeNext` lo richiede)

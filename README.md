@@ -193,7 +193,7 @@ Tutti i dati meteo provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it
 |---|---|
 | `https://www.lamma.toscana.it/previ/ita/xml/lista_comuni.xml` | Elenco completo dei comuni toscani (formato XML) — usato da `npm run db:seed` per popolare il DB |
 | `https://www.lamma.toscana.it/previ/ita/xml/comuni_web/dati/{url}.xml` | Dati meteo e allerta per un singolo comune — `url` è l'identificativo breve (es. `firenze`, `pisa`) |
-| `https://www.lamma.toscana.it/previ/ita/immagini/image_1_{M\|P\|S}.jpg?v={ts}` | Mappa meteorologica regionale (M=mattina, P=pomeriggio, S=sera) |
+| `https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg` | Mappa meteorologica — `N` = 1 (oggi), 2 (domani), 3 (dopodomani); `F` = M (mattina ~8), P (pomeriggio ~14), S (sera ~20) |
 
 ### Struttura XML (dati comune)
 
@@ -226,6 +226,18 @@ Tutti i dati meteo provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it
 |---|---|
 | Allerta | `VERDE` · `GIALLO` · `ARANCIONE` · `ROSSO` |
 | Rischio | `ASSENTE` · `BASSO` · `MODERATO` · `ELEVATO` · `MOLTO ELEVATO` |
+
+### Album immagini meteo
+
+Il bot invia un album di 9 immagini (3 giorni × 3 fasce orarie) dopo il messaggio
+di previsioni meteo, sia su richiesta (`/previsioni`) che nelle notifiche programmate.
+
+```
+URL: https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg
+
+N = 1 (oggi), 2 (domani), 3 (dopodomani)
+F = M (mattina ~8:00), P (pomeriggio ~14:00), S (sera ~20:00)
+```
 
 ## Struttura del progetto
 
