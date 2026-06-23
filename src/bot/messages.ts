@@ -22,7 +22,8 @@ export const messages = {
 
   credits:
     "ℹ️ Servizio di notifica allerta e previsioni meteo realizzato da @DaniZ97\n" +
-    "basato sui dati resi liberamente disponibili a tutti i cittadini dal consorzio LAMMA.",
+    "basato sui dati resi liberamente disponibili a tutti i cittadini dal\n" +
+    "<a href=\"https://www.lamma.toscana.it/\">consorzio LAMMA</a>.",
 
   help:
     "📋 <b>Comandi disponibili</b>\n" +
