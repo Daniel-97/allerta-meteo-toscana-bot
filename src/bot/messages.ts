@@ -26,11 +26,37 @@ export const messages = {
 
   help:
     "📋 <b>Comandi disponibili</b>\n" +
+    "/aggiungi &lt;nome&gt; — Aggiungi un comune\n" +
+    "/elimina — Elimina un comune\n" +
+    "/modifica — Modifica le notifiche di un comune\n" +
+    "/lista — Mostra i tuoi comuni\n" +
     "/allerta — Ricevi l'allerta meteo\n" +
     "/previsioni — Ricevi le previsioni\n" +
-    "/imposta &lt;nome&gt; — Imposta un comune\n" +
     "/credits — Info sul servizio\n" +
     "/annulla — Annulla operazione",
+
+  nessunComune:
+    "Non hai ancora impostato comuni. Usa /aggiungi per iniziare.",
+
+  confermaElimina: (nome: string) =>
+    `Eliminare ${escHtml(nome)} dalla tua lista?`,
+
+  eliminato: (nome: string) =>
+    `✅ ${escHtml(nome)} rimosso dalla tua lista.`,
+
+  confermaModifica: (nome: string, stato: string) =>
+    `Notifiche meteo per ${escHtml(nome)}: attualmente ${stato}. Modificare?`,
+
+  modificato: (nome: string, stato: string) =>
+    `✅ Notifiche meteo per ${escHtml(nome)}: ${stato}.`,
+
+  gestisciComuni: (comuni: { nome: string; notificheMeteo: boolean }[]) => {
+    const items = comuni.map(
+      (c) =>
+        `• ${escHtml(c.nome)}\n  🔔 Allerta: ✅  Meteo: ${c.notificheMeteo ? "✅" : "❌"}`
+    );
+    return `📍 <b>I tuoi comuni:</b>\n\n${items.join("\n\n")}`;
+  },
 
   annulla: "✖️ Operazione annullata.",
 
