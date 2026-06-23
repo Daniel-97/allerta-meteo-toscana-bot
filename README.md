@@ -6,10 +6,10 @@ Bot Telegram per allerte meteo della Toscana, basato sui dati resi disponibili d
 
 ```
 Cloudflare Worker (webhook)──► grammY ──► Telegram Bot API
-       │
-       ├── Turso (libSQL) — utenti, comuni, sessioni
-       ├── LAMMA XML API — dati meteo e allerte
-       └── Cron Trigger (9:30, 15:30) — notifiche programmate
+       │                          │
+       ├── Turso (libSQL)          └── Admin (solo ADMIN_CHAT_ID)
+       ├── LAMMA XML API
+       └── Cron Trigger (9:30, 15:30 UTC) — notifiche programmate
 ```
 
 | Componente | Tecnologia |
@@ -65,7 +65,7 @@ Apri Telegram, cerca il tuo bot e scrivi `/start`.
 
 ```bash
 npm run dev        # tsx watch — riavvio automatico su modifiche
-npm test           # 38 test, nessuna dipendenza esterna
+npm test           # 79 test, nessuna dipendenza esterna
 ```
 
 Tutte le funzionalità funzionano in polling: comandi, callback query, search comuni, fetch LAMMA. Il polling e il webhook sono **mutuamente esclusivi** — Telegram invia gli update solo a uno dei due.
@@ -124,7 +124,7 @@ npm run webhook -- info          # Mostra stato webhook (URL, errori, coda)
 
 ## Notifiche programmate
 
-Il bot invia notifiche meteo 2 volte al giorno (9:30 e 15:30) a tutti gli utenti iscritti. Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
+Il bot invia notifiche meteo 2 volte al giorno (9:30 UTC / 11:30 CEST e 15:30 UTC / 17:30 CEST) a tutti gli utenti iscritti. Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
 
 Configurazione in `wrangler.toml`:
 ```toml
@@ -140,13 +140,92 @@ curl "http://localhost:8787/__scheduled"
 ## Comandi bot
 
 | Comando / Bottone | Azione |
-|---|---|
+|---|---|---|
 | `/start` | Menu principale |
-| `/allerta` o "Aggiorna allerta" | Allerta meteo per i tuoi comuni |
-| `/previsioni` o "Aggiorna meteo" | Previsioni meteo per i tuoi comuni |
-| `/imposta <nome>` o "Imposta comune" | Cerca e iscrivi a un comune |
-| `/credits` o "Credits&Info" | Info sul servizio |
+| `/allerta` o `🚨 Aggiorna allerta` | Allerta meteo per i tuoi comuni |
+| `/previsioni` o `🌤️ Aggiorna meteo` | Previsioni meteo per i tuoi comuni |
+| `/aggiungi <nome>` | Cerca e iscrivi a un comune |
+| `/elimina` | Elimina un comune dalla tua lista |
+| `/modifica` | Attiva/disattiva notifiche meteo per un comune |
+| `/lista` o `📋 Gestisci comuni` | Mostra i tuoi comuni e apre il menu gestione |
+| `/credits` o `ℹ️ Credits&Info` | Info sul servizio |
+| `/help` | Elenco comandi disponibili |
 | `/annulla` | Annulla operazione corrente |
+
+### Menu a bottoni
+
+```
+┌─ Menu principale ─────────────────┐
+│ 🚨 Aggiorna allerta               │
+│ 🌤️ Aggiorna meteo                │
+│ 📋 Gestisci comuni                │
+│ ℹ️ Credits&Info                   │
+└───────────────────────────────────┘
+
+         ▼ (clicca "Gestisci comuni")
+
+┌─ Sottomenu gestione ──────────────┐
+│ ➕ Aggiungi (cerca comune)        │
+│ 🗑️ Elimina (rimuovi comune)      │
+│ ✏️ Modifica (notifiche on/off)   │
+│ 📋 Lista (mostra elenco)          │
+│ 🔙 Indietro (torna al menu)       │
+└───────────────────────────────────┘
+```
+
+## Pannello Admin
+
+I comandi admin sono accessibili solo dall'utente configurato come `ADMIN_CHAT_ID`:
+
+| Comando | Azione |
+|---|---|
+| `/admin` | Mostra il pannello admin |
+| `/admin stat` | Statistiche: utenti registrati e comuni seguiti |
+| `/admin utenti` | Elenco completo degli utenti registrati |
+| `/admin info <id>` | Info dettagliate su un utente specifico |
+| `/admin broadcast <testo>` | Invia un messaggio a tutti gli utenti registrati |
+
+## Fonti dati
+
+Tutti i dati meteo provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it/).
+
+| Endpoint | Uso |
+|---|---|
+| `https://www.lamma.toscana.it/previ/ita/xml/lista_comuni.xml` | Elenco completo dei comuni toscani (formato XML) — usato da `npm run db:seed` per popolare il DB |
+| `https://www.lamma.toscana.it/previ/ita/xml/comuni_web/dati/{url}.xml` | Dati meteo e allerta per un singolo comune — `url` è l'identificativo breve (es. `firenze`, `pisa`) |
+| `https://www.lamma.toscana.it/previ/ita/immagini/image_1_{M\|P\|S}.jpg?v={ts}` | Mappa meteorologica regionale (M=mattina, P=pomeriggio, S=sera) |
+
+### Struttura XML (dati comune)
+
+```xml
+<dati>
+  <comune>Firenze</comune>
+  <aggiornamento>2025-01-15 11:30</aggiornamento>
+  <previsione ora="giorno">
+    <allerta value="GIALLO"/>
+    <rischio value="MODERATO"/>    <!-- idraulico -->
+    <rischio value="BASSO"/>       <!-- idrogeologico -->
+    <rischio value="ASSENTE"/>     <!-- temporali -->
+    <rischio value="ASSENTE"/>     <!-- vento -->
+    <rischio value="ASSENTE"/>     <!-- neve -->
+    <rischio value="ASSENTE"/>     <!-- ghiaccio -->
+    <temp>12</temp>                <!-- min -->
+    <temp>22</temp>                <!-- max -->
+  </previsione>
+  <previsione ora="mattina|pomeriggio|sera">...</previsione>
+  <almanacco>
+    <sole_sorge>07:30</sole_sorge>
+    <sole_tramonta>17:00</sole_tramonta>
+  </almanacco>
+</dati>
+```
+
+### Livelli
+
+| Campo | Valori |
+|---|---|
+| Allerta | `VERDE` · `GIALLO` · `ARANCIONE` · `ROSSO` |
+| Rischio | `ASSENTE` · `BASSO` · `MODERATO` · `ELEVATO` · `MOLTO ELEVATO` |
 
 ## Struttura del progetto
 
@@ -166,6 +245,10 @@ src/
 │   ├── meteo.ts          # Meteo service (fetch + parse XML LAMMA → DatiMeteo)
 │   └── messaggi.ts       # Message formatters (allerta, previsioni, completo, image URL)
 ├── bot/
+│   ├── admin/
+│   │   ├── handlers.ts   # Admin command handlers
+│   │   ├── messages.ts   # Admin message templates
+│   │   └── middleware.ts # Admin auth middleware
 │   ├── handlers.ts       # Command + callback query handlers
 │   ├── bot.ts            # Bot factory (createBot)
 │   ├── strings.ts        # Message templates
@@ -179,29 +262,27 @@ scripts/
 └── webhook.ts            # Gestione webhook Telegram
 
 tests/
-├── config.test.ts        # 3 test (env schema)
+├── config.test.ts
 ├── services/
-│   ├── comuni.test.ts    # 7 test
-│   ├── users.test.ts     # 7 test
-│   ├── meteo.test.ts     # 8 test
-│   └── messaggi.test.ts  # 12 test
+│   ├── comuni.test.ts
+│   ├── users.test.ts
+│   ├── meteo.test.ts
+│   └── messaggi.test.ts
 ├── bot/
-│   └── scheduler.test.ts # 1 test
+│   ├── admin/
+│   │   └── handlers.test.ts
+│   ├── handlers.test.ts
+│   ├── logging.test.ts
+│   ├── messages.test.ts
+│   └── scheduler.test.ts
 └── helpers/
     └── test-db.ts        # createTestDb (:memory: libsql + migrate)
-
-XML/
-└── lista_comuni.xml      # Lista comuni Toscana (fonte per seed)
-
-wrangler.toml              # Config Cloudflare Workers
-drizzle.config.ts          # Config Drizzle Kit (dialect turso)
-tsconfig.json              # TypeScript config
 ```
 
 ## Test
 
 ```bash
-npm test              # Esegue tutti i test (38)
+npm test              # Esegue tutti i test (79)
 npm run test:watch    # Modalità watch
 ```
 
