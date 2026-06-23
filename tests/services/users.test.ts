@@ -56,6 +56,7 @@ describe("UsersRepository", () => {
     expect(user!.comuni[0].nome).toBe("Firenze");
     expect(user!.comuni[0].url).toBe("firenze");
     expect(user!.comuni[0].notificheMeteo).toBe(true);
+    expect(user!.creatoIl).toBeInstanceOf(Date);
   });
 
   it("subscribe aggiunge secondo comune senza perdere il primo", async () => {
@@ -165,5 +166,10 @@ describe("UsersRepository", () => {
     await expect(
       repo.updateNotificheMeteo(111, "comune-inesistente", true)
     ).resolves.toBeUndefined();
+  });
+
+  it("count ritorna il numero di utenti registrati", async () => {
+    const totali = await repo.count();
+    expect(totali).toBe(2);
   });
 });

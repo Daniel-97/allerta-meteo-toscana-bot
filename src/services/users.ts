@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
 import { utenti, utentiComuni } from "../db/schema.js";
 
@@ -12,6 +12,7 @@ export interface User {
   idTelegram: number;
   usernameTelegram: string | null;
   nomeTelegram: string;
+  creatoIl: Date;
   comuni: UserComune[];
 }
 
@@ -29,6 +30,7 @@ export interface UsersRepository {
   findAllWithComuni(): Promise<User[]>;
   removeComune(idTelegram: number, comuneUrl: string): Promise<void>;
   updateNotificheMeteo(idTelegram: number, comuneUrl: string, notificheMeteo: boolean): Promise<void>;
+  count(): Promise<number>;
 }
 
 export function createUsersRepository(db: LibSQLDatabase): UsersRepository {
@@ -48,6 +50,7 @@ export function createUsersRepository(db: LibSQLDatabase): UsersRepository {
       idTelegram: utente.idTelegram,
       usernameTelegram: utente.usernameTelegram,
       nomeTelegram: utente.nomeTelegram,
+      creatoIl: utente.creatoIl,
       comuni,
     };
   }
@@ -133,6 +136,14 @@ export function createUsersRepository(db: LibSQLDatabase): UsersRepository {
             eq(utentiComuni.comuneUrl, comuneUrl)
           )
         );
+    },
+
+    count: async () => {
+      const result = await db
+        .select({ value: count() })
+        .from(utenti)
+        .limit(1);
+      return result[0]?.value ?? 0;
     },
   };
 }
