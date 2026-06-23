@@ -3,7 +3,7 @@ import { GrammyError } from "grammy";
 import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
-import { messages, costruisciAlbumImmagini } from "./messages.js";
+import { messages, costruisciAlbumImmagini, escHtml } from "./messages.js";
 import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
@@ -59,7 +59,7 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   }
 }
 
-export function registerHandlers(bot: Bot, services: BotServices) {
+export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: number) {
   bot.command("start", async (ctx) => {
     await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
   });
@@ -197,7 +197,7 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard() });
   });
 
-  bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services));
+  bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
 
   bot.command("help", async (ctx) => {
     await ctx.reply(messages.help);
@@ -207,6 +207,7 @@ export function registerHandlers(bot: Bot, services: BotServices) {
 export async function handleCallbackQuery(
   ctx: Filter<Context, "callback_query:data">,
   services: BotServices,
+  adminChatId?: number,
 ) {
   const data = ctx.callbackQuery.data;
   const parts = data.split(":");
@@ -253,6 +254,9 @@ export async function handleCallbackQuery(
     const idTelegram = ctx.from?.id;
     if (!idTelegram) return;
 
+    const existingUser = await services.users.findByTelegramId(idTelegram);
+    const isNewUser = !existingUser;
+
     await services.users.subscribe({
       idTelegram,
       usernameTelegram: ctx.from?.username ?? null,
@@ -260,6 +264,16 @@ export async function handleCallbackQuery(
       comune: { nome, url },
       notificheMeteo,
     });
+
+    if (isNewUser && adminChatId) {
+      const displayName = ctx.from?.first_name
+        ? `${escHtml(ctx.from.first_name)}${ctx.from?.username ? ` (@${escHtml(ctx.from.username)})` : ""}`
+        : `ID ${idTelegram}`;
+      await ctx.api.sendMessage(
+        adminChatId,
+        `🆕 <b>Nuovo utente!</b>\n👤 ${displayName}\n🆔 ${idTelegram}\n📍 ${escHtml(nome)}\n🔔 Meteo: ${notificheMeteo ? "✅" : "❌"}`,
+      );
+    }
 
     const msg = notificheMeteo
       ? messages.impostaOkAllerta(nome)

@@ -57,13 +57,17 @@ describe("handleCallbackQuery", () => {
     };
 
     const baseServices = {
-      users: { subscribe: vi.fn().mockResolvedValue(undefined) },
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] }),
+        subscribe: vi.fn().mockResolvedValue(undefined),
+      },
     };
 
     it("chiama subscribe con i dati corretti", async () => {
       const subscribe = vi.fn().mockResolvedValue(undefined);
+      const findByTelegramId = vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] });
       const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
-      const services = { users: { subscribe } } as any;
+      const services = { users: { subscribe, findByTelegramId } } as any;
 
       await handleCallbackQuery(ctx, services);
 
@@ -102,13 +106,14 @@ describe("handleCallbackQuery", () => {
 
     it("ignora errore message not modified e continua con subscribe", async () => {
       const subscribe = vi.fn().mockResolvedValue(undefined);
+      const findByTelegramId = vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] });
       const reply = vi.fn().mockResolvedValue(undefined);
       const ctx = {
         ...baseCtx,
         editMessageText: vi.fn().mockRejectedValue(grammyErrorNotModified()),
         reply,
       } as any;
-      const services = { users: { subscribe } } as any;
+      const services = { users: { subscribe, findByTelegramId } } as any;
 
       await expect(handleCallbackQuery(ctx, services)).resolves.toBeUndefined();
 
@@ -131,13 +136,14 @@ describe("handleCallbackQuery", () => {
 
     it("imposta notificheMeteo a false quando flagRaw è 0", async () => {
       const subscribe = vi.fn().mockResolvedValue(undefined);
+      const findByTelegramId = vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] });
       const editMessageText = vi.fn().mockResolvedValue(undefined);
       const ctx = {
         ...baseCtx,
         callbackQuery: { data: "sub:firenze:Pisa:0" },
         editMessageText,
       } as any;
-      const services = { users: { subscribe } } as any;
+      const services = { users: { subscribe, findByTelegramId } } as any;
 
       await handleCallbackQuery(ctx, services);
 

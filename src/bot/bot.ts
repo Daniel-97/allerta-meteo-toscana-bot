@@ -16,9 +16,8 @@ export function createBot(config: Config, services: BotServices) {
   });
 
   bot.use(logUserMessage);
-  registerHandlers(bot, services);
-
   const adminChatId = Number(config.ADMIN_CHAT_ID);
+  registerHandlers(bot, services, adminChatId);
   if (adminChatId) {
     bot.use(isAdmin(adminChatId));
     registerAdminHandlers(bot, services, adminChatId);
