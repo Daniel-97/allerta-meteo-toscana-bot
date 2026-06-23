@@ -112,6 +112,8 @@ export const messages = {
     `🤒 Percepita: ${d.temperaturaPercepita}°\n` +
     `💧 Umidità: ${d.umidita}%\n` +
     `🌧️ Pioggia: ${d.probabilitaPioggia}%\n` +
+    `☀️ UV: ${d.uv}\n` +
+    `❄️ Quota neve: ${d.quotaNeve} m\n` +
     `🌅 Alba: ${d.alba}\n` +
     `🌇 Tramonto: ${d.tramonto}\n\n` +
     `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
@@ -131,7 +133,9 @@ export const messages = {
     `🌡️ Temperatura: ${d.temperaturaAttuale}°\n` +
     `🤒 Percepita: ${d.temperaturaPercepita}°\n` +
     `💧 Umidità: ${d.umidita}%\n` +
-    `🌧️ Pioggia: ${d.probabilitaPioggia}%\n\n` +
+    `🌧️ Pioggia: ${d.probabilitaPioggia}%\n` +
+    `☀️ UV: ${d.uv}\n` +
+    `❄️ Quota neve: ${d.quotaNeve} m\n\n` +
     `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
     `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`,
 };

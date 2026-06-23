@@ -22,6 +22,8 @@ const datiFixture: DatiMeteo = {
   temperatura: { min: 15, max: 28 },
   temperaturaAttuale: 22,
   temperaturaPercepita: 21,
+  uv: 3,
+  quotaNeve: 1800,
   umidita: 45,
   probabilitaPioggia: 10,
   alba: "05:30",

@@ -39,6 +39,8 @@ describe("broadcastNotifiche", () => {
           temperatura: { min: 10, max: 20 },
           temperaturaAttuale: 15,
           temperaturaPercepita: 14,
+          uv: 4,
+          quotaNeve: 2000,
           umidita: 50,
           probabilitaPioggia: 0,
           alba: "06:00",

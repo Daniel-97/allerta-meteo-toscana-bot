@@ -32,6 +32,8 @@ export interface DatiMeteo {
   temperaturaPercepita: number;
   umidita: number;
   probabilitaPioggia: number;
+  uv: number;
+  quotaNeve: number;
   alba: string;
   tramonto: string;
   parteGiorno: ParteGiorno;

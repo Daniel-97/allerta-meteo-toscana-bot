@@ -83,6 +83,8 @@ export function createMeteoService(): MeteoService {
         },
         temperaturaAttuale: Number(subPrev?.temp?.[0]?._ ?? 0),
         temperaturaPercepita: Number(subPrev?.temp?.[1]?._ ?? 0),
+        uv: Number(subPrev?.uv ?? 0),
+        quotaNeve: Number(subPrev?.quota_neve ?? 0),
         umidita: Number(subPrev?.um ?? 0),
         probabilitaPioggia: Number(subPrev?.prob_rain ?? 0),
         alba: String(root.almanacco?.sole_sorge ?? ""),

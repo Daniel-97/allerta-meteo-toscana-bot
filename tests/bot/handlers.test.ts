@@ -398,6 +398,8 @@ describe("handlePrevisioni", () => {
           allerta: "VERDE",
           temperaturaAttuale: 15,
           temperaturaPercepita: 14,
+          uv: 2,
+          quotaNeve: 1500,
           umidita: 65,
           probabilitaPioggia: 10,
           alba: "07:00",

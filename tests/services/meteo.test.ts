@@ -26,18 +26,24 @@ const XML_FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
     <temp temp_type="perc">21</temp>
     <um>45</um>
     <prob_rain>10</prob_rain>
+    <uv>3</uv>
+    <quota_neve>1800</quota_neve>
   </previsione>
   <previsione ora="pomeriggio">
     <temp temp_type="">26</temp>
     <temp temp_type="perc">25</temp>
     <um>40</um>
     <prob_rain>5</prob_rain>
+    <uv>5</uv>
+    <quota_neve>2000</quota_neve>
   </previsione>
   <previsione ora="sera">
     <temp temp_type="">18</temp>
     <temp temp_type="perc">17</temp>
     <um>50</um>
     <prob_rain>20</prob_rain>
+    <uv>1</uv>
+    <quota_neve>1600</quota_neve>
   </previsione>
 </dati>`;
 
