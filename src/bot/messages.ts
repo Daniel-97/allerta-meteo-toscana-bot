@@ -22,6 +22,7 @@ export const messages = {
     "🚨 Le allerte meteo vengono sempre comunicate per i comuni che hai impostato\n\n" +
     "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n\n" +
     "⏰ Le notifiche vengono inviate 2 volte al giorno (11:30 e 17:30 ora italiana)\n\n" +
+    "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA né alla Regione Toscana.</i>\n\n" +
     "Seleziona una voce dal menu o usa i comandi.",
 
   credits:
@@ -31,7 +32,8 @@ export const messages = {
     "⏰ Le notifiche vengono inviate 2 volte al giorno (11:30 e 17:30 ora italiana)\n\n" +
     "<i>Servizio realizzato da @DaniZ97 basato sui dati resi liberamente disponibili dal\n" +
     "<a href=\"https://www.lamma.toscana.it/\">consorzio LAMMA</a>.</i>\n\n" +
-    "🔗 Per ulteriori informazioni: <a href=\"https://www.regione.toscana.it/allertameteo\">Regione Toscana — Allerta Meteo</a>",
+    "🔗 Per ulteriori informazioni: <a href=\"https://www.regione.toscana.it/allertameteo\">Regione Toscana — Allerta Meteo</a>\n\n" +
+    "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA né alla Regione Toscana.</i>",
 
   help:
     "📋 <b>Comandi disponibili</b>\n" +
