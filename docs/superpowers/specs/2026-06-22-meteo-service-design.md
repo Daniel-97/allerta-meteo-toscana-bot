@@ -95,10 +95,11 @@ export function ottieniUrlImmagine(parteGiorno: ParteGiorno, timeMs: string): st
 
 Messaggi identici al legacy (stessi \n, emoji impliciti via testo, °, %).
 
-URL immagine:
-- `"mattina"` → `http://www.lamma.rete.toscana.it/previ/ita/immagini/image_1_M.jpg?v={timeMs}`
-- `"pomeriggio"` → `http://www.lamma.rete.toscana.it/previ/ita/immagini/image_1_P.jpg?v={timeMs}`
-- `"sera"` → `http://www.lamma.rete.toscana.it/previ/ita/immagini/image_1_S.jpg?v={timeMs}`
+URL immagine (aggiornato):
+- `ottieniUrlImmagine(parteGiorno: ParteGiorno, timeMs: string)` → `ottieniUrlImmagine(giorno: number, parteGiorno: ParteGiorno): string`
+- Pattern: `https://www.lamma.toscana.it/previ/ita/immagini/image_{1|2|3}_{M|P|S}.jpg`
+- Giorno: 1 (oggi), 2 (domani), 3 (dopodomani)
+- Fascia: M (mattina), P (pomeriggio), S (sera)
 
 ## Test
 
