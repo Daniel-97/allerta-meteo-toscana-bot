@@ -121,4 +121,49 @@ describe("UsersRepository", () => {
     const u2 = all.find((u) => u.idTelegram === 222)!;
     expect(u2.comuni).toHaveLength(1);
   });
+
+  it("removeComune rimuove solo il comune specificato", async () => {
+    const user = await repo.findByTelegramId(111);
+    expect(user!.comuni).toHaveLength(2);
+
+    await repo.removeComune(111, "firenze");
+
+    const after = await repo.findByTelegramId(111);
+    expect(after!.comuni).toHaveLength(1);
+    expect(after!.comuni[0].url).toBe("pisa");
+  });
+
+  it("removeComune no-op per comune inesistente", async () => {
+    await repo.removeComune(111, "comune-inesistente");
+    const user = await repo.findByTelegramId(111);
+    expect(user!.comuni).toHaveLength(1);
+  });
+
+  it("removeComune su utente senza comuni non crasha", async () => {
+    await repo.removeComune(999, "firenze");
+    const user = await repo.findByTelegramId(999);
+    expect(user).toBeUndefined();
+  });
+
+  it("updateNotificheMeteo aggiorna il flag", async () => {
+    await repo.updateNotificheMeteo(111, "pisa", true);
+    const user = await repo.findByTelegramId(111);
+    expect(user!.comuni.find((c) => c.url === "pisa")!.notificheMeteo).toBe(true);
+  });
+
+  it("updateNotificheMeteo non tocca altri comuni", async () => {
+    // pisa was set to true in previous test
+    await repo.updateNotificheMeteo(111, "pisa", false);
+    const user = await repo.findByTelegramId(111);
+    expect(user!.comuni.find((c) => c.url === "pisa")!.notificheMeteo).toBe(false);
+    // user 222's pisa (set to true in subscribe test) is not affected
+    const user2 = await repo.findByTelegramId(222);
+    expect(user2!.comuni.find((c) => c.url === "pisa")!.notificheMeteo).toBe(true);
+  });
+
+  it("updateNotificheMeteo no-op per comune inesistente", async () => {
+    await expect(
+      repo.updateNotificheMeteo(111, "comune-inesistente", true)
+    ).resolves.toBeUndefined();
+  });
 });
