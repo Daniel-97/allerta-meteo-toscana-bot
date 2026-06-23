@@ -76,7 +76,7 @@ export function mappeMeteoInlineKeyboard() {
     inline_keyboard: [
       [
         { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
-        { text: "🛰️ Satellite", callback_data: "sat" },
+        { text: "🛰️ Sat. infrarosso", callback_data: "sat" },
       ],
     ],
   };
