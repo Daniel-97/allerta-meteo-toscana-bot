@@ -74,7 +74,10 @@ export function comuniInlineKeyboard(
 export function mappeMeteoInlineKeyboard() {
   return {
     inline_keyboard: [
-      [{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }],
+      [
+        { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
+        { text: "🛰️ Satellite", callback_data: "sat" },
+      ],
     ],
   };
 }

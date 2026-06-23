@@ -56,18 +56,21 @@ describe("broadcastNotifiche", () => {
     expect(sendMessage).toHaveBeenCalledTimes(3);
     expect(sendMediaGroup).not.toHaveBeenCalled();
 
+    const expectedKeyboard = expect.objectContaining({
+      inline_keyboard: [[
+        { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
+        { text: "🛰️ Satellite", callback_data: "sat" },
+      ]],
+    });
+
     expect(sendMessage).toHaveBeenCalledWith(1, expect.any(String), expect.objectContaining({
-      reply_markup: expect.objectContaining({
-        inline_keyboard: [[{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }]],
-      }),
+      reply_markup: expectedKeyboard,
     }));
     expect(sendMessage).toHaveBeenCalledWith(1, expect.any(String), expect.objectContaining({
       reply_markup: undefined,
     }));
     expect(sendMessage).toHaveBeenCalledWith(2, expect.any(String), expect.objectContaining({
-      reply_markup: expect.objectContaining({
-        inline_keyboard: [[{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }]],
-      }),
+      reply_markup: expectedKeyboard,
     }));
   });
 });

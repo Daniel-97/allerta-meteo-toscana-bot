@@ -352,4 +352,10 @@ export async function handleCallbackQuery(
     await ctx.replyWithMediaGroup(costruisciAlbumImmagini());
     return;
   }
+
+  if (action === "sat") {
+    await ctx.answerCallbackQuery();
+    await ctx.replyWithAnimation("https://modeles20.meteociel.fr/satellite/animsatirmtgeu.gif");
+    return;
+  }
 }

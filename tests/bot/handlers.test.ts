@@ -425,7 +425,10 @@ describe("handlePrevisioni", () => {
       expect.stringContaining("Firenze"),
       expect.objectContaining({
         reply_markup: expect.objectContaining({
-          inline_keyboard: [[{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }]],
+          inline_keyboard: [[
+            { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
+            { text: "🛰️ Satellite", callback_data: "sat" },
+          ]],
         }),
       }),
     );
