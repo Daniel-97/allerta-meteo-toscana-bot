@@ -4,7 +4,8 @@ import { broadcastNotifiche } from "../../src/bot/scheduler.js";
 describe("broadcastNotifiche", () => {
   it("invia messaggio per ogni comune di ogni utente", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
-    const bot = { api: { sendMessage } } as any;
+    const sendMediaGroup = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage, sendMediaGroup } } as any;
 
     const services = {
       users: {
@@ -51,5 +52,8 @@ describe("broadcastNotifiche", () => {
     expect(result.totali).toBe(2);
     expect(result.inviati).toBe(3);
     expect(sendMessage).toHaveBeenCalledTimes(3);
+    expect(sendMediaGroup).toHaveBeenCalledTimes(2);
+    expect(sendMediaGroup).toHaveBeenCalledWith(1, expect.any(Array));
+    expect(sendMediaGroup).toHaveBeenCalledWith(2, expect.any(Array));
   });
 });

@@ -1,6 +1,6 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
-import { messages } from "./messages.js";
+import { costruisciAlbumImmagini, messages } from "./messages.js";
 
 export async function broadcastNotifiche(
   bot: Bot,
@@ -18,6 +18,12 @@ export async function broadcastNotifiche(
           : messages.allerta(dati);
         await bot.api.sendMessage(user.idTelegram, msg);
         inviati++;
+        if (comune.notificheMeteo) {
+          await bot.api.sendMediaGroup(
+            user.idTelegram,
+            costruisciAlbumImmagini(),
+          );
+        }
       } catch {
         continue;
       }
