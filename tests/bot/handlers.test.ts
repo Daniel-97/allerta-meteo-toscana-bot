@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { GrammyError } from "grammy";
-import { handleCallbackQuery } from "../../src/bot/handlers.js";
+import { handleCallbackQuery, handlePrevisioni } from "../../src/bot/handlers.js";
 
 const grammyErrorNotModified = () =>
   new GrammyError(
@@ -364,5 +364,57 @@ describe("mod-set callback", () => {
       expect.stringContaining("Firenze"),
       expect.any(Object),
     );
+  });
+});
+
+describe("handlePrevisioni", () => {
+  it("invia album immagini dopo il messaggio di previsioni", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const replyWithMediaGroup = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      from: { id: 123 },
+      reply,
+      replyWithMediaGroup,
+    } as any;
+
+    const services = {
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({
+          idTelegram: 123,
+          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+        }),
+      },
+      meteo: {
+        fetchDatiMeteo: vi.fn().mockResolvedValue({
+          comune: "Firenze",
+          parteGiorno: "mattina",
+          aggiornamento: "2024-01-01",
+          allerta: "VERDE",
+          temperaturaAttuale: 15,
+          temperaturaPercepita: 14,
+          umidita: 65,
+          probabilitaPioggia: 10,
+          alba: "07:00",
+          tramonto: "17:00",
+          temperatura: { min: 10, max: 20 },
+          rischi: {
+            idraulico: "nullo",
+            idrogeologico: "nullo",
+            temporali: "nullo",
+            vento: "nullo",
+            neve: "nullo",
+            ghiaccio: "nullo",
+          },
+        }),
+      },
+    } as any;
+
+    await handlePrevisioni(ctx, services);
+
+    expect(reply).toHaveBeenCalledTimes(1);
+    expect(replyWithMediaGroup).toHaveBeenCalledTimes(1);
+    const album = replyWithMediaGroup.mock.calls[0][0];
+    expect(album).toHaveLength(9);
+    expect(album[0].type).toBe("photo");
   });
 });

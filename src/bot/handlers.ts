@@ -3,7 +3,7 @@ import { GrammyError } from "grammy";
 import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
-import { messages } from "./messages.js";
+import { messages, costruisciAlbumImmagini } from "./messages.js";
 import { mainMenuKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
@@ -41,7 +41,7 @@ async function handleAllerta(ctx: Context, services: BotServices) {
   }
 }
 
-async function handlePrevisioni(ctx: Context, services: BotServices) {
+export async function handlePrevisioni(ctx: Context, services: BotServices) {
   const id = ctx.from?.id;
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
@@ -53,6 +53,7 @@ async function handlePrevisioni(ctx: Context, services: BotServices) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
       await ctx.reply(messages.previsioni(dati), { reply_markup: mainMenuKeyboard() });
+      await ctx.replyWithMediaGroup(costruisciAlbumImmagini());
     } catch {
       await ctx.reply(messages.errore);
     }
