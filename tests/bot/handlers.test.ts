@@ -193,6 +193,48 @@ describe("manage callback", () => {
   });
 });
 
+describe("back callback", () => {
+  it("mostra lista comuni quando utente ne ha", async () => {
+    const findByTelegramId = vi.fn().mockResolvedValue({
+      idTelegram: 123,
+      comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+    });
+    const ctx = {
+      callbackQuery: { data: "back" },
+      from: { id: 123 },
+      editMessageText: vi.fn().mockResolvedValue(undefined),
+    } as any;
+    const services = { users: { findByTelegramId } } as any;
+
+    await handleCallbackQuery(ctx, services);
+
+    expect(ctx.editMessageText).toHaveBeenCalledWith(
+      expect.stringContaining("I tuoi comuni"),
+      expect.any(Object),
+    );
+  });
+
+  it("mostra nessunComune se utente non ha comuni", async () => {
+    const findByTelegramId = vi.fn().mockResolvedValue({
+      idTelegram: 123,
+      comuni: [],
+    });
+    const ctx = {
+      callbackQuery: { data: "back" },
+      from: { id: 123 },
+      editMessageText: vi.fn().mockResolvedValue(undefined),
+    } as any;
+    const services = { users: { findByTelegramId } } as any;
+
+    await handleCallbackQuery(ctx, services);
+
+    expect(ctx.editMessageText).toHaveBeenCalledWith(
+      expect.stringContaining("Non hai ancora"),
+      expect.any(Object),
+    );
+  });
+});
+
 describe("del callback", () => {
   it("mostra conferma eliminazione", async () => {
     const editMessageText = vi.fn().mockResolvedValue(undefined);

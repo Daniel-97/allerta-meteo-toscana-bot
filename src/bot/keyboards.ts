@@ -18,6 +18,8 @@ export function gestisciSubMenuKeyboard() {
     .row()
     .text("Elimina")
     .text("Lista")
+    .row()
+    .text("Indietro")
     .resized();
 }
 
@@ -25,11 +27,13 @@ export function comuniSelezioneInlineKeyboard(
   comuni: Array<{ url: string; nome: string }>,
   action: string
 ) {
-  return {
-    inline_keyboard: comuni.map((c) => [
-      { text: c.nome, callback_data: `${action}:${c.url}:${c.nome}` },
-    ]),
-  };
+  const keyboard = comuni.map((c) => [
+    { text: c.nome, callback_data: `${action}:${c.url}:${c.nome}` },
+  ]);
+  keyboard.push([
+    { text: "◀️ Indietro", callback_data: "back" },
+  ]);
+  return { inline_keyboard: keyboard };
 }
 
 export function confermaEliminaInlineKeyboard(url: string, nome: string) {

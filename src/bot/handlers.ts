@@ -189,6 +189,10 @@ export function registerHandlers(bot: Bot, services: BotServices) {
     });
   });
 
+  bot.hears("Indietro", async (ctx) => {
+    await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
+  });
+
   bot.hears("Credits&Info", async (ctx) => {
     await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard() });
   });
@@ -207,6 +211,22 @@ export async function handleCallbackQuery(
   const data = ctx.callbackQuery.data;
   const parts = data.split(":");
   const action = parts[0];
+
+  if (action === "back") {
+    const id = ctx.from?.id;
+    if (!id) return;
+    const user = await services.users.findByTelegramId(id);
+    if (!user || user.comuni.length === 0) {
+      await safeEditMessageText(ctx, messages.nessunComune, {
+        reply_markup: { inline_keyboard: [] },
+      });
+      return;
+    }
+    await safeEditMessageText(ctx, messages.gestisciComuni(user.comuni), {
+      reply_markup: { inline_keyboard: [] },
+    });
+    return;
+  }
 
   if (action === "annulla") {
     await safeEditMessageText(ctx, messages.annulla, {
