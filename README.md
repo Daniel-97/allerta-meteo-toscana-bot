@@ -236,7 +236,7 @@ di previsioni meteo, sia su richiesta (`/previsioni`) che nelle notifiche progra
 URL: https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg
 
 N = 1 (oggi), 2 (domani), 3 (dopodomani)
-F = M (mattina ~8:00), P (pomeriggio ~14:00), S (sera ~20:00)
+F = M (prima mattina ~8:00), M2 (tarda mattina ~11:00), P (primo pomeriggio ~14:00), P2 (tardo pomeriggio ~17:00), S (sera ~20:00), S2 (tarda sera ~23:00)
 ```
 
 ## Struttura del progetto
