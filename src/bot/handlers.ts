@@ -4,7 +4,7 @@ import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
 import { messages, costruisciAlbumImmagini } from "./messages.js";
-import { mainMenuKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
+import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
@@ -52,8 +52,7 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   for (const c of user.comuni) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
-      await ctx.reply(messages.previsioni(dati), { reply_markup: mainMenuKeyboard(), link_preview_options: { is_disabled: true } });
-      await ctx.replyWithMediaGroup(costruisciAlbumImmagini());
+      await ctx.reply(messages.previsioni(dati), { reply_markup: mappeMeteoInlineKeyboard(), link_preview_options: { is_disabled: true } });
     } catch {
       await ctx.reply(messages.errore);
     }
@@ -331,6 +330,12 @@ export async function handleCallbackQuery(
       reply_markup: { inline_keyboard: [] },
     });
     await ctx.reply(messages.modificato(nome, stato), { reply_markup: mainMenuKeyboard() });
+    return;
+  }
+
+  if (action === "img") {
+    await ctx.answerCallbackQuery();
+    await ctx.replyWithMediaGroup(costruisciAlbumImmagini());
     return;
   }
 }

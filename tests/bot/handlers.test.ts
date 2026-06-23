@@ -368,7 +368,7 @@ describe("mod-set callback", () => {
 });
 
 describe("handlePrevisioni", () => {
-  it("invia album immagini dopo il messaggio di previsioni", async () => {
+  it("invia messaggio di previsioni con pulsante mappe meteo e senza album", async () => {
     const reply = vi.fn().mockResolvedValue(undefined);
     const replyWithMediaGroup = vi.fn().mockResolvedValue(undefined);
     const ctx = {
@@ -412,9 +412,14 @@ describe("handlePrevisioni", () => {
     await handlePrevisioni(ctx, services);
 
     expect(reply).toHaveBeenCalledTimes(1);
-    expect(replyWithMediaGroup).toHaveBeenCalledTimes(1);
-    const album = replyWithMediaGroup.mock.calls[0][0];
-    expect(album).toHaveLength(9);
-    expect(album[0].type).toBe("photo");
+    expect(replyWithMediaGroup).not.toHaveBeenCalled();
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("Firenze"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({
+          inline_keyboard: [[{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }]],
+        }),
+      }),
+    );
   });
 });

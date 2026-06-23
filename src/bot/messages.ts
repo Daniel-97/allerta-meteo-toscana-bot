@@ -19,18 +19,19 @@ function parteGiornoStr(p: ParteGiorno): string {
 export const messages = {
   welcome:
     "👋 <b>Benvenuto/a in Allerta Meteo Toscana Bot!</b>\n\n" +
-    "🚨 Le allerte meteo vengono sempre comunicate per i comuni che hai impostato\n" +
-    "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n" +
+    "🚨 Le allerte meteo vengono sempre comunicate per i comuni che hai impostato\n\n" +
+    "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n\n" +
     "⏰ Le notifiche vengono inviate 2 volte al giorno (11:30 e 17:30 ora italiana)\n\n" +
     "Seleziona una voce dal menu o usa i comandi.",
 
   credits:
     "ℹ️ <b>Come funziona</b>\n\n" +
-    "🚨 Le allerte meteo vengono sempre comunicate per i comuni che hai impostato\n" +
-    "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n" +
+    "🚨 Le allerte meteo vengono sempre comunicate per i comuni che hai impostato\n\n" +
+    "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n\n" +
     "⏰ Le notifiche vengono inviate 2 volte al giorno (11:30 e 17:30 ora italiana)\n\n" +
     "<i>Servizio realizzato da @DaniZ97 basato sui dati resi liberamente disponibili dal\n" +
-    "<a href=\"https://www.lamma.toscana.it/\">consorzio LAMMA</a>.</i>",
+    "<a href=\"https://www.lamma.toscana.it/\">consorzio LAMMA</a>.</i>\n\n" +
+    "🔗 Per ulteriori informazioni: <a href=\"https://www.regione.toscana.it/allertameteo\">Regione Toscana — Allerta Meteo</a>",
 
   help:
     "📋 <b>Comandi disponibili</b>\n" +

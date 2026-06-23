@@ -229,14 +229,15 @@ Tutti i dati meteo provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it
 
 ### Album immagini meteo
 
-Il bot invia un album di 9 immagini (3 giorni × 3 fasce orarie) dopo il messaggio
-di previsioni meteo, sia su richiesta (`/previsioni`) che nelle notifiche programmate.
+Il bot non invia più l'album immagini di default. Sotto il messaggio di previsioni
+meteo (o di notifica programmata) compare un pulsante **🖼️ Mostra mappe meteo**:
+cliccandolo, il bot invia l'album di 9 immagini (3 giorni × 3 fasce orarie).
 
 ```
 URL: https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg
 
 N = 1 (oggi), 2 (domani), 3 (dopodomani)
-F = M (prima mattina ~8:00), M2 (tarda mattina ~11:00), P (primo pomeriggio ~14:00), P2 (tardo pomeriggio ~17:00), S (sera ~20:00), S2 (tarda sera ~23:00)
+F = M (mattina ~8), P (pomeriggio ~14), S (sera ~20)
 ```
 
 ## Struttura del progetto

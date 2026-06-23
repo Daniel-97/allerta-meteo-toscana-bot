@@ -1,6 +1,7 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
-import { costruisciAlbumImmagini, messages } from "./messages.js";
+import { messages } from "./messages.js";
+import { mappeMeteoInlineKeyboard } from "./keyboards.js";
 
 export async function broadcastNotifiche(
   bot: Bot,
@@ -16,14 +17,11 @@ export async function broadcastNotifiche(
         const msg = comune.notificheMeteo
           ? messages.completo(dati)
           : messages.allerta(dati);
-        await bot.api.sendMessage(user.idTelegram, msg, { link_preview_options: { is_disabled: true } });
+        const reply_markup = comune.notificheMeteo
+          ? mappeMeteoInlineKeyboard()
+          : undefined;
+        await bot.api.sendMessage(user.idTelegram, msg, { link_preview_options: { is_disabled: true }, reply_markup });
         inviati++;
-        if (comune.notificheMeteo) {
-          await bot.api.sendMediaGroup(
-            user.idTelegram,
-            costruisciAlbumImmagini(),
-          );
-        }
       } catch {
         continue;
       }
