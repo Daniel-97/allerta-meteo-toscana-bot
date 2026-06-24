@@ -50,7 +50,7 @@ export function createUsersRepository(db: LibSQLDatabase): UsersRepository {
       idTelegram: utente.idTelegram,
       usernameTelegram: utente.usernameTelegram,
       nomeTelegram: utente.nomeTelegram,
-      creatoIl: utente.creatoIl,
+      creatoIl: utente.creatoIl!,
       comuni,
     };
   }

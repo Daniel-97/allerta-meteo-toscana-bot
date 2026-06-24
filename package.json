@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/dev.ts",
+    "typecheck": "tsc --noEmit",
     "build": "tsc",
     "start": "tsx src/dev.ts",
     "deploy": "wrangler deploy",
