@@ -17,7 +17,7 @@ export interface Env extends Record<string, string | undefined> {
 
 let initialized: { bot: any; services: BotServices } | null = null;
 
-function getInitialized(env: Env) {
+async function getInitialized(env: Env) {
   if (initialized) return initialized;
   const config = createConfig(env);
   const db = createDb(config) as any;
@@ -27,6 +27,7 @@ function getInitialized(env: Env) {
     meteo: createMeteoService(),
   };
   const bot = createBot(config, services);
+  await bot.init();
   initialized = { bot, services };
   return initialized;
 }
@@ -36,14 +37,14 @@ export default {
     if (request.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
     }
-    const { bot } = getInitialized(env);
+    const { bot } = await getInitialized(env);
     const update = await request.json();
     await bot.handleUpdate(update);
     return new Response("OK");
   },
 
   async scheduled(_event: unknown, env: Env): Promise<void> {
-    const { bot, services } = getInitialized(env);
+    const { bot, services } = await getInitialized(env);
     await broadcastNotifiche(bot, services);
   },
 };
