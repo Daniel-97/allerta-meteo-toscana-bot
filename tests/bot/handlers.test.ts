@@ -519,7 +519,7 @@ describe("handleRichiestaTestoLibero", () => {
     await handleRichiestaTestoLibero(ctx, services as any);
 
     expect(reply).toHaveBeenCalledWith(
-      expect.stringContaining("trovato"),
+      expect.stringContaining("Nessun"),
     );
   });
 
