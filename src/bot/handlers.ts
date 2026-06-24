@@ -27,8 +27,8 @@ async function handleAllerta(ctx: Context, services: BotServices) {
   const id = ctx.from?.id;
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
-  if (!user) {
-    await ctx.reply(messages.nonIscritto, { reply_markup: mainMenuKeyboard() });
+  if (!user || user.comuni.length === 0) {
+    await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
     return;
   }
   for (const c of user.comuni) {
@@ -45,8 +45,8 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   const id = ctx.from?.id;
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
-  if (!user) {
-    await ctx.reply(messages.nonIscritto, { reply_markup: mainMenuKeyboard() });
+  if (!user || user.comuni.length === 0) {
+    await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
     return;
   }
   for (const c of user.comuni) {
