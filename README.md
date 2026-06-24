@@ -1,5 +1,13 @@
 # Allerta Meteo Toscana Bot
 
+<p align="center">
+  <a href="https://t.me/allerta_meteo_toscana_bot">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://t.me/allerta_meteo_toscana_bot" alt="QR Code Allerta Meteo Toscana Bot">
+  </a>
+  <br>
+  <strong><a href="https://t.me/allerta_meteo_toscana_bot">👉 @allerta_meteo_toscana_bot</a></strong>
+</p>
+
 Bot Telegram per allerte meteo della Toscana, basato sui dati resi disponibili dal [Consorzio LAMMA](https://www.lamma.toscana.it/).
 
 ## Architettura
