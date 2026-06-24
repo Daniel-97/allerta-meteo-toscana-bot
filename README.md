@@ -161,13 +161,15 @@ curl "http://localhost:8787/__scheduled"
 | `/start` | Menu principale |
 | `/allerta` o `🚨 Aggiorna allerta` | Allerta meteo per i tuoi comuni |
 | `/previsioni` o `🌤️ Aggiorna meteo` | Previsioni meteo per i tuoi comuni |
-| `/aggiungi <nome>` | Cerca e iscrivi a un comune |
+| `/aggiungi <nome>` | Cerca e iscrivi a un comune (o digita il nome direttamente) |
 | `/elimina` | Elimina un comune dalla tua lista |
 | `/modifica` | Attiva/disattiva notifiche meteo per un comune |
 | `/lista` o `📋 Gestisci comuni` | Mostra i tuoi comuni e apre il menu gestione |
 | `/credits` o `ℹ️ Credits&Info` | Info sul servizio |
 | `/help` | Elenco comandi disponibili |
 | `/annulla` | Annulla operazione corrente |
+
+> 💡 **Suggerimento:** In qualsiasi momento, puoi digitare 3 o più lettere del nome di un comune (es. "pis") per cercarlo direttamente, senza usare il comando `/aggiungi`.
 
 ### Menu a bottoni
 
@@ -182,7 +184,7 @@ curl "http://localhost:8787/__scheduled"
          ▼ (clicca "Gestisci comuni")
 
 ┌─ Sottomenu gestione ──────────────┐
-│ ➕ Aggiungi (cerca comune)        │
+│ ➕ Aggiungi (digita il nome)        │
 │ 🗑️ Elimina (rimuovi comune)      │
 │ ✏️ Modifica (notifiche on/off)   │
 │ 📋 Lista (mostra elenco)          │
