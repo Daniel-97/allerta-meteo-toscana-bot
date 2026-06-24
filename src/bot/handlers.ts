@@ -59,6 +59,22 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   }
 }
 
+export async function handleRichiestaTestoLibero(
+  ctx: Context,
+  services: BotServices,
+) {
+  const text = ctx.message?.text?.trim();
+  if (!text || text.startsWith("/") || text.length < 3) return;
+  const risultati = await services.comuni.searchByPrefix(text);
+  if (risultati.length === 0) {
+    await ctx.reply(messages.ricercaNonTrovato(text));
+    return;
+  }
+  await ctx.reply(messages.ricercaTrovati(risultati.length, text), {
+    reply_markup: comuniInlineKeyboard(risultati),
+  });
+}
+
 export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: number) {
   bot.command("start", async (ctx) => {
     await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
@@ -81,7 +97,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   bot.command("aggiungi", async (ctx) => {
     const text = ctx.match?.trim() ?? "";
     if (!text) {
-      await ctx.reply(messages.impostaPrompt);
+      await ctx.reply(messages.aggiungiPrompt);
       return;
     }
     const risultati = await services.comuni.searchByPrefix(text);
@@ -147,7 +163,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   });
 
   bot.hears("➕ Aggiungi", async (ctx) => {
-    await ctx.reply(messages.impostaPrompt);
+    await ctx.reply(messages.aggiungiPrompt);
   });
 
   bot.hears("🗑️ Elimina", async (ctx) => {
@@ -202,6 +218,8 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   bot.command("help", async (ctx) => {
     await ctx.reply(messages.help);
   });
+
+  bot.on("message:text", (ctx) => handleRichiestaTestoLibero(ctx, services));
 }
 
 export async function handleCallbackQuery(
