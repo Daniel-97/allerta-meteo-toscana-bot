@@ -31,6 +31,30 @@ const datiFixture: DatiMeteo = {
   parteGiorno: "mattina",
 };
 
+const datiNessunaAllerta: DatiMeteo = {
+  comune: "Firenze",
+  aggiornamento: "22/06/2026 12:00",
+  allerta: "nessuno",
+  rischi: {
+    idraulico: "nessuno",
+    idrogeologico: "nessuno",
+    temporali: "nessuno",
+    vento: "nessuno",
+    neve: "nessuno",
+    ghiaccio: "nessuno",
+  },
+  temperatura: { min: 15, max: 28 },
+  temperaturaAttuale: 22,
+  temperaturaPercepita: 21,
+  uv: 3,
+  quotaNeve: 1800,
+  umidita: 45,
+  probabilitaPioggia: 10,
+  alba: "05:30",
+  tramonto: "21:00",
+  parteGiorno: "mattina",
+};
+
 describe("messages.allerta", () => {
   it("include comune e aggiornamento", () => {
     const msg = messages.allerta(datiFixture);
@@ -57,6 +81,18 @@ describe("messages.allerta", () => {
     const msg = messages.allerta(datiFixture);
     expect(msg).not.toContain("Temperatura");
     expect(msg).not.toContain("Umidità");
+  });
+
+  it("quando allerta = nessuno, non mostra rischi e mostra messaggio", () => {
+    const msg = messages.allerta(datiNessunaAllerta);
+    expect(msg).toContain("nessuno");
+    expect(msg).toContain("Nessuna allerta in corso");
+    expect(msg).not.toContain("Idraulico:");
+    expect(msg).not.toContain("Idrogeologico:");
+    expect(msg).not.toContain("Temporali:");
+    expect(msg).not.toContain("Vento:");
+    expect(msg).not.toContain("Neve:");
+    expect(msg).not.toContain("Ghiaccio:");
   });
 });
 
@@ -108,6 +144,19 @@ describe("messages.completo", () => {
     const msg = messages.completo(datiFixture);
     expect(msg).toContain("Bollettino del giorno");
     expect(msg).toContain("https://www.lamma.toscana.it/previ/ita/bollettino.pdf");
+  });
+
+  it("quando allerta = nessuno, non mostra rischi ma mantiene previsioni", () => {
+    const msg = messages.completo(datiNessunaAllerta);
+    expect(msg).toContain("nessuno");
+    expect(msg).toContain("Previsioni");
+    expect(msg).toContain("Temperatura: 22°");
+    expect(msg).not.toContain("Idraulico:");
+    expect(msg).not.toContain("Idrogeologico:");
+    expect(msg).not.toContain("Temporali:");
+    expect(msg).not.toContain("Vento:");
+    expect(msg).not.toContain("Neve:");
+    expect(msg).not.toContain("Ghiaccio:");
   });
 });
 

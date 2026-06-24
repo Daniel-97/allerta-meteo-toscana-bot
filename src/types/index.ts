@@ -5,7 +5,7 @@ export interface Comune {
 
 export type ParteGiorno = "mattina" | "pomeriggio" | "sera";
 
-export type LivelloAllerta = "VERDE" | "GIALLO" | "ARANCIONE" | "ROSSO";
+export type LivelloAllerta = "VERDE" | "GIALLO" | "ARANCIONE" | "ROSSO" | "nessuno";
 
 export type LivelloRischio =
   | "ASSENTE"

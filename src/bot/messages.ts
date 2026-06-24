@@ -6,6 +6,7 @@ const EMOJI_ALLERTA: Record<string, string> = {
   GIALLO: "🟡",
   ARANCIONE: "🟠",
   ROSSO: "🔴",
+  nessuno: "⚪",
 };
 
 export function escHtml(s: string): string {
@@ -99,16 +100,24 @@ export const messages = {
 
   errore: "❌ Si è verificato un errore. Riprova più tardi.",
 
-  allerta: (d: DatiMeteo) =>
-    `🚨 <b>Allerta meteo</b> — ${escHtml(d.comune)}\n` +
-    `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
-    `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} Livello allerta: <b>${d.allerta}</b>\n\n` +
-    `💧 Idraulico: ${d.rischi.idraulico}\n` +
-    `⛰️ Idrogeologico: ${d.rischi.idrogeologico}\n` +
-    `⚡ Temporali: ${d.rischi.temporali}\n` +
-    `💨 Vento: ${d.rischi.vento}\n` +
-    `❄️ Neve: ${d.rischi.neve}\n` +
-    `🧊 Ghiaccio: ${d.rischi.ghiaccio}`,
+  allerta: (d: DatiMeteo) => {
+    const haAllerta = d.allerta !== "nessuno";
+    let msg =
+      `🚨 <b>Allerta meteo</b> — ${escHtml(d.comune)}\n` +
+      `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
+      `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} Livello allerta: <b>${d.allerta}</b>`;
+    if (haAllerta) {
+      msg += `\n\n💧 Idraulico: ${d.rischi.idraulico}\n` +
+        `⛰️ Idrogeologico: ${d.rischi.idrogeologico}\n` +
+        `⚡ Temporali: ${d.rischi.temporali}\n` +
+        `💨 Vento: ${d.rischi.vento}\n` +
+        `❄️ Neve: ${d.rischi.neve}\n` +
+        `🧊 Ghiaccio: ${d.rischi.ghiaccio}`;
+    } else {
+      msg += `\n\nNessuna allerta in corso.`;
+    }
+    return msg;
+  },
 
   previsioni: (d: DatiMeteo) =>
     `🌡️ <b>Previsioni meteo</b> — ${escHtml(d.comune)} (${parteGiornoStr(d.parteGiorno)})\n` +
@@ -124,25 +133,34 @@ export const messages = {
     `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
     `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`,
 
-  completo: (d: DatiMeteo) =>
-    `📊 <b>Dati meteo</b> — ${escHtml(d.comune)}\n` +
-    `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
-    `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} <b>Allerta: ${d.allerta}</b>\n` +
-    `💧 Idraulico: ${d.rischi.idraulico}\n` +
-    `⛰️ Idrogeologico: ${d.rischi.idrogeologico}\n` +
-    `⚡ Temporali: ${d.rischi.temporali}\n` +
-    `💨 Vento: ${d.rischi.vento}\n` +
-    `❄️ Neve: ${d.rischi.neve}\n` +
-    `🧊 Ghiaccio: ${d.rischi.ghiaccio}\n\n` +
-    `🌡️ <b>Previsioni (${parteGiornoStr(d.parteGiorno)})</b>\n` +
-    `🌡️ Temperatura: ${d.temperaturaAttuale}°\n` +
-    `🤒 Percepita: ${d.temperaturaPercepita}°\n` +
-    `💧 Umidità: ${d.umidita}%\n` +
-    `🌧️ Pioggia: ${d.probabilitaPioggia}%\n` +
-    `☀️ UV: ${d.uv}\n` +
-    `❄️ Quota neve: ${d.quotaNeve} m\n\n` +
-    `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
-    `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`,
+  completo: (d: DatiMeteo) => {
+    const haAllerta = d.allerta !== "nessuno";
+    let sezioneAllerta =
+      `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} <b>Allerta: ${d.allerta}</b>`;
+    if (haAllerta) {
+      sezioneAllerta += `\n` +
+        `💧 Idraulico: ${d.rischi.idraulico}\n` +
+        `⛰️ Idrogeologico: ${d.rischi.idrogeologico}\n` +
+        `⚡ Temporali: ${d.rischi.temporali}\n` +
+        `💨 Vento: ${d.rischi.vento}\n` +
+        `❄️ Neve: ${d.rischi.neve}\n` +
+        `🧊 Ghiaccio: ${d.rischi.ghiaccio}`;
+    }
+    return (
+      `📊 <b>Dati meteo</b> — ${escHtml(d.comune)}\n` +
+      `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
+      sezioneAllerta + `\n\n` +
+      `🌡️ <b>Previsioni (${parteGiornoStr(d.parteGiorno)})</b>\n` +
+      `🌡️ Temperatura: ${d.temperaturaAttuale}°\n` +
+      `🤒 Percepita: ${d.temperaturaPercepita}°\n` +
+      `💧 Umidità: ${d.umidita}%\n` +
+      `🌧️ Pioggia: ${d.probabilitaPioggia}%\n` +
+      `☀️ UV: ${d.uv}\n` +
+      `❄️ Quota neve: ${d.quotaNeve} m\n\n` +
+      `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
+      `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`
+    );
+  },
 };
 
 export function ottieniUrlImmagine(
