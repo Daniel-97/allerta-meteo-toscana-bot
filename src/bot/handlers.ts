@@ -65,14 +65,18 @@ export async function handleRichiestaTestoLibero(
 ) {
   const text = ctx.message?.text?.trim();
   if (!text || text.startsWith("/") || text.length < 3) return;
-  const risultati = await services.comuni.searchByPrefix(text);
-  if (risultati.length === 0) {
-    await ctx.reply(messages.ricercaNonTrovato(text));
-    return;
+  try {
+    const risultati = await services.comuni.searchByPrefix(text);
+    if (risultati.length === 0) {
+      await ctx.reply(messages.ricercaNonTrovato(text));
+      return;
+    }
+    await ctx.reply(messages.ricercaTrovati(risultati.length, text), {
+      reply_markup: comuniInlineKeyboard(risultati),
+    });
+  } catch {
+    await ctx.reply(messages.errore);
   }
-  await ctx.reply(messages.ricercaTrovati(risultati.length, text), {
-    reply_markup: comuniInlineKeyboard(risultati),
-  });
 }
 
 export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: number) {
