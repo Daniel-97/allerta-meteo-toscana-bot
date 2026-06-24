@@ -8,6 +8,15 @@
   <strong><a href="https://t.me/allerta_meteo_toscana_bot">👉 @allerta_meteo_toscana_bot</a></strong>
 </p>
 
+### Funzionalità
+
+- 🚨 **Allerte meteo** — livelli VERDE / GIALLO / ARANCIONE / ROSSO per ogni comune
+- 🌤️ **Previsioni** — temperatura, umidità, pioggia, UV, quota neve, alba/tramonto
+- 🖼️ **Mappe meteo** — 9 immagini (3 giorni × 3 fasce orarie)
+- 🔔 **Notifiche** — 2 volte al giorno (11:30 e 17:30)
+- 📍 **Comuni multipli** — aggiungi, elimina e gestisci più comuni
+- ⚙️ **Notifiche meteo on/off** — per singolo comune
+
 Bot Telegram per allerte meteo della Toscana, basato sui dati resi disponibili dal [Consorzio LAMMA](https://www.lamma.toscana.it/).
 
 ## Architettura
