@@ -86,6 +86,15 @@ export const messages = {
 
   impostaNonTrovato: "❌ Nessun comune trovato con quel nome. Riprova.",
 
+  aggiungiPrompt:
+    "🔍 Digita almeno 3 lettere del nome del comune per iniziare la ricerca.",
+
+  ricercaNonTrovato: (testo: string) =>
+    `Nessun comune trovato per '${escHtml(testo)}'. Se stavi cercando un comune, riprova con un nome diverso.`,
+
+  ricercaTrovati: (count: number, testo: string) =>
+    `📍 Ho trovato ${count} comuni per '${escHtml(testo)}':`,
+
   impostaConferma: (comune: string) =>
     `Vuoi ricevere anche le informazioni meteo per ${escHtml(comune)} insieme alle notifiche di allerta?`,
 
