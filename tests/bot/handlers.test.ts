@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { GrammyError } from "grammy";
-import { handleCallbackQuery, handlePrevisioni } from "../../src/bot/handlers.js";
+import { handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero } from "../../src/bot/handlers.js";
 
 const grammyErrorNotModified = () =>
   new GrammyError(
@@ -431,6 +431,114 @@ describe("handlePrevisioni", () => {
           ]],
         }),
       }),
+    );
+  });
+});
+
+describe("handleRichiestaTestoLibero", () => {
+  const baseServices = {
+    comuni: {
+      searchByPrefix: vi.fn(),
+    },
+  };
+
+  it("ignora testo con meno di 3 caratteri", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      message: { text: "ab" },
+      reply,
+    } as any;
+
+    await handleRichiestaTestoLibero(ctx, baseServices as any);
+
+    expect(reply).not.toHaveBeenCalled();
+  });
+
+  it("ignora comandi (testo che inizia con /)", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      message: { text: "/start" },
+      reply,
+    } as any;
+
+    await handleRichiestaTestoLibero(ctx, baseServices as any);
+
+    expect(reply).not.toHaveBeenCalled();
+  });
+
+  it("ignora testo vuoto", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      message: { text: "" },
+      reply,
+    } as any;
+
+    await handleRichiestaTestoLibero(ctx, baseServices as any);
+
+    expect(reply).not.toHaveBeenCalled();
+  });
+
+  it("mostra risultati quando la ricerca ha match", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      message: { text: "pis" },
+      reply,
+    } as any;
+    const services = {
+      comuni: {
+        searchByPrefix: vi.fn().mockResolvedValue([
+          { nome: "Pisa", url: "pisa" },
+          { nome: "Pistoia", url: "pistoia" },
+        ]),
+      },
+    };
+
+    await handleRichiestaTestoLibero(ctx, services as any);
+
+    expect(services.comuni.searchByPrefix).toHaveBeenCalledWith("pis");
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("trovato"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({ inline_keyboard: expect.any(Array) }),
+      }),
+    );
+  });
+
+  it("mostra messaggio non trovato quando la ricerca non ha match", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      message: { text: "xyzxyz" },
+      reply,
+    } as any;
+    const services = {
+      comuni: {
+        searchByPrefix: vi.fn().mockResolvedValue([]),
+      },
+    };
+
+    await handleRichiestaTestoLibero(ctx, services as any);
+
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("trovato"),
+    );
+  });
+
+  it("gestisce errore di searchByPrefix con messaggio di errore", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      message: { text: "pisa" },
+      reply,
+    } as any;
+    const services = {
+      comuni: {
+        searchByPrefix: vi.fn().mockRejectedValue(new Error("DB error")),
+      },
+    };
+
+    await handleRichiestaTestoLibero(ctx, services as any);
+
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("errore"),
     );
   });
 });
