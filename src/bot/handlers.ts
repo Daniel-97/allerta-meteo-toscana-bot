@@ -223,7 +223,6 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     await ctx.reply(messages.help);
   });
 
-  bot.on("message:text", (ctx) => handleRichiestaTestoLibero(ctx, services));
 }
 
 export async function handleCallbackQuery(

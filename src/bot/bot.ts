@@ -1,6 +1,6 @@
 import { Bot } from "grammy";
 import type { Config } from "../config.js";
-import { registerHandlers, type BotServices } from "./handlers.js";
+import { registerHandlers, handleRichiestaTestoLibero, type BotServices } from "./handlers.js";
 import { logUserMessage } from "./logging.js";
 import { registerAdminHandlers } from "./admin/handlers.js";
 import { isAdmin } from "./admin/middleware.js";
@@ -22,6 +22,8 @@ export function createBot(config: Config, services: BotServices) {
     bot.use(isAdmin(adminChatId));
     registerAdminHandlers(bot, services, adminChatId);
   }
+
+  bot.on("message:text", (ctx) => handleRichiestaTestoLibero(ctx, services));
 
   return bot;
 }
