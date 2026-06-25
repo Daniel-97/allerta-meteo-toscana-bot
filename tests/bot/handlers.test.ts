@@ -435,6 +435,52 @@ describe("handlePrevisioni", () => {
   });
 });
 
+describe("action: add", () => {
+  it("risponde alla callback e invia prompt aggiungi", async () => {
+    const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "add" },
+      answerCallbackQuery,
+      reply,
+    } as any;
+
+    await handleCallbackQuery(ctx, {} as any);
+
+    expect(answerCallbackQuery).toHaveBeenCalledOnce();
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("Digita almeno 3 lettere"),
+    );
+  });
+});
+
+describe("action: credits", () => {
+  it("risponde alla callback e invia credits con inline keyboard", async () => {
+    const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "credits" },
+      answerCallbackQuery,
+      reply,
+    } as any;
+
+    await handleCallbackQuery(ctx, {} as any);
+
+    expect(answerCallbackQuery).toHaveBeenCalledOnce();
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("Come funziona"),
+      expect.objectContaining({
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "➕ Aggiungi comune", callback_data: "add" }],
+            [{ text: "ℹ️ Credits&Info", callback_data: "credits" }],
+          ],
+        },
+      }),
+    );
+  });
+});
+
 describe("handleRichiestaTestoLibero", () => {
   const baseServices = {
     comuni: {

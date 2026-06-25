@@ -4,7 +4,7 @@ import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
 import { messages, costruisciAlbumImmagini, escHtml } from "./messages.js";
-import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
+import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard, noComuniInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
@@ -163,6 +163,18 @@ export async function handleCallbackQuery(
   const data = ctx.callbackQuery.data;
   const parts = data.split(":");
   const action = parts[0];
+
+  if (action === "add") {
+    await ctx.answerCallbackQuery();
+    await ctx.reply(messages.aggiungiPrompt);
+    return;
+  }
+
+  if (action === "credits") {
+    await ctx.answerCallbackQuery();
+    await ctx.reply(messages.credits, { reply_markup: noComuniInlineKeyboard() });
+    return;
+  }
 
   if (action === "back") {
     const id = ctx.from?.id;
