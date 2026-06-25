@@ -84,74 +84,9 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
   });
 
-  bot.command("credits", async (ctx) => {
-    await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard() });
-  });
-
-  bot.command("annulla", async (ctx) => {
-    await ctx.reply(messages.annulla, { reply_markup: mainMenuKeyboard() });
-  });
-
   bot.hears("🚨 Aggiorna allerta", (ctx) => handleAllerta(ctx, services));
-  bot.command("allerta", (ctx) => handleAllerta(ctx, services));
 
   bot.hears("🌤️ Aggiorna meteo", (ctx) => handlePrevisioni(ctx, services));
-  bot.command("previsioni", (ctx) => handlePrevisioni(ctx, services));
-
-  bot.command("aggiungi", async (ctx) => {
-    const text = ctx.match?.trim() ?? "";
-    if (!text) {
-      await ctx.reply(messages.aggiungiPrompt);
-      return;
-    }
-    const risultati = await services.comuni.searchByPrefix(text);
-    if (risultati.length === 0) {
-      await ctx.reply(messages.impostaNonTrovato);
-      return;
-    }
-    await ctx.reply(messages.comuniTrovati, {
-      reply_markup: comuniInlineKeyboard(risultati),
-    });
-  });
-
-  bot.command("elimina", async (ctx) => {
-    const id = ctx.from?.id;
-    if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
-      return;
-    }
-    await ctx.reply(messages.selezionaComuneDaEliminare, {
-      reply_markup: comuniSelezioneInlineKeyboard(user.comuni, "del"),
-    });
-  });
-
-  bot.command("modifica", async (ctx) => {
-    const id = ctx.from?.id;
-    if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
-      return;
-    }
-    await ctx.reply(messages.selezionaComuneDaModificare, {
-      reply_markup: comuniSelezioneInlineKeyboard(user.comuni, "mod"),
-    });
-  });
-
-  bot.command("lista", async (ctx) => {
-    const id = ctx.from?.id;
-    if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
-      return;
-    }
-    await ctx.reply(messages.gestisciComuni(user.comuni), {
-      reply_markup: gestisciSubMenuKeyboard(),
-    });
-  });
 
   bot.hears("📋 Gestisci comuni", async (ctx) => {
     const id = ctx.from?.id;
@@ -218,11 +153,6 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   });
 
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
-
-  bot.command("help", async (ctx) => {
-    await ctx.reply(messages.help);
-  });
-
 }
 
 export async function handleCallbackQuery(

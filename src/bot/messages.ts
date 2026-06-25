@@ -36,19 +36,8 @@ export const messages = {
     "🔗 Per ulteriori informazioni: <a href=\"https://www.regione.toscana.it/allertameteo\">Regione Toscana — Allerta Meteo</a>\n\n" +
     "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA né alla Regione Toscana.</i>",
 
-  help:
-    "📋 <b>Comandi disponibili</b>\n" +
-    "/aggiungi &lt;nome&gt; — Aggiungi un comune\n" +
-    "/elimina — Elimina un comune\n" +
-    "/modifica — Modifica le notifiche di un comune\n" +
-    "/lista — Mostra i tuoi comuni\n" +
-    "/allerta — Ricevi l'allerta meteo\n" +
-    "/previsioni — Ricevi le previsioni\n" +
-    "/credits — Info sul servizio\n" +
-    "/annulla — Annulla operazione",
-
   nessunComune:
-    "Non hai ancora impostato comuni. Usa /aggiungi per iniziare.",
+    "Non hai ancora impostato comuni. Premi il pulsante <b>➕ Aggiungi</b> per iniziare.",
 
   nessunComunePrevisioni:
     "Imposta almeno un comune da monitorare prima",
@@ -79,12 +68,8 @@ export const messages = {
 
   annulla: "✖️ Operazione annullata.",
 
-  comuniTrovati: "📍 Comuni trovati:",
-
   impostaPrompt:
-    "🔍 Scrivi il nome del comune (es. /aggiungi pisa) oppure parte del nome per cercarlo.",
-
-  impostaNonTrovato: "❌ Nessun comune trovato con quel nome. Riprova.",
+    "🔍 Scrivi il nome del comune (almeno 3 lettere) per cercarlo.",
 
   aggiungiPrompt:
     "🔍 Digita almeno 3 lettere del nome del comune per iniziare la ricerca.",
@@ -103,9 +88,6 @@ export const messages = {
 
   impostaOkAllerta: (comune: string) =>
     `✅ Ok! Riceverai notifiche per ${escHtml(comune)}. Ti avviserò anche delle condizioni meteo.`,
-
-  nonIscritto:
-    "⚠️ Non hai ancora impostato un comune. Usa /imposta per iniziare.",
 
   errore: "❌ Si è verificato un errore. Riprova più tardi.",
 
