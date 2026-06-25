@@ -81,7 +81,11 @@ export async function handleRichiestaTestoLibero(
 
 export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: number) {
   bot.command("start", async (ctx) => {
-    await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
+    const id = ctx.from?.id;
+    if (!id) return;
+    const user = await services.users.findByTelegramId(id);
+    const hasComuni = user && user.comuni.length > 0;
+    await ctx.reply(messages.welcome, { reply_markup: hasComuni ? mainMenuKeyboard() : noComuniInlineKeyboard() });
   });
 
   bot.hears("🚨 Allerta meteo", (ctx) => handleAllerta(ctx, services));
@@ -145,11 +149,19 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   });
 
   bot.hears("🔙 Indietro", async (ctx) => {
-    await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
+    const id = ctx.from?.id;
+    if (!id) return;
+    const user = await services.users.findByTelegramId(id);
+    const hasComuni = user && user.comuni.length > 0;
+    await ctx.reply(messages.welcome, { reply_markup: hasComuni ? mainMenuKeyboard() : noComuniInlineKeyboard() });
   });
 
   bot.hears("ℹ️ Credits&Info", async (ctx) => {
-    await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard() });
+    const id = ctx.from?.id;
+    if (!id) return;
+    const user = await services.users.findByTelegramId(id);
+    const hasComuni = user && user.comuni.length > 0;
+    await ctx.reply(messages.credits, { reply_markup: hasComuni ? mainMenuKeyboard() : noComuniInlineKeyboard() });
   });
 
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
@@ -277,7 +289,9 @@ export async function handleCallbackQuery(
     await safeEditMessageText(ctx, messages.eliminato(nome), {
       reply_markup: { inline_keyboard: [] },
     });
-    await ctx.reply(messages.eliminato(nome), { reply_markup: mainMenuKeyboard() });
+    const user = await services.users.findByTelegramId(idTelegram);
+    const hasComuni = user && user.comuni.length > 0;
+    await ctx.reply(messages.eliminato(nome), { reply_markup: hasComuni ? mainMenuKeyboard() : noComuniInlineKeyboard() });
     return;
   }
 

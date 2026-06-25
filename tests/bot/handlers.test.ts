@@ -270,8 +270,12 @@ describe("del-confirm callback", () => {
 
   it("chiama removeComune e mostra conferma", async () => {
     const removeComune = vi.fn().mockResolvedValue(undefined);
+    const findByTelegramId = vi.fn().mockResolvedValue({
+      idTelegram: 123,
+      comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+    });
     const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
-    const services = { users: { removeComune } } as any;
+    const services = { users: { removeComune, findByTelegramId } } as any;
 
     await handleCallbackQuery(ctx, services);
 
@@ -293,6 +297,30 @@ describe("del-confirm callback", () => {
     await handleCallbackQuery(ctx, { users: { removeComune } } as any);
 
     expect(removeComune).not.toHaveBeenCalled();
+  });
+
+  it("usa noComuniInlineKeyboard se l'utente non ha più comuni", async () => {
+    const removeComune = vi.fn().mockResolvedValue(undefined);
+    const findByTelegramId = vi.fn().mockResolvedValue({
+      idTelegram: 123,
+      comuni: [],
+    });
+    const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
+    const services = { users: { removeComune, findByTelegramId } } as any;
+
+    await handleCallbackQuery(ctx, services);
+
+    expect(ctx.reply).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "➕ Aggiungi comune", callback_data: "add" }],
+            [{ text: "ℹ️ Credits&Info", callback_data: "credits" }],
+          ],
+        },
+      }),
+    );
   });
 });
 
