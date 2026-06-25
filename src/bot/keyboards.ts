@@ -82,15 +82,6 @@ export function mappeMeteoInlineKeyboard() {
   };
 }
 
-export function noComuniInlineKeyboard() {
-  return {
-    inline_keyboard: [
-      [{ text: "➕ Aggiungi comune", callback_data: "add" }],
-      [{ text: "ℹ️ Credits&Info", callback_data: "credits" }],
-    ],
-  };
-}
-
 export function confermaInlineKeyboard(url: string, nome: string) {
   return {
     inline_keyboard: [
