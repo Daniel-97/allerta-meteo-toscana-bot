@@ -40,7 +40,7 @@ export const messages = {
     "Non hai ancora impostato comuni. Premi il pulsante <b>➕ Aggiungi</b> per iniziare.",
 
   nessunComunePrevisioni:
-    "Imposta almeno un comune da monitorare prima",
+    "Imposta almeno un comune da monitorare prima premendo sul tasto <b>Gestisci comuni → Aggiungi</b>",
 
   confermaElimina: (nome: string) =>
     `Eliminare ${escHtml(nome)} dalla tua lista?`,
