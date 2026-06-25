@@ -184,6 +184,8 @@ curl "http://localhost:8787/__scheduled"
 └───────────────────────────────────┘
 ```
 
+> **Utenti senza comuni:** Se non hai ancora aggiunto comuni (o se li hai eliminati tutti), il bot mostra una tastiera inline semplificata con i pulsanti **➕ Aggiungi comune** e **ℹ️ Credits&Info** al posto del menu principale. In questa modalità non sono accessibili le funzioni meteo finché non aggiungi almeno un comune.
+
 ## Pannello Admin
 
 I comandi admin sono accessibili solo dall'utente configurato come `ADMIN_CHAT_ID`:
