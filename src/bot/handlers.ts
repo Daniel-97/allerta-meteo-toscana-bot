@@ -28,7 +28,7 @@ async function handleAllerta(ctx: Context, services: BotServices) {
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
   if (!user || user.comuni.length === 0) {
-    await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: noComuniInlineKeyboard() });
     return;
   }
   for (const c of user.comuni) {
@@ -46,7 +46,7 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
   if (!user || user.comuni.length === 0) {
-    await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: noComuniInlineKeyboard() });
     return;
   }
   for (const c of user.comuni) {
@@ -93,7 +93,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
     if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.gestisciComuni([]), { reply_markup: gestisciSubMenuKeyboard() });
+      await ctx.reply(messages.gestisciComuni([]), { reply_markup: noComuniInlineKeyboard() });
       return;
     }
     await ctx.reply(messages.gestisciComuni(user.comuni), {
@@ -110,7 +110,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
     if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
+      await ctx.reply(messages.nessunComune, { reply_markup: noComuniInlineKeyboard() });
       return;
     }
     await ctx.reply(messages.selezionaComuneDaEliminare, {
@@ -123,7 +123,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
     if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
+      await ctx.reply(messages.nessunComune, { reply_markup: noComuniInlineKeyboard() });
       return;
     }
     await ctx.reply(messages.selezionaComuneDaModificare, {
@@ -136,7 +136,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
     if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
+      await ctx.reply(messages.nessunComune, { reply_markup: noComuniInlineKeyboard() });
       return;
     }
     await ctx.reply(messages.gestisciComuni(user.comuni), {
