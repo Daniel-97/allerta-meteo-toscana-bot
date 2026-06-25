@@ -158,7 +158,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     if (!id) return;
     const user = await services.users.findByTelegramId(id);
     if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
+      await ctx.reply(messages.gestisciComuni([]), { reply_markup: gestisciSubMenuKeyboard() });
       return;
     }
     await ctx.reply(messages.gestisciComuni(user.comuni), {

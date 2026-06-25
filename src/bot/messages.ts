@@ -24,7 +24,7 @@ export const messages = {
     "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n\n" +
     "⏰ Le notifiche vengono inviate 2 volte al giorno (11:30 e 17:30 ora italiana)\n\n" +
     "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA né alla Regione Toscana.</i>\n\n" +
-    "Seleziona una voce dal menu o usa i comandi.",
+    "Per iniziare aggiungi un comune premendo sul tasto <b>Gestisci comuni → Aggiungi</b>",
 
   credits:
     "ℹ️ <b>Come funziona</b>\n\n" +
