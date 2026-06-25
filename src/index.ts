@@ -38,13 +38,23 @@ export default {
       return new Response("Method not allowed", { status: 405 });
     }
     const { bot } = await getInitialized(env);
-    const update = await request.json();
-    await bot.handleUpdate(update);
-    return new Response("OK");
+    try {
+      const update = await request.json();
+      await bot.handleUpdate(update);
+      return new Response("OK");
+    } catch (err) {
+      console.error("fetch handler error", err, request.url);
+      return new Response("Internal error", { status: 500 });
+    }
   },
 
   async scheduled(_event: unknown, env: Env): Promise<void> {
     const { bot, services } = await getInitialized(env);
-    await broadcastNotifiche(bot, services);
+    try {
+      const result = await broadcastNotifiche(bot, services);
+      console.log(`scheduled: ${result.inviati}/${result.totali} notifiche inviate`);
+    } catch (err) {
+      console.error("scheduled handler error", err);
+    }
   },
 };

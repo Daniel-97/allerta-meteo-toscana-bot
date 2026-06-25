@@ -154,6 +154,17 @@ Per testare il cron localmente con `wrangler dev`:
 curl "http://localhost:8787/__scheduled"
 ```
 
+## Observability (log)
+
+I log del Worker sono abilitati via Workers Logs. I `console.log`/`console.error` emessi dal codice (handler fetch/scheduled, errori di notifica, config mancante) vengono catturati nel dashboard Cloudflare: **Workers & Pages > [worker] > Logs**. Gli invocation logs registrano automaticamente start/end, status e durata di ogni richiesta e ogni esecuzione del cron.
+
+Configurazione in `wrangler.toml`:
+```toml
+[observability.logs]
+enabled = true
+invocation_logs = true
+```
+
 ## Comandi bot
 
 | Comando | Azione |

@@ -22,7 +22,8 @@ export async function broadcastNotifiche(
           : undefined;
         await bot.api.sendMessage(user.idTelegram, msg, { link_preview_options: { is_disabled: true }, reply_markup });
         inviati++;
-      } catch {
+      } catch (err) {
+        console.error("notifica fallita", { user: user.idTelegram, comune: comune.nome, err });
         continue;
       }
     }
