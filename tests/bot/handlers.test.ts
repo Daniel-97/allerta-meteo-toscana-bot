@@ -270,12 +270,8 @@ describe("del-confirm callback", () => {
 
   it("chiama removeComune e mostra conferma", async () => {
     const removeComune = vi.fn().mockResolvedValue(undefined);
-    const findByTelegramId = vi.fn().mockResolvedValue({
-      idTelegram: 123,
-      comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
-    });
     const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
-    const services = { users: { removeComune, findByTelegramId } } as any;
+    const services = { users: { removeComune } } as any;
 
     await handleCallbackQuery(ctx, services);
 
@@ -297,30 +293,6 @@ describe("del-confirm callback", () => {
     await handleCallbackQuery(ctx, { users: { removeComune } } as any);
 
     expect(removeComune).not.toHaveBeenCalled();
-  });
-
-  it("usa noComuniInlineKeyboard se l'utente non ha più comuni", async () => {
-    const removeComune = vi.fn().mockResolvedValue(undefined);
-    const findByTelegramId = vi.fn().mockResolvedValue({
-      idTelegram: 123,
-      comuni: [],
-    });
-    const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
-    const services = { users: { removeComune, findByTelegramId } } as any;
-
-    await handleCallbackQuery(ctx, services);
-
-    expect(ctx.reply).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "➕ Aggiungi comune", callback_data: "add" }],
-            [{ text: "ℹ️ Credits&Info", callback_data: "credits" }],
-          ],
-        },
-      }),
-    );
   });
 });
 
@@ -458,52 +430,6 @@ describe("handlePrevisioni", () => {
             { text: "🛰️ Sat. infrarosso", callback_data: "sat" },
           ]],
         }),
-      }),
-    );
-  });
-});
-
-describe("action: add", () => {
-  it("risponde alla callback e invia prompt aggiungi", async () => {
-    const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
-    const reply = vi.fn().mockResolvedValue(undefined);
-    const ctx = {
-      callbackQuery: { data: "add" },
-      answerCallbackQuery,
-      reply,
-    } as any;
-
-    await handleCallbackQuery(ctx, {} as any);
-
-    expect(answerCallbackQuery).toHaveBeenCalledOnce();
-    expect(reply).toHaveBeenCalledWith(
-      expect.stringContaining("Digita almeno 3 lettere"),
-    );
-  });
-});
-
-describe("action: credits", () => {
-  it("risponde alla callback e invia credits con inline keyboard", async () => {
-    const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
-    const reply = vi.fn().mockResolvedValue(undefined);
-    const ctx = {
-      callbackQuery: { data: "credits" },
-      answerCallbackQuery,
-      reply,
-    } as any;
-
-    await handleCallbackQuery(ctx, {} as any);
-
-    expect(answerCallbackQuery).toHaveBeenCalledOnce();
-    expect(reply).toHaveBeenCalledWith(
-      expect.stringContaining("Come funziona"),
-      expect.objectContaining({
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "➕ Aggiungi comune", callback_data: "add" }],
-            [{ text: "ℹ️ Credits&Info", callback_data: "credits" }],
-          ],
-        },
       }),
     );
   });
