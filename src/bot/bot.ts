@@ -1,4 +1,5 @@
-import { Bot } from "grammy";
+import { Bot, Composer } from "grammy";
+import type { Context } from "grammy";
 import type { Config } from "../config.js";
 import { registerHandlers, handleRichiestaTestoLibero, type BotServices } from "./handlers.js";
 import { logUserMessage } from "./logging.js";
@@ -16,14 +17,24 @@ export function createBot(config: Config, services: BotServices) {
   });
 
   bot.use(logUserMessage);
+
   const adminChatId = Number(config.ADMIN_CHAT_ID);
   registerHandlers(bot, services, adminChatId);
-  if (adminChatId) {
-    bot.use(isAdmin(adminChatId));
-    registerAdminHandlers(bot, services, adminChatId);
-  }
 
-  bot.on("message:text", (ctx) => handleRichiestaTestoLibero(ctx, services));
+  bot.on("message:text", async (ctx, next) => {
+    const text = ctx.message?.text?.trim();
+    if (!text || text.startsWith("/") || text.length < 3) {
+      return await next();
+    }
+    await handleRichiestaTestoLibero(ctx, services);
+  });
+
+  if (adminChatId) {
+    const adminScope = new Composer<Context>();
+    adminScope.use(isAdmin(adminChatId));
+    registerAdminHandlers(adminScope, services);
+    bot.use(adminScope);
+  }
 
   return bot;
 }

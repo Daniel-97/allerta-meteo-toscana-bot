@@ -1,4 +1,4 @@
-import type { Bot, Context } from "grammy";
+import type { Composer, Context } from "grammy";
 import type { BotServices } from "../handlers.js";
 import { adminMessages } from "./messages.js";
 import { mainMenuKeyboard } from "../keyboards.js";
@@ -48,7 +48,6 @@ export async function handleAdminInfo(ctx: Context, services: BotServices, id: s
 export async function handleAdminBroadcast(
   ctx: Context,
   services: BotServices,
-  bot: Bot,
   testo: string,
 ) {
   if (!testo) {
@@ -62,7 +61,7 @@ export async function handleAdminBroadcast(
   let falliti = 0;
   for (const u of users) {
     try {
-      await bot.api.sendMessage(u.idTelegram, testo);
+      await ctx.api.sendMessage(u.idTelegram, testo);
       inviati++;
     } catch {
       falliti++;
@@ -75,11 +74,10 @@ export async function handleAdminBroadcast(
 }
 
 export function registerAdminHandlers(
-  bot: Bot,
+  composer: Composer<Context>,
   services: BotServices,
-  _adminChatId: number,
 ) {
-  bot.command("admin", async (ctx) => {
+  composer.command("admin", async (ctx) => {
     const fullText = (ctx.match as string)?.trim() ?? "";
     const parts = fullText.split(/\s+/);
     const sub = parts[0]?.toLowerCase() ?? "";
@@ -89,7 +87,7 @@ export function registerAdminHandlers(
     if (sub === "info")
       return handleAdminInfo(ctx, services, parts.slice(1).join(" "));
     if (sub === "broadcast")
-      return handleAdminBroadcast(ctx, services, bot, parts.slice(1).join(" "));
+      return handleAdminBroadcast(ctx, services, parts.slice(1).join(" "));
     return handleAdmin(ctx, services);
   });
 }

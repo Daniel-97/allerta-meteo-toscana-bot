@@ -142,9 +142,8 @@ describe("handleAdminInfo", () => {
 describe("handleAdminBroadcast", () => {
   it("invia messaggio a tutti gli utenti", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
-    const bot = { api: { sendMessage } } as any;
     const reply = vi.fn().mockResolvedValue(undefined);
-    const ctx = { reply } as any;
+    const ctx = { reply, api: { sendMessage } } as any;
     const services = {
       users: {
         findAllWithComuni: vi.fn().mockResolvedValue([
@@ -154,7 +153,7 @@ describe("handleAdminBroadcast", () => {
       },
     } as any;
 
-    await handleAdminBroadcast(ctx, services, bot, "Ciao a tutti!");
+    await handleAdminBroadcast(ctx, services, "Ciao a tutti!");
 
     expect(sendMessage).toHaveBeenCalledTimes(2);
     expect(sendMessage).toHaveBeenCalledWith(1, "Ciao a tutti!");
@@ -169,7 +168,7 @@ describe("handleAdminBroadcast", () => {
     const reply = vi.fn().mockResolvedValue(undefined);
     const ctx = { reply } as any;
 
-    await handleAdminBroadcast(ctx, {} as any, {} as any, "");
+    await handleAdminBroadcast(ctx, {} as any, "");
 
     expect(reply).toHaveBeenCalledWith(
       adminMessages.broadcastVuoto,
@@ -182,9 +181,8 @@ describe("handleAdminBroadcast", () => {
       .fn()
       .mockResolvedValueOnce(undefined)
       .mockRejectedValueOnce(new Error("bloccato"));
-    const bot = { api: { sendMessage } } as any;
     const reply = vi.fn().mockResolvedValue(undefined);
-    const ctx = { reply } as any;
+    const ctx = { reply, api: { sendMessage } } as any;
     const services = {
       users: {
         findAllWithComuni: vi.fn().mockResolvedValue([
@@ -194,7 +192,7 @@ describe("handleAdminBroadcast", () => {
       },
     } as any;
 
-    await handleAdminBroadcast(ctx, services, bot, "test");
+    await handleAdminBroadcast(ctx, services, "test");
 
     expect(sendMessage).toHaveBeenCalledTimes(2);
     expect(reply).toHaveBeenCalledWith(

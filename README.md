@@ -281,11 +281,11 @@ src/
 │   └── messaggi.ts       # Message formatters (allerta, previsioni, completo, image URL)
 ├── bot/
 │   ├── admin/
-│   │   ├── handlers.ts   # Admin command handlers
+│   │   ├── handlers.ts   # Admin command handlers (scoped via Composer)
 │   │   ├── messages.ts   # Admin message templates
-│   │   └── middleware.ts # Admin auth middleware
+│   │   └── middleware.ts # Admin auth middleware (isAdmin)
 │   ├── handlers.ts       # Command + callback query handlers
-│   ├── bot.ts            # Bot factory (createBot)
+│   ├── bot.ts            # Bot factory (createBot, ordine middleware)
 │   ├── strings.ts        # Message templates
 │   ├── keyboards.ts      # Custom + inline keyboard builders
 │   └── scheduler.ts      # Notifica programmata (broadcastNotifiche)
@@ -306,6 +306,7 @@ tests/
 ├── bot/
 │   ├── admin/
 │   │   └── handlers.test.ts
+│   ├── bot.test.ts       # createBot: ordinamento middleware (admin vs testo libero)
 │   ├── handlers.test.ts
 │   ├── logging.test.ts
 │   ├── messages.test.ts
