@@ -167,8 +167,8 @@ curl "http://localhost:8787/__scheduled"
 
 ```
 ┌─ Menu principale ─────────────────┐
-│ 🚨 Aggiorna allerta               │
-│ 🌤️ Aggiorna meteo                │
+│ 🚨 Allerta meteo                  │
+│ 🌤️ Previsioni meteo              │
 │ 📋 Gestisci comuni                │
 │ ℹ️ Credits&Info                   │
 └───────────────────────────────────┘

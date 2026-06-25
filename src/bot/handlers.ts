@@ -84,9 +84,9 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
   });
 
-  bot.hears("🚨 Aggiorna allerta", (ctx) => handleAllerta(ctx, services));
+  bot.hears("🚨 Allerta meteo", (ctx) => handleAllerta(ctx, services));
 
-  bot.hears("🌤️ Aggiorna meteo", (ctx) => handlePrevisioni(ctx, services));
+  bot.hears("🌤️ Previsioni meteo", (ctx) => handlePrevisioni(ctx, services));
 
   bot.hears("📋 Gestisci comuni", async (ctx) => {
     const id = ctx.from?.id;

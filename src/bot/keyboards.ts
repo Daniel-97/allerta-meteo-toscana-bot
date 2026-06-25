@@ -2,8 +2,8 @@ import { Keyboard } from "grammy";
 
 export function mainMenuKeyboard() {
   return new Keyboard()
-    .text("🚨 Aggiorna allerta")
-    .text("🌤️ Aggiorna meteo")
+    .text("🚨 Allerta meteo")
+    .text("🌤️ Previsioni meteo")
     .row()
     .text("📋 Gestisci comuni")
     .text("ℹ️ Credits&Info")
