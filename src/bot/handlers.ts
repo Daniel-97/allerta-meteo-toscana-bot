@@ -6,7 +6,7 @@ import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
 import type { HeatWaveService } from "../services/heatwave.js";
 import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
-import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
+import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
@@ -58,7 +58,9 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
     await ctx.reply(messages.allerta(dati), { reply_markup: mainMenuKeyboard() });
   }
   if (msgCalore) {
-    await ctx.reply(msgCalore, { link_preview_options: { is_disabled: true } });
+    const extra: Record<string, unknown> = { link_preview_options: { is_disabled: true } };
+    if (!r.errore) extra.reply_markup = caloreInlineKeyboard();
+    await ctx.reply(msgCalore, extra);
   }
 }
 

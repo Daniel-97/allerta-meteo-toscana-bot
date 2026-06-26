@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
 import { messages, messaggioCalore, haAllertaMeteo } from "./messages.js";
-import { mappeMeteoInlineKeyboard } from "./keyboards.js";
+import { mappeMeteoInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
 
 export async function broadcastNotifiche(
   bot: Bot,
@@ -32,7 +32,9 @@ export async function broadcastNotifiche(
     }
     if (msgCalore) {
       try {
-        await bot.api.sendMessage(user.idTelegram, msgCalore, { link_preview_options: { is_disabled: true } });
+        const extra: Record<string, unknown> = { link_preview_options: { is_disabled: true } };
+        if (!r.errore) extra.reply_markup = caloreInlineKeyboard();
+        await bot.api.sendMessage(user.idTelegram, msgCalore, extra);
         inviati++;
       } catch (err) {
         console.error("notifica calore fallita", { user: user.idTelegram, err });

@@ -75,9 +75,12 @@ describe("broadcastNotifiche", () => {
     expect(sendMessage).toHaveBeenCalledWith(1, expect.any(String), expect.objectContaining({ reply_markup: expectedKeyboard }));
     expect(sendMessage).toHaveBeenCalledWith(1, expect.any(String), expect.objectContaining({ reply_markup: undefined }));
     expect(sendMessage).toHaveBeenCalledWith(2, expect.any(String), expect.objectContaining({ reply_markup: expectedKeyboard }));
-    // calore: una per utente
-    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.objectContaining({ link_preview_options: { is_disabled: true } }));
-    expect(sendMessage).toHaveBeenCalledWith(2, expect.stringContaining("Ondata di calore"), expect.objectContaining({ link_preview_options: { is_disabled: true } }));
+    const caloreKeyboard = expect.objectContaining({
+      inline_keyboard: [[{ text: "📋 Cosa fare", url: "https://www.salute.gov.it/new/it/tema/ondate-di-calore/livelli-di-rischio-cosa-fare/" }]],
+    });
+    // calore: una per utente, con bottone "Cosa fare"
+    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.objectContaining({ link_preview_options: { is_disabled: true }, reply_markup: caloreKeyboard }));
+    expect(sendMessage).toHaveBeenCalledWith(2, expect.stringContaining("Ondata di calore"), expect.objectContaining({ link_preview_options: { is_disabled: true }, reply_markup: caloreKeyboard }));
   });
 
   it("nessun messaggio calore se entrambi Livello0", async () => {
@@ -202,6 +205,6 @@ describe("broadcastNotifiche", () => {
     expect(result.inviati).toBe(2); // 1 meteo (Firenze) + 1 calore
     expect(sendMessage).toHaveBeenCalledTimes(2);
     expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Test"), expect.anything());
-    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.anything());
+    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.objectContaining({ reply_markup: expect.objectContaining({ inline_keyboard: [[{ text: "📋 Cosa fare", url: expect.any(String) }]] }) }));
   });
 });

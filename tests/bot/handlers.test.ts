@@ -470,7 +470,7 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Ondata di calore"),
-      expect.anything(),
+      expect.objectContaining({ reply_markup: expect.objectContaining({ inline_keyboard: [[{ text: "📋 Cosa fare", url: expect.any(String) }]] }) }),
     );
   });
 
@@ -497,7 +497,7 @@ describe("handleAllerta", () => {
     );
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Ondata di calore"),
-      expect.anything(),
+      expect.objectContaining({ reply_markup: expect.objectContaining({ inline_keyboard: [[{ text: "📋 Cosa fare", url: expect.any(String) }]] }) }),
     );
   });
 
