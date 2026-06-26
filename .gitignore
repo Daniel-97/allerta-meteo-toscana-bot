@@ -6,3 +6,4 @@ log/
 .wrangler
 src/db/migrations/
 docs/
+.opencode/
