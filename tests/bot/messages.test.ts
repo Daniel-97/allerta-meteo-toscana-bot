@@ -7,6 +7,7 @@ import {
   messaggioCalore,
   livelloCaloreToEmoji,
   livelloCaloreToNome,
+  haAllertaMeteo,
 } from "../../src/bot/messages.js";
 import type { DatiMeteo, RisultatoAllertaCalore } from "../../src/types/index.js";
 
@@ -371,5 +372,32 @@ describe("messaggioCalore", () => {
       oggi: null, domani: null,
     };
     expect(messaggioCalore(r)).toBeNull();
+  });
+});
+
+describe("haAllertaMeteo", () => {
+  it("allerta=GIALLO → true", () => {
+    expect(haAllertaMeteo(datiFixture)).toBe(true);
+  });
+
+  it("allerta=nessuno senza domani → false", () => {
+    expect(haAllertaMeteo(datiNessunaAllerta)).toBe(false);
+  });
+
+  it("allerta=nessuno con domani ARANCIONE → true", () => {
+    expect(haAllertaMeteo(datiNessunaAllertaConDomani)).toBe(true);
+  });
+
+  it("allerta=VERDE → true (VERDE e' un allerta reale)", () => {
+    const datiVerde: DatiMeteo = { ...datiFixture, allerta: "VERDE" };
+    expect(haAllertaMeteo(datiVerde)).toBe(true);
+  });
+});
+
+describe("messages.nessunaAllerta", () => {
+  it("contiene il testo atteso", () => {
+    expect(messages.nessunaAllerta).toBe(
+      "ℹ️ Nessuna allerta in corso o prevista per i prossimi giorni."
+    );
   });
 });

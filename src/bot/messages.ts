@@ -62,6 +62,10 @@ export function messaggioCalore(r: RisultatoAllertaCalore): string | null {
   );
 }
 
+export function haAllertaMeteo(d: DatiMeteo): boolean {
+  return d.allerta !== "nessuno" || isAllertaReale(d.allertaDomani);
+}
+
 export const messages = {
   welcome:
     "👋 <b>Benvenuto/a in Allerta Meteo Toscana Bot!</b>\n\n" +
@@ -138,6 +142,9 @@ export const messages = {
     `✅ Ok! Riceverai notifiche per ${escHtml(comune)}. Ti avviserò anche delle condizioni meteo.`,
 
   errore: "❌ Si è verificato un errore. Riprova più tardi.",
+
+  nessunaAllerta:
+    "ℹ️ Nessuna allerta in corso o prevista per i prossimi giorni.",
 
   allerta: (d: DatiMeteo) => {
     const haAllerta = d.allerta !== "nessuno";
