@@ -13,8 +13,9 @@
 - 🚨 **Allerte meteo** — livelli VERDE / GIALLO / ARANCIONE / ROSSO per ogni comune
 - 🌤️ **Previsioni** — temperatura, umidità, pioggia, UV, quota neve, alba/tramonto
 - 🖼️ **Mappe meteo** — 9 immagini (3 giorni × 3 fasce orarie)
-- 🔔 **Notifiche** — 2 volte al giorno (08:00 e 15:00 ora italiana)
+- 🔔 **Notifiche** — 2 volte al giorno (08:00 e 15:00 ora italiana); inviate solo per i comuni con allerta in corso
 - 🌡️ **Ondata di calore** — messaggio autonomo "Ondata di calore — Toscana" insieme alle allerte meteo, con link al bollettino del Ministero della Salute
+- 💬 **Messaggio generico** — se non ci sono allerte (meteo o calore), l'on-demand mostra un unico messaggio "Nessuna allerta in corso o prevista per i prossimi giorni"
 - 📍 **Comuni multipli** — aggiungi, elimina e gestisci più comuni
 - ⚙️ **Notifiche meteo on/off** — per singolo comune
 
@@ -142,7 +143,7 @@ npm run webhook -- info          # Mostra stato webhook (URL, errori, coda)
 
 ## Notifiche programmate
 
-Il bot invia notifiche meteo 2 volte al giorno (08:00 e 15:00 ora italiana, corrispondenti a UTC 6–14) a tutti gli utenti iscritti. Durante ogni broadcast, oltre ai messaggi meteo per-comune, viene inviato anche il messaggio "Ondata di calore — Toscana" (se presente un'allerta per oggi o domani). Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
+Il bot invia notifiche meteo 2 volte al giorno (08:00 e 15:00 ora italiana, corrispondenti a UTC 6–14) a tutti gli utenti iscritti. Il broadcast invia messaggi solo per i comuni che hanno un'allerta in corso (oggi o domani); i comuni senza allerta vengono soppressi. Durante ogni broadcast viene inviato anche il messaggio "Ondata di calore — Toscana" (se presente un'allerta per oggi o domani). Se non c'è nessuna allerta né meteo né calore, l'utente non riceve alcuna notifica programmata in quella fascia oraria. Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
 
 Configurazione in `wrangler.toml`:
 ```toml
