@@ -4,8 +4,11 @@ import {
   messages,
   ottieniUrlImmagine,
   costruisciAlbumImmagini,
+  messaggioCalore,
+  livelloCaloreToEmoji,
+  livelloCaloreToNome,
 } from "../../src/bot/messages.js";
-import type { DatiMeteo } from "../../src/types/index.js";
+import type { DatiMeteo, RisultatoAllertaCalore } from "../../src/types/index.js";
 
 const datiFixture: DatiMeteo = {
   comune: "Firenze",
@@ -281,5 +284,92 @@ describe("costruisciAlbumImmagini", () => {
     for (const media of album) {
       expect(media.type).toBe("photo");
     }
+  });
+});
+
+describe("livelloCaloreToEmoji", () => {
+  it("0→🟢, 1→🟡, 2→🟠, 3→🔴", () => {
+    expect(livelloCaloreToEmoji(0)).toBe("🟢");
+    expect(livelloCaloreToEmoji(1)).toBe("🟡");
+    expect(livelloCaloreToEmoji(2)).toBe("🟠");
+    expect(livelloCaloreToEmoji(3)).toBe("🔴");
+  });
+});
+
+describe("livelloCaloreToNome", () => {
+  it("0→Verde, 1→Gialla, 2→Arancione, 3→Rossa", () => {
+    expect(livelloCaloreToNome(0)).toBe("Verde");
+    expect(livelloCaloreToNome(1)).toBe("Gialla");
+    expect(livelloCaloreToNome(2)).toBe("Arancione");
+    expect(livelloCaloreToNome(3)).toBe("Rossa");
+  });
+});
+
+describe("messaggioCalore", () => {
+  const rAlert: RisultatoAllertaCalore = {
+    errore: false,
+    dataEstrazione: "2026-06-25",
+    oggi: { livello: 2, url: "https://salute.gov.it/bol.pdf" },
+    domani: { livello: 3, url: "https://salute.gov.it/bol.pdf" },
+  };
+
+  it("oggi e domani con allerta produce messaggio completo", () => {
+    const msg = messaggioCalore(rAlert);
+    expect(msg).not.toBeNull();
+    expect(msg).toContain("Ondata di calore");
+    expect(msg).toContain("Oggi: 🟠 Arancione");
+    expect(msg).toContain("Domani: 🔴 Rossa");
+    expect(msg).toContain("Bollettino calore");
+    expect(msg).toContain("salute.gov.it/bol.pdf");
+    expect(msg).toContain("2026-06-25");
+  });
+
+  it("solo oggi alert (domani Livello0)", () => {
+    const r: RisultatoAllertaCalore = {
+      errore: false, dataEstrazione: "2026-06-25",
+      oggi: { livello: 2, url: "https://salute.gov.it/bol.pdf" },
+      domani: { livello: 0, url: "https://salute.gov.it/bol.pdf" },
+    };
+    const msg = messaggioCalore(r);
+    expect(msg).not.toBeNull();
+    expect(msg).toContain("Oggi: 🟠 Arancione");
+    expect(msg).not.toContain("Domani:");
+  });
+
+  it("solo domani alert (oggi Livello0)", () => {
+    const r: RisultatoAllertaCalore = {
+      errore: false, dataEstrazione: "2026-06-25",
+      oggi: { livello: 0, url: "https://salute.gov.it/bol.pdf" },
+      domani: { livello: 1, url: "https://salute.gov.it/bol.pdf" },
+    };
+    const msg = messaggioCalore(r);
+    expect(msg).not.toBeNull();
+    expect(msg).not.toContain("Oggi:");
+    expect(msg).toContain("Domani: 🟡 Gialla");
+  });
+
+  it("entrambi Livello0 ritorna null", () => {
+    const r: RisultatoAllertaCalore = {
+      errore: false, dataEstrazione: "2026-06-25",
+      oggi: { livello: 0, url: "https://salute.gov.it/bol.pdf" },
+      domani: { livello: 0, url: "https://salute.gov.it/bol.pdf" },
+    };
+    expect(messaggioCalore(r)).toBeNull();
+  });
+
+  it("errore: true produce messaggio di avviso", () => {
+    const msg = messaggioCalore({ errore: true });
+    expect(msg).not.toBeNull();
+    expect(msg).toContain("Ondata di calore");
+    expect(msg).toContain("non disponibili");
+    expect(msg).not.toContain("Bollettino calore");
+  });
+
+  it("oggi=null domani=null ritorna null", () => {
+    const r: RisultatoAllertaCalore = {
+      errore: false, dataEstrazione: "",
+      oggi: null, domani: null,
+    };
+    expect(messaggioCalore(r)).toBeNull();
   });
 });
