@@ -138,4 +138,70 @@ describe("broadcastNotifiche", () => {
     expect(sendMessage).toHaveBeenCalledTimes(2);
     expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("non disponibili"), expect.anything());
   });
+
+  it("sopprime comune senza allerta meteo e senza calore → nessun messaggio inviato", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+
+    const datiNessunaAllerta = { ...datiMeteoMock, allerta: "nessuno" };
+
+    const fetchAllertaCalore = vi.fn().mockResolvedValue({
+      errore: false, dataEstrazione: "",
+      oggi: null, domani: null,
+    } as const);
+
+    const services = {
+      users: {
+        findAllWithComuni: vi.fn().mockResolvedValue([
+          { idTelegram: 1, comuni: [{ url: "firenze", notificheMeteo: true }] },
+        ]),
+      },
+      meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(datiNessunaAllerta) },
+      heatwave: { fetchAllertaCalore },
+    } as any;
+
+    const result = await broadcastNotifiche(bot, services);
+    expect(result.inviati).toBe(0); // ne meteo ne calore
+    expect(sendMessage).toHaveBeenCalledTimes(0);
+  });
+
+  it("sopprime solo comune senza allerta in caso misto", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+
+    const datiAlert = datiMeteoMock; // VERDE = allerta reale
+    const datiNull = { ...datiMeteoMock, allerta: "nessuno" };
+
+    const fetchAllertaCalore = vi.fn().mockResolvedValue({
+      errore: false, dataEstrazione: "2026-06-25",
+      oggi: { livello: 2, url: "https://salute.gov.it/bol.pdf" },
+      domani: null,
+    } as const);
+
+    const services = {
+      users: {
+        findAllWithComuni: vi.fn().mockResolvedValue([
+          {
+            idTelegram: 1,
+            comuni: [
+              { url: "firenze", notificheMeteo: true },
+              { url: "pisa", notificheMeteo: false },
+            ],
+          },
+        ]),
+      },
+      meteo: {
+        fetchDatiMeteo: vi.fn()
+          .mockResolvedValueOnce(datiAlert) // Firenze → alert
+          .mockResolvedValueOnce(datiNull), // Pisa → no alert → soppresso
+      },
+      heatwave: { fetchAllertaCalore },
+    } as any;
+
+    const result = await broadcastNotifiche(bot, services);
+    expect(result.inviati).toBe(2); // 1 meteo (Firenze) + 1 calore
+    expect(sendMessage).toHaveBeenCalledTimes(2);
+    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Test"), expect.anything());
+    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.anything());
+  });
 });

@@ -1,6 +1,6 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
-import { messages, messaggioCalore } from "./messages.js";
+import { messages, messaggioCalore, haAllertaMeteo } from "./messages.js";
 import { mappeMeteoInlineKeyboard } from "./keyboards.js";
 
 export async function broadcastNotifiche(
@@ -16,6 +16,7 @@ export async function broadcastNotifiche(
     for (const comune of user.comuni) {
       try {
         const dati = await services.meteo.fetchDatiMeteo(comune.url);
+        if (!haAllertaMeteo(dati)) continue;
         const msg = comune.notificheMeteo
           ? messages.completo(dati)
           : messages.allerta(dati);
