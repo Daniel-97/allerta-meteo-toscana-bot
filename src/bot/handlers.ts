@@ -1,10 +1,11 @@
 import type { Bot, Context, Filter } from "grammy";
 import { GrammyError } from "grammy";
+import type { DatiMeteo } from "../types/index.js";
 import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
 import type { HeatWaveService } from "../services/heatwave.js";
-import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore } from "./messages.js";
+import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
 import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
@@ -25,7 +26,7 @@ async function safeEditMessageText(ctx: Context, text: string, extra?: Record<st
   }
 }
 
-async function handleAllerta(ctx: Context, services: BotServices) {
+export async function handleAllerta(ctx: Context, services: BotServices) {
   const id = ctx.from?.id;
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
@@ -34,15 +35,28 @@ async function handleAllerta(ctx: Context, services: BotServices) {
     return;
   }
   const r = await services.heatwave.fetchAllertaCalore();
+  const msgCalore = messaggioCalore(r);
+
+  const comuniConAllerta: DatiMeteo[] = [];
   for (const c of user.comuni) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
-      await ctx.reply(messages.allerta(dati), { reply_markup: mainMenuKeyboard() });
+      if (haAllertaMeteo(dati)) comuniConAllerta.push(dati);
     } catch {
       await ctx.reply(messages.errore);
     }
   }
-  const msgCalore = messaggioCalore(r);
+
+  const haMeteo = comuniConAllerta.length > 0;
+  const haCalore = msgCalore !== null;
+
+  if (!haMeteo && !haCalore) {
+    await ctx.reply(messages.nessunaAllerta, { reply_markup: mainMenuKeyboard() });
+    return;
+  }
+  for (const dati of comuniConAllerta) {
+    await ctx.reply(messages.allerta(dati), { reply_markup: mainMenuKeyboard() });
+  }
   if (msgCalore) {
     await ctx.reply(msgCalore, { link_preview_options: { is_disabled: true } });
   }
