@@ -304,9 +304,4 @@ export async function handleCallbackQuery(
     return;
   }
 
-  if (action === "sat") {
-    await ctx.answerCallbackQuery();
-    await ctx.replyWithAnimation("https://modeles20.meteociel.fr/satellite/animsatirmtgeu.gif");
-    return;
-  }
 }
