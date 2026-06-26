@@ -37,6 +37,16 @@ export interface DatiMeteo {
   alba: string;
   tramonto: string;
   parteGiorno: ParteGiorno;
+  allertaDomani?: LivelloAllerta;
+  rischiDomani?: {
+    idraulico: LivelloRischio;
+    idrogeologico: LivelloRischio;
+    temporali: LivelloRischio;
+    vento: LivelloRischio;
+    neve: LivelloRischio;
+    ghiaccio: LivelloRischio;
+  };
+  nomeGiornoDomani?: string;
 }
 
 export type ModalitaInvio = "allerta" | "previsioni" | "allertaprevisioni";

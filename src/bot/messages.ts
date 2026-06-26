@@ -9,6 +9,11 @@ const EMOJI_ALLERTA: Record<string, string> = {
   nessuno: "⚪",
 };
 
+function isAllertaReale(allerta: string | undefined): boolean {
+  if (!allerta) return false;
+  return ["VERDE", "GIALLO", "ARANCIONE", "ROSSO"].includes(allerta);
+}
+
 export function escHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
@@ -115,22 +120,18 @@ export const messages = {
     } else {
       msg += `\n\nNessuna allerta in corso.`;
     }
+    if (d.allertaDomani && isAllertaReale(d.allertaDomani)) {
+      msg += `\n\n🚨 <b>Previsioni per ${escHtml(d.nomeGiornoDomani ?? "domani")}</b>\n` +
+        `${EMOJI_ALLERTA[d.allertaDomani] ?? "⚪"} Allerta: <b>${d.allertaDomani}</b>\n` +
+        `💧 Idraulico: ${d.rischiDomani?.idraulico}\n` +
+        `⛰️ Idrogeologico: ${d.rischiDomani?.idrogeologico}\n` +
+        `⚡ Temporali: ${d.rischiDomani?.temporali}\n` +
+        `💨 Vento: ${d.rischiDomani?.vento}\n` +
+        `❄️ Neve: ${d.rischiDomani?.neve}\n` +
+        `🧊 Ghiaccio: ${d.rischiDomani?.ghiaccio}`;
+    }
     return msg;
   },
-
-  previsioni: (d: DatiMeteo) =>
-    `🌡️ <b>Previsioni meteo</b> — ${escHtml(d.comune)} (${parteGiornoStr(d.parteGiorno)})\n` +
-    `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
-    `🌡️ Temperatura: ${d.temperaturaAttuale}°\n` +
-    `🤒 Percepita: ${d.temperaturaPercepita}°\n` +
-    `💧 Umidità: ${d.umidita}%\n` +
-    `🌧️ Pioggia: ${d.probabilitaPioggia}%\n` +
-    `☀️ UV: ${d.uv}\n` +
-    `❄️ Quota neve: ${d.quotaNeve} m\n` +
-    `🌅 Alba: ${d.alba}\n` +
-    `🌇 Tramonto: ${d.tramonto}\n\n` +
-    `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
-    `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`,
 
   completo: (d: DatiMeteo) => {
     const haAllerta = d.allerta !== "nessuno";
@@ -144,6 +145,16 @@ export const messages = {
         `💨 Vento: ${d.rischi.vento}\n` +
         `❄️ Neve: ${d.rischi.neve}\n` +
         `🧊 Ghiaccio: ${d.rischi.ghiaccio}`;
+    }
+    if (d.allertaDomani && isAllertaReale(d.allertaDomani)) {
+      sezioneAllerta += `\n\n🚨 <b>Previsioni per ${escHtml(d.nomeGiornoDomani ?? "domani")}</b>\n` +
+        `${EMOJI_ALLERTA[d.allertaDomani] ?? "⚪"} Allerta: <b>${d.allertaDomani}</b>\n` +
+        `💧 Idraulico: ${d.rischiDomani?.idraulico}\n` +
+        `⛰️ Idrogeologico: ${d.rischiDomani?.idrogeologico}\n` +
+        `⚡ Temporali: ${d.rischiDomani?.temporali}\n` +
+        `💨 Vento: ${d.rischiDomani?.vento}\n` +
+        `❄️ Neve: ${d.rischiDomani?.neve}\n` +
+        `🧊 Ghiaccio: ${d.rischiDomani?.ghiaccio}`;
     }
     return (
       `📊 <b>Dati meteo</b> — ${escHtml(d.comune)}\n` +
@@ -160,6 +171,20 @@ export const messages = {
       `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`
     );
   },
+
+  previsioni: (d: DatiMeteo) =>
+    `🌡️ <b>Previsioni meteo</b> — ${escHtml(d.comune)} (${parteGiornoStr(d.parteGiorno)})\n` +
+    `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
+    `🌡️ Temperatura: ${d.temperaturaAttuale}°\n` +
+    `🤒 Percepita: ${d.temperaturaPercepita}°\n` +
+    `💧 Umidità: ${d.umidita}%\n` +
+    `🌧️ Pioggia: ${d.probabilitaPioggia}%\n` +
+    `☀️ UV: ${d.uv}\n` +
+    `❄️ Quota neve: ${d.quotaNeve} m\n` +
+    `🌅 Alba: ${d.alba}\n` +
+    `🌇 Tramonto: ${d.tramonto}\n\n` +
+    `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
+    `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`,
 };
 
 export function ottieniUrlImmagine(

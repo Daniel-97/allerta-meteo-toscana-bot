@@ -57,6 +57,9 @@ export function createMeteoService(): MeteoService {
         previsioni.find((p: { ora: string }) => p.ora === ora);
       const giornoPrev = findPrev("giorno") ?? previsioni[0];
       const subPrev = findPrev(parteGiorno);
+      const giorno2 = previsioni.find(
+        (p: { idday: string; ora: string }) => p.idday === "2" && p.ora === "giorno"
+      );
 
       return {
         comune: String(root.comune ?? ""),
@@ -97,6 +100,22 @@ export function createMeteoService(): MeteoService {
         alba: String(root.almanacco?.sole_sorge ?? ""),
         tramonto: String(root.almanacco?.sole_tramonta ?? ""),
         parteGiorno,
+        allertaDomani: (giorno2?.allerta?.value && giorno2.allerta.value !== "NA")
+          ? String(giorno2.allerta.value) as LivelloAllerta
+          : undefined,
+        rischiDomani: (giorno2?.rischio && giorno2.allerta?.value !== "NA")
+          ? {
+              idraulico: String(giorno2.rischio?.[0]?.value ?? "") as LivelloRischio,
+              idrogeologico: String(giorno2.rischio?.[1]?.value ?? "") as LivelloRischio,
+              temporali: String(giorno2.rischio?.[2]?.value ?? "") as LivelloRischio,
+              vento: String(giorno2.rischio?.[3]?.value ?? "") as LivelloRischio,
+              neve: String(giorno2.rischio?.[4]?.value ?? "") as LivelloRischio,
+              ghiaccio: String(giorno2.rischio?.[5]?.value ?? "") as LivelloRischio,
+            }
+          : undefined,
+        nomeGiornoDomani: giorno2?.datadescr
+          ? String(giorno2.datadescr)
+          : undefined,
       };
     },
   };

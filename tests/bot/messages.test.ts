@@ -55,6 +55,34 @@ const datiNessunaAllerta: DatiMeteo = {
   parteGiorno: "mattina",
 };
 
+const datiConDomani: DatiMeteo = {
+  ...datiFixture,
+  allertaDomani: "ARANCIONE",
+  rischiDomani: {
+    idraulico: "MODERATO",
+    idrogeologico: "ELEVATO",
+    temporali: "ASSENTE",
+    vento: "BASSO",
+    neve: "ASSENTE",
+    ghiaccio: "ASSENTE",
+  },
+  nomeGiornoDomani: "Sabato",
+};
+
+const datiNessunaAllertaConDomani: DatiMeteo = {
+  ...datiNessunaAllerta,
+  allertaDomani: "ARANCIONE",
+  rischiDomani: {
+    idraulico: "MODERATO",
+    idrogeologico: "ELEVATO",
+    temporali: "ASSENTE",
+    vento: "BASSO",
+    neve: "ASSENTE",
+    ghiaccio: "ASSENTE",
+  },
+  nomeGiornoDomani: "Sabato",
+};
+
 describe("messages.allerta", () => {
   it("include comune e aggiornamento", () => {
     const msg = messages.allerta(datiFixture);
@@ -93,6 +121,25 @@ describe("messages.allerta", () => {
     expect(msg).not.toContain("Vento:");
     expect(msg).not.toContain("Neve:");
     expect(msg).not.toContain("Ghiaccio:");
+  });
+
+  it("include previsioni per domani quando presenti", () => {
+    const msg = messages.allerta(datiConDomani);
+    expect(msg).toContain("Previsioni per Sabato");
+    expect(msg).toContain("<b>ARANCIONE</b>");
+    expect(msg).toContain("Idrogeologico: ELEVATO");
+  });
+
+  it("NON include previsioni per domani quando assenti", () => {
+    const msg = messages.allerta(datiFixture);
+    expect(msg).not.toContain("Previsioni per");
+  });
+
+  it("include previsioni per domani anche quando oggi non ha allerta", () => {
+    const msg = messages.allerta(datiNessunaAllertaConDomani);
+    expect(msg).toContain("Previsioni per Sabato");
+    expect(msg).toContain("<b>ARANCIONE</b>");
+    expect(msg).toContain("Nessuna allerta in corso");
   });
 });
 
@@ -157,6 +204,17 @@ describe("messages.completo", () => {
     expect(msg).not.toContain("Vento:");
     expect(msg).not.toContain("Neve:");
     expect(msg).not.toContain("Ghiaccio:");
+  });
+
+  it("completo include previsioni per domani quando presenti", () => {
+    const msg = messages.completo(datiConDomani);
+    expect(msg).toContain("Previsioni per Sabato");
+    expect(msg).toContain("<b>ARANCIONE</b>");
+  });
+
+  it("completo NON include previsioni per domani quando assenti", () => {
+    const msg = messages.completo(datiFixture);
+    expect(msg).not.toContain("Previsioni per");
   });
 });
 
