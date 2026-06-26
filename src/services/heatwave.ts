@@ -1,4 +1,4 @@
-import type { RisultatoAllertaCalore } from "../types/index.js";
+import type { RisultatoAllertaCalore, LivelloCalore } from "../types/index.js";
 
 const CSV_URL = "https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_latest.csv";
 
@@ -47,8 +47,8 @@ export function createHeatWaveService(): HeatWaveService {
         }
 
         const { oggi, domani } = oggiDomaniISO(ref);
-        let oggiFound: { livello: number; url: string } | null = null;
-        let domaniFound: { livello: number; url: string } | null = null;
+        let oggiFound: { livello: LivelloCalore; url: string } | null = null;
+        let domaniFound: { livello: LivelloCalore; url: string } | null = null;
         let dataEstrazione = "";
 
         for (let i = 1; i < lines.length; i++) {
@@ -67,9 +67,9 @@ export function createHeatWaveService(): HeatWaveService {
           if (livello === -1) continue;
 
           if (data === oggi) {
-            oggiFound = { livello, url: pdfUrl };
+            oggiFound = { livello: livello as LivelloCalore, url: pdfUrl };
           } else if (data === domani) {
-            domaniFound = { livello, url: pdfUrl };
+            domaniFound = { livello: livello as LivelloCalore, url: pdfUrl };
           }
         }
 

@@ -50,3 +50,15 @@ export interface DatiMeteo {
 }
 
 export type ModalitaInvio = "allerta" | "previsioni" | "allertaprevisioni";
+
+export type LivelloCalore = 0 | 1 | 2 | 3;
+// 0=Verde(nessuna), 1=Gialla, 2=Arancione, 3=Rossa
+
+export type RisultatoAllertaCalore =
+  | {
+      errore: false;
+      dataEstrazione: string;
+      oggi: { livello: LivelloCalore; url: string } | null;
+      domani: { livello: LivelloCalore; url: string } | null;
+    }
+  | { errore: true };
