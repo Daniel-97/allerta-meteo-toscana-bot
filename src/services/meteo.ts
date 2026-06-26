@@ -19,10 +19,17 @@ export function createMeteoService(): MeteoService {
   });
 
   function calcolaParteGiorno(): ParteGiorno {
-    const h = new Date().getHours();
-    if (h >= 1 && h < 13) return "mattina";
-    if (h >= 13 && h <= 19) return "pomeriggio";
-    return "sera";
+    const h = parseInt(
+      new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "numeric", hourCycle: "h23" }).format(new Date()),
+      10,
+    );
+    if (h >= 0 && h < 6) return "mattina";
+    if (h >= 6 && h < 9) return "mattina";
+    if (h >= 9 && h < 12) return "mattina2";
+    if (h >= 12 && h < 15) return "pomeriggio";
+    if (h >= 15 && h < 18) return "pomeriggio2";
+    if (h >= 18 && h < 21) return "sera";
+    return "sera2";
   }
 
   return {

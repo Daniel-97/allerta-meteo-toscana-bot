@@ -114,7 +114,7 @@ describe("createMeteoService", () => {
   it("fetchDatiMeteo parteGiorno è una ParteGiorno valida", async () => {
     const service = createMeteoService();
     const dati = await service.fetchDatiMeteo("firenze");
-    expect(["mattina", "pomeriggio", "sera"]).toContain(dati.parteGiorno);
+    expect(["mattina", "mattina2", "pomeriggio", "pomeriggio2", "sera", "sera2"]).toContain(dati.parteGiorno);
   });
 
   it("fetchDatiMeteo lancia errore per HTTP 404", async () => {

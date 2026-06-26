@@ -14,7 +14,15 @@ export function escHtml(s: string): string {
 }
 
 function parteGiornoStr(p: ParteGiorno): string {
-  return p === "mattina" ? "mattina" : p === "pomeriggio" ? "pomeriggio" : "sera";
+  const map: Record<ParteGiorno, string> = {
+    mattina: "mattina",
+    mattina2: "mattina tardi",
+    pomeriggio: "pomeriggio",
+    pomeriggio2: "pomeriggio avanzato",
+    sera: "sera",
+    sera2: "sera tardi",
+  };
+  return map[p] ?? "sera";
 }
 
 export const messages = {
@@ -159,7 +167,9 @@ export function ottieniUrlImmagine(
   parteGiorno: ParteGiorno,
 ): string {
   const base = "https://www.lamma.toscana.it/previ/ita/immagini/image_";
-  const suffix = parteGiorno === "mattina" ? "M" : parteGiorno === "pomeriggio" ? "P" : "S";
+  const suffix = parteGiorno === "mattina" || parteGiorno === "mattina2" ? "M"
+    : parteGiorno === "pomeriggio" || parteGiorno === "pomeriggio2" ? "P"
+    : "S";
   return `${base}${giorno}_${suffix}.jpg`;
 }
 

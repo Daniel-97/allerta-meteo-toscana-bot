@@ -3,7 +3,7 @@ export interface Comune {
   url: string;
 }
 
-export type ParteGiorno = "mattina" | "pomeriggio" | "sera";
+export type ParteGiorno = "mattina" | "mattina2" | "pomeriggio" | "pomeriggio2" | "sera" | "sera2";
 
 export type LivelloAllerta = "VERDE" | "GIALLO" | "ARANCIONE" | "ROSSO" | "nessuno";
 
