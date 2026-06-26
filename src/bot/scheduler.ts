@@ -1,6 +1,6 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
-import { messages } from "./messages.js";
+import { messages, messaggioCalore } from "./messages.js";
 import { mappeMeteoInlineKeyboard } from "./keyboards.js";
 
 export async function broadcastNotifiche(
@@ -8,6 +8,8 @@ export async function broadcastNotifiche(
   services: BotServices
 ): Promise<{ totali: number; inviati: number }> {
   const users = await services.users.findAllWithComuni();
+  const r = await services.heatwave.fetchAllertaCalore();
+  const msgCalore = messaggioCalore(r);
   let inviati = 0;
 
   for (const user of users) {
@@ -25,6 +27,14 @@ export async function broadcastNotifiche(
       } catch (err) {
         console.error("notifica fallita", { user: user.idTelegram, comune: comune.nome, err });
         continue;
+      }
+    }
+    if (msgCalore) {
+      try {
+        await bot.api.sendMessage(user.idTelegram, msgCalore, { link_preview_options: { is_disabled: true } });
+        inviati++;
+      } catch (err) {
+        console.error("notifica calore fallita", { user: user.idTelegram, err });
       }
     }
   }
