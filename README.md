@@ -13,7 +13,8 @@
 - 🚨 **Allerte meteo** — livelli VERDE / GIALLO / ARANCIONE / ROSSO per ogni comune
 - 🌤️ **Previsioni** — temperatura, umidità, pioggia, UV, quota neve, alba/tramonto
 - 🖼️ **Mappe meteo** — 9 immagini (3 giorni × 3 fasce orarie)
-- 🔔 **Notifiche** — 2 volte al giorno (11:30 e 17:30)
+- 🔔 **Notifiche** — 2 volte al giorno (08:00 e 15:00 ora italiana)
+- 🌡️ **Ondata di calore** — messaggio autonomo "Ondata di calore — Toscana" insieme alle allerte meteo, con link al bollettino del Ministero della Salute
 - 📍 **Comuni multipli** — aggiungi, elimina e gestisci più comuni
 - ⚙️ **Notifiche meteo on/off** — per singolo comune
 
@@ -141,12 +142,12 @@ npm run webhook -- info          # Mostra stato webhook (URL, errori, coda)
 
 ## Notifiche programmate
 
-Il bot invia notifiche meteo 2 volte al giorno (9:30 UTC / 11:30 CEST e 15:30 UTC / 17:30 CEST) a tutti gli utenti iscritti. Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
+Il bot invia notifiche meteo 2 volte al giorno (08:00 e 15:00 ora italiana, corrispondenti a UTC 6–14) a tutti gli utenti iscritti. Durante ogni broadcast, oltre ai messaggi meteo per-comune, viene inviato anche il messaggio "Ondata di calore — Toscana" (se presente un'allerta per oggi o domani). Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
 
 Configurazione in `wrangler.toml`:
 ```toml
 [triggers]
-crons = ["30 9,15 * * *"]
+crons = ["0 6-14 * * *"]
 ```
 
 Per testare il cron localmente con `wrangler dev`:
@@ -209,13 +210,14 @@ I comandi admin sono accessibili solo dall'utente configurato come `ADMIN_CHAT_I
 
 ## Fonti dati
 
-Tutti i dati meteo provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it/).
+Tutti i dati meteo provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it/). I dati sull'ondata di calore provengono dal [repository ondate-calore](https://github.com/ondata/ondate-calore/) del progetto Ondata.
 
 | Endpoint | Uso |
 |---|---|
 | `https://www.lamma.toscana.it/previ/ita/xml/lista_comuni.xml` | Elenco completo dei comuni toscani (formato XML) — usato da `npm run db:seed` per popolare il DB |
 | `https://www.lamma.toscana.it/previ/ita/xml/comuni_web/dati/{url}.xml` | Dati meteo e allerta per un singolo comune — `url` è l'identificativo breve (es. `firenze`, `pisa`) |
 | `https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg` | Mappa meteorologica — `N` = 1 (oggi), 2 (domani), 3 (dopodomani); `F` = M (mattina ~8), P (pomeriggio ~14), S (sera ~20) |
+| `https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_latest.csv` | Bollettino ondata di calore (CSV) — colonne: `citta`, `data`, `livello`, `data_estrazione`, `URL`. Scala livelli: 0=Verde (nessuna), 1=Gialla, 2=Arancione, 3=Rossa. Copertura Toscana tramite capoluogo FIRENZE nel bollettino nazionale del Ministero della Salute. |
 
 ### Struttura XML (dati comune)
 
@@ -278,6 +280,7 @@ src/
 │   ├── comuni.ts         # Archivio comuni (searchByPrefix, findByNome, all)
 │   ├── users.ts          # Users repository (subscribe, findByTelegramId, findAllWithComuni)
 │   ├── meteo.ts          # Meteo service (fetch + parse XML LAMMA → DatiMeteo)
+│   ├── heatwave.ts       # Ondata di calore service (fetch + parse CSV → RisultatoAllertaCalore)
 │   └── messaggi.ts       # Message formatters (allerta, previsioni, completo, image URL)
 ├── bot/
 │   ├── admin/

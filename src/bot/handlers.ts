@@ -3,13 +3,15 @@ import { GrammyError } from "grammy";
 import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
-import { messages, costruisciAlbumImmagini, escHtml } from "./messages.js";
+import type { HeatWaveService } from "../services/heatwave.js";
+import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore } from "./messages.js";
 import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
   users: UsersRepository;
   meteo: MeteoService;
+  heatwave: HeatWaveService;
 }
 
 async function safeEditMessageText(ctx: Context, text: string, extra?: Record<string, unknown>) {
@@ -31,6 +33,7 @@ async function handleAllerta(ctx: Context, services: BotServices) {
     await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
     return;
   }
+  const r = await services.heatwave.fetchAllertaCalore();
   for (const c of user.comuni) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
@@ -38,6 +41,10 @@ async function handleAllerta(ctx: Context, services: BotServices) {
     } catch {
       await ctx.reply(messages.errore);
     }
+  }
+  const msgCalore = messaggioCalore(r);
+  if (msgCalore) {
+    await ctx.reply(msgCalore, { link_preview_options: { is_disabled: true } });
   }
 }
 

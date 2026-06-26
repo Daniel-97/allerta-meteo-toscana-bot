@@ -1,5 +1,5 @@
 import { InputMediaBuilder } from "grammy";
-import type { DatiMeteo, ParteGiorno } from "../types/index.js";
+import type { DatiMeteo, ParteGiorno, RisultatoAllertaCalore, LivelloCalore } from "../types/index.js";
 
 const EMOJI_ALLERTA: Record<string, string> = {
   VERDE: "🟢",
@@ -28,6 +28,38 @@ function parteGiornoStr(p: ParteGiorno): string {
     sera2: "sera tardi",
   };
   return map[p] ?? "sera";
+}
+
+export function livelloCaloreToEmoji(l: LivelloCalore): string {
+  const map: Record<number, string> = { 0: "🟢", 1: "🟡", 2: "🟠", 3: "🔴" };
+  return map[l] ?? "⚪";
+}
+
+export function livelloCaloreToNome(l: LivelloCalore): string {
+  const map: Record<number, string> = { 0: "Verde", 1: "Gialla", 2: "Arancione", 3: "Rossa" };
+  return map[l] ?? "Sconosciuto";
+}
+
+export function messaggioCalore(r: RisultatoAllertaCalore): string | null {
+  if (r.errore) {
+    return `🌡️ <b>Ondata di calore — Toscana</b>\n\n⚠️ Dati ondata calore non disponibili`;
+  }
+  const righe: string[] = [];
+  if (r.oggi && r.oggi.livello > 0) {
+    righe.push(`Oggi: ${livelloCaloreToEmoji(r.oggi.livello)} ${livelloCaloreToNome(r.oggi.livello)}`);
+  }
+  if (r.domani && r.domani.livello > 0) {
+    righe.push(`Domani: ${livelloCaloreToEmoji(r.domani.livello)} ${livelloCaloreToNome(r.domani.livello)}`);
+  }
+  if (righe.length === 0) return null;
+
+  const url = r.oggi?.url ?? r.domani?.url ?? "";
+  return (
+    `🌡️ <b>Ondata di calore — Toscana</b>\n` +
+    `<i>Aggiornamento: ${r.dataEstrazione}</i>\n\n` +
+    righe.join("\n") + "\n\n" +
+    `📄 <a href="${url}">Bollettino calore</a>`
+  );
 }
 
 export const messages = {
