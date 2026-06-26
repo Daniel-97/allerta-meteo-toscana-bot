@@ -49,6 +49,16 @@ export default {
   },
 
   async scheduled(_event: unknown, env: Env): Promise<void> {
+    const now = new Date();
+    const oraIt = parseInt(
+      new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "numeric", hourCycle: "h23" }).format(now),
+      10,
+    );
+    if (oraIt !== 8 && oraIt !== 15) {
+      console.log(`scheduled: skipped (Italian hour ${oraIt})`);
+      return;
+    }
+
     const { bot, services } = await getInitialized(env);
     try {
       const result = await broadcastNotifiche(bot, services);
