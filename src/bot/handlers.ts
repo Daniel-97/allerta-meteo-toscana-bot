@@ -170,7 +170,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   });
 
   bot.hears("ℹ️ Credits&Info", async (ctx) => {
-    await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard(), link_preview_options: { is_disabled: true } });
   });
 
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
