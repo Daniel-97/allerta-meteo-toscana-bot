@@ -210,16 +210,17 @@ I comandi admin sono accessibili solo dall'utente configurato come `ADMIN_CHAT_I
 
 ## Fonti dati
 
-Tutti i dati meteo provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it/). I dati sull'ondata di calore provengono dal [repository ondate-calore](https://github.com/ondata/ondate-calore/) del progetto Ondata.
+Le informazioni meteorologiche provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it/). I bollettini sulle ondate di calore sono pubblicati dal [Ministero della Salute](https://www.salute.gov.it/new/it/tema/ondate-di-calore/bollettini-sulle-ondate-di-calore-0/) e resi disponibili in formato aperto tramite l'associazione [OnData](https://github.com/ondata/ondate-calore).
+
+### Dati meteo (Consorzio LAMMA)
 
 | Endpoint | Uso |
 |---|---|
 | `https://www.lamma.toscana.it/previ/ita/xml/lista_comuni.xml` | Elenco completo dei comuni toscani (formato XML) — usato da `npm run db:seed` per popolare il DB |
 | `https://www.lamma.toscana.it/previ/ita/xml/comuni_web/dati/{url}.xml` | Dati meteo e allerta per un singolo comune — `url` è l'identificativo breve (es. `firenze`, `pisa`) |
 | `https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg` | Mappa meteorologica — `N` = 1 (oggi), 2 (domani), 3 (dopodomani); `F` = M (mattina ~8), P (pomeriggio ~14), S (sera ~20) |
-| `https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_latest.csv` | Bollettino ondata di calore (CSV) — colonne: `citta`, `data`, `livello`, `data_estrazione`, `URL`. Scala livelli: 0=Verde (nessuna), 1=Gialla, 2=Arancione, 3=Rossa. Copertura Toscana tramite capoluogo FIRENZE nel bollettino nazionale del Ministero della Salute. |
 
-### Struttura XML (dati comune)
+#### Struttura XML (dati comune)
 
 ```xml
 <dati>
@@ -244,14 +245,14 @@ Tutti i dati meteo provengono dal [Consorzio LAMMA](https://www.lamma.toscana.it
 </dati>
 ```
 
-### Livelli
+#### Livelli
 
 | Campo | Valori |
 |---|---|
 | Allerta | `VERDE` · `GIALLO` · `ARANCIONE` · `ROSSO` |
 | Rischio | `ASSENTE` · `BASSO` · `MODERATO` · `ELEVATO` · `MOLTO ELEVATO` |
 
-### Album immagini meteo
+#### Album immagini meteo
 
 Il bot non invia più l'album immagini di default. Sotto il messaggio di previsioni
 meteo (o di notifica programmata) compare un pulsante **🖼️ Mostra mappe meteo**:
@@ -263,6 +264,23 @@ URL: https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg
 N = 1 (oggi), 2 (domani), 3 (dopodomani)
 F = M (mattina ~8), P (pomeriggio ~14), S (sera ~20)
 ```
+
+### Bollettino ondata di calore (Ministero della Salute / OnData)
+
+I bollettini ufficiali del [Ministero della Salute](https://www.salute.gov.it/new/it/tema/ondate-di-calore/bollettini-sulle-ondate-di-calore-0/) sono raccolti e resi disponibili in formato CSV dall'associazione [OnData](https://github.com/ondata/ondate-calore). Il bot utilizza il capoluogo **Firenze** come riferimento regionale per la Toscana (il bollettino nazionale copre 27 città capoluogo).
+
+| Endpoint | Uso |
+|---|---|
+| `https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_latest.csv` | CSV con colonne `citta`, `data`, `livello`, `data_estrazione`, `URL` |
+
+**Scala livelli:**
+
+| Codice | Nome | Emoji | Significato |
+|---|---|---|---|
+| `Livello0` | Verde | 🟢 | nessuna allerta |
+| `Livello1` | Gialla | 🟡 | allerta |
+| `Livello2` | Arancione | 🟠 | allerta |
+| `Livello3` | Rossa | 🔴 | allerta |
 
 ## Struttura del progetto
 

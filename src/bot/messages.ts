@@ -66,20 +66,23 @@ export const messages = {
   welcome:
     "👋 <b>Benvenuto/a in Allerta Meteo Toscana Bot!</b>\n\n" +
     "🚨 Le allerte meteo vengono sempre comunicate per i comuni che hai impostato\n\n" +
+    "🌡️ Le allerte per ondate di calore (Toscana) vengono comunicate insieme a quelle meteo\n\n" +
     "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n\n" +
-    "⏰ Le notifiche vengono inviate 2 volte al giorno (11:30 e 17:30 ora italiana)\n\n" +
-    "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA né alla Regione Toscana.</i>\n\n" +
+    "⏰ Le notifiche vengono inviate 2 volte al giorno (08:00 e 15:00 ora italiana)\n\n" +
+    "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA, alla Regione Toscana né al Ministero della Salute.</i>\n\n" +
     "Per iniziare aggiungi un comune premendo sul tasto <b>Gestisci comuni → Aggiungi</b>",
 
   credits:
     "ℹ️ <b>Come funziona</b>\n\n" +
     "🚨 Le allerte meteo vengono sempre comunicate per i comuni che hai impostato\n\n" +
+    "🌡️ Le allerte per ondate di calore (Toscana) vengono comunicate insieme a quelle meteo\n\n" +
     "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n\n" +
-    "⏰ Le notifiche vengono inviate 2 volte al giorno (11:30 e 17:30 ora italiana)\n\n" +
-    "<i>Servizio realizzato da @DaniZ97 basato sui dati resi liberamente disponibili dal\n" +
-    "<a href=\"https://www.lamma.toscana.it/\">consorzio LAMMA</a>.</i>\n\n" +
+    "⏰ Le notifiche vengono inviate 2 volte al giorno (08:00 e 15:00 ora italiana)\n\n" +
+    "<i>Servizio realizzato da @DaniZ97 basato su:</i>\n" +
+    "<i>• dati meteo resi liberamente disponibili dal <a href=\"https://www.lamma.toscana.it/\">consorzio LAMMA</a>;</i>\n" +
+    "<i>• bollettini ondate di calore del <a href=\"https://www.salute.gov.it/new/it/tema/ondate-di-calore/bollettini-sulle-ondate-di-calore-0/\">Ministero della Salute</a>, ottenuti tramite l'associazione <a href=\"https://github.com/ondata/ondate-calore\">OnData</a>.</i>\n\n" +
     "🔗 Per ulteriori informazioni: <a href=\"https://www.regione.toscana.it/allertameteo\">Regione Toscana — Allerta Meteo</a>\n\n" +
-    "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA né alla Regione Toscana.</i>",
+    "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA, alla Regione Toscana né al Ministero della Salute.</i>",
 
   nessunComune:
     "Non hai ancora impostato comuni. Premi il pulsante <b>➕ Aggiungi</b> per iniziare.",
