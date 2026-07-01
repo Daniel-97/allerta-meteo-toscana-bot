@@ -9,9 +9,27 @@ const EMOJI_ALLERTA: Record<string, string> = {
   nessuno: "⚪",
 };
 
+const RISCHIO_MAP: Record<keyof DatiMeteo["rischi"], { emoji: string; label: string }> = {
+  idraulico: { emoji: "💧", label: "Idraulico" },
+  idrogeologico: { emoji: "⛰️", label: "Idrogeologico" },
+  temporali: { emoji: "⚡", label: "Temporali" },
+  vento: { emoji: "💨", label: "Vento" },
+  neve: { emoji: "❄️", label: "Neve" },
+  ghiaccio: { emoji: "🧊", label: "Ghiaccio" },
+};
+
 function isAllertaReale(allerta: string | undefined): boolean {
   if (!allerta) return false;
   return ["VERDE", "GIALLO", "ARANCIONE", "ROSSO"].includes(allerta);
+}
+
+export function formatRischi(
+  rischi: DatiMeteo["rischi"],
+): string | null {
+  const entries = (Object.keys(RISCHIO_MAP) as (keyof DatiMeteo["rischi"])[])
+    .filter(k => rischi[k] !== "ASSENTE" && rischi[k] !== "nessuno" && rischi[k] !== "")
+    .map(k => `${RISCHIO_MAP[k].emoji} ${RISCHIO_MAP[k].label}: ${rischi[k]}`);
+  return entries.length > 0 ? entries.join("\n") : null;
 }
 
 export function escHtml(s: string): string {
@@ -153,24 +171,16 @@ export const messages = {
       `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
       `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} Livello allerta: <b>${d.allerta}</b>`;
     if (haAllerta) {
-      msg += `\n\n💧 Idraulico: ${d.rischi.idraulico}\n` +
-        `⛰️ Idrogeologico: ${d.rischi.idrogeologico}\n` +
-        `⚡ Temporali: ${d.rischi.temporali}\n` +
-        `💨 Vento: ${d.rischi.vento}\n` +
-        `❄️ Neve: ${d.rischi.neve}\n` +
-        `🧊 Ghiaccio: ${d.rischi.ghiaccio}`;
+      const rischiStr = formatRischi(d.rischi);
+      if (rischiStr) msg += `\n\n${rischiStr}`;
     } else {
       msg += `\n\nNessuna allerta in corso.`;
     }
     if (d.allertaDomani && isAllertaReale(d.allertaDomani)) {
       msg += `\n\n🚨 <b>Previsioni per ${escHtml(d.nomeGiornoDomani ?? "domani")}</b>\n` +
-        `${EMOJI_ALLERTA[d.allertaDomani] ?? "⚪"} Allerta: <b>${d.allertaDomani}</b>\n` +
-        `💧 Idraulico: ${d.rischiDomani?.idraulico}\n` +
-        `⛰️ Idrogeologico: ${d.rischiDomani?.idrogeologico}\n` +
-        `⚡ Temporali: ${d.rischiDomani?.temporali}\n` +
-        `💨 Vento: ${d.rischiDomani?.vento}\n` +
-        `❄️ Neve: ${d.rischiDomani?.neve}\n` +
-        `🧊 Ghiaccio: ${d.rischiDomani?.ghiaccio}`;
+        `${EMOJI_ALLERTA[d.allertaDomani] ?? "⚪"} Allerta: <b>${d.allertaDomani}</b>`;
+      const rischiDomaniStr = d.rischiDomani ? formatRischi(d.rischiDomani) : null;
+      if (rischiDomaniStr) msg += `\n${rischiDomaniStr}`;
     }
     return msg;
   },
@@ -180,23 +190,14 @@ export const messages = {
     let sezioneAllerta =
       `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} <b>Allerta: ${d.allerta}</b>`;
     if (haAllerta) {
-      sezioneAllerta += `\n` +
-        `💧 Idraulico: ${d.rischi.idraulico}\n` +
-        `⛰️ Idrogeologico: ${d.rischi.idrogeologico}\n` +
-        `⚡ Temporali: ${d.rischi.temporali}\n` +
-        `💨 Vento: ${d.rischi.vento}\n` +
-        `❄️ Neve: ${d.rischi.neve}\n` +
-        `🧊 Ghiaccio: ${d.rischi.ghiaccio}`;
+      const rischiStr = formatRischi(d.rischi);
+      if (rischiStr) sezioneAllerta += `\n${rischiStr}`;
     }
     if (d.allertaDomani && isAllertaReale(d.allertaDomani)) {
       sezioneAllerta += `\n\n🚨 <b>Previsioni per ${escHtml(d.nomeGiornoDomani ?? "domani")}</b>\n` +
-        `${EMOJI_ALLERTA[d.allertaDomani] ?? "⚪"} Allerta: <b>${d.allertaDomani}</b>\n` +
-        `💧 Idraulico: ${d.rischiDomani?.idraulico}\n` +
-        `⛰️ Idrogeologico: ${d.rischiDomani?.idrogeologico}\n` +
-        `⚡ Temporali: ${d.rischiDomani?.temporali}\n` +
-        `💨 Vento: ${d.rischiDomani?.vento}\n` +
-        `❄️ Neve: ${d.rischiDomani?.neve}\n` +
-        `🧊 Ghiaccio: ${d.rischiDomani?.ghiaccio}`;
+        `${EMOJI_ALLERTA[d.allertaDomani] ?? "⚪"} Allerta: <b>${d.allertaDomani}</b>`;
+      const rischiDomaniStr = d.rischiDomani ? formatRischi(d.rischiDomani) : null;
+      if (rischiDomaniStr) sezioneAllerta += `\n${rischiDomaniStr}`;
     }
     return (
       `📊 <b>Dati meteo</b> — ${escHtml(d.comune)}\n` +

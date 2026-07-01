@@ -8,6 +8,7 @@ import {
   livelloCaloreToEmoji,
   livelloCaloreToNome,
   haAllertaMeteo,
+  formatRischi,
 } from "../../src/bot/messages.js";
 import type { DatiMeteo, RisultatoAllertaCalore } from "../../src/types/index.js";
 
@@ -99,14 +100,14 @@ describe("messages.allerta", () => {
     expect(msg).toContain("GIALLO");
   });
 
-  it("include tutti i 6 rischi", () => {
+  it("include solo rischi attivi", () => {
     const msg = messages.allerta(datiFixture);
     expect(msg).toContain("Idraulico: MODERATO");
     expect(msg).toContain("Idrogeologico: BASSO");
-    expect(msg).toContain("Temporali: ASSENTE");
     expect(msg).toContain("Vento: ELEVATO");
-    expect(msg).toContain("Neve: ASSENTE");
-    expect(msg).toContain("Ghiaccio: ASSENTE");
+    expect(msg).not.toContain("Temporali:");
+    expect(msg).not.toContain("Neve:");
+    expect(msg).not.toContain("Ghiaccio:");
   });
 
   it("NON include informazioni meteo", () => {
@@ -186,6 +187,11 @@ describe("messages.completo", () => {
     const msg = messages.completo(datiFixture);
     expect(msg).toContain("Allerta: GIALLO");
     expect(msg).toContain("Idraulico: MODERATO");
+    expect(msg).toContain("Idrogeologico: BASSO");
+    expect(msg).toContain("Vento: ELEVATO");
+    expect(msg).not.toContain("Temporali:");
+    expect(msg).not.toContain("Neve:");
+    expect(msg).not.toContain("Ghiaccio:");
     expect(msg).toContain("mattina");
     expect(msg).toContain("Umidità: 45%");
     expect(msg).toContain("Temperatura: 22°");
@@ -391,6 +397,51 @@ describe("haAllertaMeteo", () => {
   it("allerta=VERDE → true (VERDE e' un allerta reale)", () => {
     const datiVerde: DatiMeteo = { ...datiFixture, allerta: "VERDE" };
     expect(haAllertaMeteo(datiVerde)).toBe(true);
+  });
+});
+
+describe("formatRischi", () => {
+  const baseRischi = {
+    idraulico: "ASSENTE" as const,
+    idrogeologico: "nessuno" as const,
+    temporali: "ASSENTE" as const,
+    vento: "ASSENTE" as const,
+    neve: "ASSENTE" as const,
+    ghiaccio: "ASSENTE" as const,
+  };
+
+  it("restituisce null se tutti i rischi sono assenti", () => {
+    expect(formatRischi(baseRischi)).toBeNull();
+  });
+
+  it("filtra ASSENTE e nessuno e mostra solo quelli attivi", () => {
+    const rischi = { ...baseRischi, idrogeologico: "MODERATO", vento: "BASSO" };
+    const result = formatRischi(rischi);
+    expect(result).toBe("⛰️ Idrogeologico: MODERATO\n💨 Vento: BASSO");
+  });
+
+  it("filtra stringa vuota", () => {
+    const rischi = { ...baseRischi, idraulico: "" };
+    const result = formatRischi(rischi);
+    expect(result).toBeNull();
+  });
+
+  it("mostra tutti i rischi se tutti sono attivi", () => {
+    const rischi = {
+      idraulico: "MODERATO",
+      idrogeologico: "ELEVATO",
+      temporali: "BASSO",
+      vento: "MOLTO ELEVATO",
+      neve: "BASSO",
+      ghiaccio: "MODERATO",
+    };
+    const result = formatRischi(rischi);
+    expect(result).toContain("💧 Idraulico: MODERATO");
+    expect(result).toContain("⛰️ Idrogeologico: ELEVATO");
+    expect(result).toContain("⚡ Temporali: BASSO");
+    expect(result).toContain("💨 Vento: MOLTO ELEVATO");
+    expect(result).toContain("❄️ Neve: BASSO");
+    expect(result).toContain("🧊 Ghiaccio: MODERATO");
   });
 });
 
