@@ -35,6 +35,13 @@ export const sessioni = sqliteTable("sessioni", {
   value: text("value").notNull(),
 });
 
+export const statoAllerte = sqliteTable("stato_allerte", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  chiave: text("chiave").notNull().unique(),
+  fingerprint: text("fingerprint").notNull(),
+  aggiornatoIl: integer("aggiornato_il", { mode: "timestamp" }).notNull(),
+});
+
 export const comuni = sqliteTable(
   "comuni",
   {
