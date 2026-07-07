@@ -5,6 +5,7 @@ import { createArchivioComuni } from "./services/comuni.js";
 import { createUsersRepository } from "./services/users.js";
 import { createMeteoService } from "./services/meteo.js";
 import { createHeatWaveService } from "./services/heatwave.js";
+import { createAlertStateService } from "./services/alert-state.js";
 import { createBot } from "./bot/bot.js";
 import { broadcastNotifiche } from "./bot/scheduler.js";
 
@@ -27,6 +28,7 @@ async function getInitialized(env: Env) {
     users: createUsersRepository(db),
     meteo: createMeteoService(),
     heatwave: createHeatWaveService(),
+    alertState: createAlertStateService(db),
   };
   const bot = createBot(config, services);
   await bot.init();

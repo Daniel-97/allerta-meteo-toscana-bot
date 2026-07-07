@@ -5,6 +5,7 @@ import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
 import type { HeatWaveService } from "../services/heatwave.js";
+import type { AlertStateService } from "../services/alert-state.js";
 import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
 import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
 
@@ -13,6 +14,7 @@ export interface BotServices {
   users: UsersRepository;
   meteo: MeteoService;
   heatwave: HeatWaveService;
+  alertState: AlertStateService;
 }
 
 async function safeEditMessageText(ctx: Context, text: string, extra?: Record<string, unknown>) {
