@@ -254,3 +254,36 @@ export function costruisciAlbumImmagini(): ReturnType<typeof InputMediaBuilder.p
 
   return album;
 }
+
+export function fingerprintMeteo(d: DatiMeteo): string {
+  const oggi = [
+    d.allerta,
+    d.rischi.idraulico, d.rischi.idrogeologico, d.rischi.temporali,
+    d.rischi.vento, d.rischi.neve, d.rischi.ghiaccio,
+  ].join("|");
+  const domani = d.allertaDomani && d.rischiDomani
+    ? [
+        d.allertaDomani,
+        d.rischiDomani.idraulico, d.rischiDomani.idrogeologico, d.rischiDomani.temporali,
+        d.rischiDomani.vento, d.rischiDomani.neve, d.rischiDomani.ghiaccio,
+      ].join("|")
+    : "";
+  return oggi + "||" + domani;
+}
+
+export function fingerprintCalore(r: RisultatoAllertaCalore): string {
+  if (r.errore) return "__errore__";
+  return `${r.oggi?.livello ?? ""}|${r.domani?.livello ?? ""}`;
+}
+
+export function isStessoGiornoIt(data: Date): boolean {
+  const fmt = "en-CA";
+  const opts: Intl.DateTimeFormatOptions = {
+    timeZone: "Europe/Rome",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  };
+  return (
+    new Intl.DateTimeFormat(fmt, opts).format(data) ===
+    new Intl.DateTimeFormat(fmt, opts).format(new Date())
+  );
+}

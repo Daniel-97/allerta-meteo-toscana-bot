@@ -9,6 +9,9 @@ import {
   livelloCaloreToNome,
   haAllertaMeteo,
   formatRischi,
+  fingerprintMeteo,
+  fingerprintCalore,
+  isStessoGiornoIt,
 } from "../../src/bot/messages.js";
 import type { DatiMeteo, RisultatoAllertaCalore } from "../../src/types/index.js";
 
@@ -450,5 +453,83 @@ describe("messages.nessunaAllerta", () => {
     expect(messages.nessunaAllerta).toBe(
       "ℹ️ Nessuna allerta in corso o prevista per i prossimi giorni."
     );
+  });
+});
+
+describe("fingerprintMeteo", () => {
+  const baseDati: DatiMeteo = {
+    comune: "Firenze",
+    aggiornamento: "01/07/2026",
+    allerta: "VERDE",
+    rischi: {
+      idraulico: "ASSENTE", idrogeologico: "ASSENTE", temporali: "ASSENTE",
+      vento: "ASSENTE", neve: "ASSENTE", ghiaccio: "ASSENTE",
+    },
+    temperatura: { min: 10, max: 20 },
+    temperaturaAttuale: 15, temperaturaPercepita: 14,
+    umidita: 50, probabilitaPioggia: 0, uv: 4, quotaNeve: 2000,
+    alba: "06:00", tramonto: "18:00", parteGiorno: "mattina",
+  };
+
+  it("include allerta e 6 rischi oggi", () => {
+    const fp = fingerprintMeteo(baseDati);
+    expect(fp).toContain("VERDE");
+    expect(fp).toContain("ASSENTE");
+  });
+
+  it("include allertaDomani e rischiDomani se presenti", () => {
+    const dati = {
+      ...baseDati,
+      allertaDomani: "GIALLO" as const,
+      rischiDomani: {
+        idraulico: "MODERATO", idrogeologico: "ASSENTE", temporali: "ASSENTE",
+        vento: "ASSENTE", neve: "ASSENTE", ghiaccio: "ASSENTE",
+      },
+      nomeGiornoDomani: "Martedì",
+    };
+    const fp = fingerprintMeteo(dati);
+    expect(fp).toContain("GIALLO");
+    expect(fp).toContain("MODERATO");
+  });
+
+  it("non include domani se absent", () => {
+    const fp = fingerprintMeteo(baseDati);
+    expect(fp).toContain("||");
+  });
+});
+
+describe("fingerprintCalore", () => {
+  it("restituisce livelli oggi|domani", () => {
+    const r: RisultatoAllertaCalore = {
+      errore: false, dataEstrazione: "2026-07-01",
+      oggi: { livello: 2, url: "https://example.com/bol.pdf" },
+      domani: { livello: 1, url: "https://example.com/bol.pdf" },
+    };
+    expect(fingerprintCalore(r)).toBe("2|1");
+  });
+
+  it("gestisce oggi nullo", () => {
+    const r: RisultatoAllertaCalore = {
+      errore: false, dataEstrazione: "2026-07-01",
+      oggi: null, domani: { livello: 1, url: "" },
+    };
+    expect(fingerprintCalore(r)).toBe("|1");
+  });
+
+  it("restituisce __errore__ se fetch fallito", () => {
+    const r: RisultatoAllertaCalore = { errore: true };
+    expect(fingerprintCalore(r)).toBe("__errore__");
+  });
+});
+
+describe("isStessoGiornoIt", () => {
+  it("restituisce true per oggi", () => {
+    expect(isStessoGiornoIt(new Date())).toBe(true);
+  });
+
+  it("restituisce false per ieri", () => {
+    const ieri = new Date();
+    ieri.setDate(ieri.getDate() - 1);
+    expect(isStessoGiornoIt(ieri)).toBe(false);
   });
 });
