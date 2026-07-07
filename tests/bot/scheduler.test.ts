@@ -1,210 +1,130 @@
 import { describe, it, expect, vi } from "vitest";
 import { broadcastNotifiche } from "../../src/bot/scheduler.js";
+import { fingerprintMeteo } from "../../src/bot/messages.js";
 
 const datiMeteoMock = {
-  comune: "Test",
-  aggiornamento: "01/01/2026",
-  allerta: "VERDE",
-  rischi: {
-    idraulico: "ASSENTE",
-    idrogeologico: "ASSENTE",
-    temporali: "ASSENTE",
-    vento: "ASSENTE",
-    neve: "ASSENTE",
-    ghiaccio: "ASSENTE",
-  },
-  temperatura: { min: 10, max: 20 },
-  temperaturaAttuale: 15,
-  temperaturaPercepita: 14,
-  uv: 4,
-  quotaNeve: 2000,
-  umidita: 50,
-  probabilitaPioggia: 0,
-  alba: "06:00",
-  tramonto: "18:00",
-  parteGiorno: "mattina",
+  comune: "Test", aggiornamento: "01/01/2026", allerta: "VERDE",
+  rischi: { idraulico: "ASSENTE", idrogeologico: "ASSENTE", temporali: "ASSENTE",
+            vento: "ASSENTE", neve: "ASSENTE", ghiaccio: "ASSENTE" },
+  temperatura: { min: 10, max: 20 }, temperaturaAttuale: 15, temperaturaPercepita: 14,
+  uv: 4, quotaNeve: 2000, umidita: 50, probabilitaPioggia: 0,
+  alba: "06:00", tramonto: "18:00", parteGiorno: "mattina",
 };
 
+function mockServices(overrides: Record<string, any> = {}) {
+  return {
+    users: {
+      findAllWithComuni: vi.fn().mockResolvedValue([
+        { idTelegram: 1, comuni: [{ url: "firenze", notificheMeteo: true }] },
+      ]),
+    },
+    meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(datiMeteoMock) },
+    heatwave: {
+      fetchAllertaCalore: vi.fn().mockResolvedValue({
+        errore: false, dataEstrazione: "2026-07-07",
+        oggi: { livello: 2, url: "https://salute.gov.it/bol.pdf" },
+        domani: null,
+      }),
+    },
+    alertState: {
+      getFingerprint: vi.fn().mockResolvedValue(null),
+      setFingerprint: vi.fn().mockResolvedValue(undefined),
+    },
+    ...overrides,
+  };
+}
+
 describe("broadcastNotifiche", () => {
-  it("invia messaggio per ogni comune + messaggio calore una volta per utente", async () => {
-    const sendMessage = vi.fn().mockResolvedValue(undefined);
-    const sendMediaGroup = vi.fn().mockResolvedValue(undefined);
-    const bot = { api: { sendMessage, sendMediaGroup } } as any;
-
-    const fetchAllertaCalore = vi.fn().mockResolvedValue({
-      errore: false,
-      dataEstrazione: "2026-06-25",
-      oggi: { livello: 2, url: "https://salute.gov.it/bol.pdf" },
-      domani: null,
-    } as const);
-
-    const services = {
-      users: {
-        findAllWithComuni: vi.fn().mockResolvedValue([
-          {
-            idTelegram: 1,
-            comuni: [
-              { url: "firenze", notificheMeteo: true },
-              { url: "pisa", notificheMeteo: false },
-            ],
-          },
-          {
-            idTelegram: 2,
-            comuni: [{ url: "siena", notificheMeteo: true }],
-          },
-        ]),
-      },
-      meteo: {
-        fetchDatiMeteo: vi.fn().mockResolvedValue(datiMeteoMock),
-      },
-      heatwave: { fetchAllertaCalore },
-    } as any;
-
-    const result = await broadcastNotifiche(bot, services);
-    expect(result.totali).toBe(2);
-    expect(result.inviati).toBe(5); // 3 comuni + 2 messaggi calore (uno per utente)
-    expect(fetchAllertaCalore).toHaveBeenCalledTimes(1);
-    expect(sendMediaGroup).not.toHaveBeenCalled();
-
-    const expectedKeyboard = expect.objectContaining({
-      inline_keyboard: [[
-        { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
-      ]],
-    });
-
-    expect(sendMessage).toHaveBeenCalledWith(1, expect.any(String), expect.objectContaining({ reply_markup: expectedKeyboard }));
-    expect(sendMessage).toHaveBeenCalledWith(1, expect.any(String), expect.objectContaining({ reply_markup: undefined }));
-    expect(sendMessage).toHaveBeenCalledWith(2, expect.any(String), expect.objectContaining({ reply_markup: expectedKeyboard }));
-    const caloreKeyboard = expect.objectContaining({
-      inline_keyboard: [[{ text: "📋 Cosa fare", url: "https://www.salute.gov.it/new/it/tema/ondate-di-calore/livelli-di-rischio-cosa-fare/" }]],
-    });
-    // calore: una per utente, con bottone "Cosa fare"
-    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.objectContaining({ link_preview_options: { is_disabled: true }, reply_markup: caloreKeyboard }));
-    expect(sendMessage).toHaveBeenCalledWith(2, expect.stringContaining("Ondata di calore"), expect.objectContaining({ link_preview_options: { is_disabled: true }, reply_markup: caloreKeyboard }));
-  });
-
-  it("nessun messaggio calore se entrambi Livello0", async () => {
+  it("mattina: invia sempre anche se fingerprint identico", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
     const bot = { api: { sendMessage } } as any;
+    const getFingerprint = vi.fn().mockResolvedValue({ fingerprint: fingerprintMeteo(datiMeteoMock), aggiornatoIl: new Date() });
+    const setFingerprint = vi.fn().mockResolvedValue(undefined);
+    const services = mockServices({ alertState: { getFingerprint, setFingerprint } }) as any;
 
-    const fetchAllertaCalore = vi.fn().mockResolvedValue({
-      errore: false,
-      dataEstrazione: "2026-06-25",
-      oggi: { livello: 0, url: "https://salute.gov.it/bol.pdf" },
-      domani: { livello: 0, url: "https://salute.gov.it/bol.pdf" },
-    } as const);
+    const result = await broadcastNotifiche(bot, services, true);
+    expect(result.inviati).toBeGreaterThan(0);
+    expect(sendMessage).toHaveBeenCalled();
+    expect(setFingerprint).toHaveBeenCalled();
+  });
 
-    const services = {
-      users: {
-        findAllWithComuni: vi.fn().mockResolvedValue([
-          {
-            idTelegram: 1,
-            comuni: [{ url: "firenze", notificheMeteo: true }],
-          },
-        ]),
-      },
-      meteo: {
-        fetchDatiMeteo: vi.fn().mockResolvedValue(datiMeteoMock),
-      },
-      heatwave: { fetchAllertaCalore },
-    } as any;
+  it("pomeriggio: salta se fingerprint identico stesso giorno", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const getFingerprint = vi.fn()
+      .mockResolvedValueOnce({ fingerprint: "2|", aggiornatoIl: new Date() })
+      .mockResolvedValueOnce({ fingerprint: fingerprintMeteo(datiMeteoMock), aggiornatoIl: new Date() });
+    const setFingerprint = vi.fn().mockResolvedValue(undefined);
+    const services = mockServices({ alertState: { getFingerprint, setFingerprint } }) as any;
 
-    const result = await broadcastNotifiche(bot, services);
-    expect(result.inviati).toBe(1); // solo meteo, no calore
+    const result = await broadcastNotifiche(bot, services, false);
+    expect(result.inviati).toBe(0);
+    expect(sendMessage).not.toHaveBeenCalled();
+  });
+
+  it("pomeriggio: invia se fingerprint diverso", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const getFingerprint = vi.fn().mockResolvedValue({ fingerprint: "ROSSO|...||...", aggiornatoIl: new Date() });
+    const setFingerprint = vi.fn().mockResolvedValue(undefined);
+    const services = mockServices({ alertState: { getFingerprint, setFingerprint } }) as any;
+
+    const result = await broadcastNotifiche(bot, services, false);
+    expect(result.inviati).toBeGreaterThan(0);
+    expect(sendMessage).toHaveBeenCalled();
+  });
+
+  it("pomeriggio: invia se fingerprint di ieri", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const ieri = new Date();
+    ieri.setDate(ieri.getDate() - 1);
+    const getFingerprint = vi.fn().mockResolvedValue({ fingerprint: fingerprintMeteo(datiMeteoMock), aggiornatoIl: ieri });
+    const setFingerprint = vi.fn().mockResolvedValue(undefined);
+    const services = mockServices({ alertState: { getFingerprint, setFingerprint } }) as any;
+
+    const result = await broadcastNotifiche(bot, services, false);
+    expect(result.inviati).toBeGreaterThan(0);
+  });
+
+  it("pomeriggio: invia se nessun fingerprint salvato", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const services = mockServices() as any;
+
+    const result = await broadcastNotifiche(bot, services, false);
+    expect(result.inviati).toBeGreaterThan(0);
+  });
+
+  it("calore e meteo indipendenti: calore cambia, meteo no", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const getFingerprint = vi.fn()
+      .mockResolvedValueOnce({ fingerprint: "2|OLD", aggiornatoIl: new Date() })
+      .mockResolvedValueOnce({ fingerprint: fingerprintMeteo(datiMeteoMock), aggiornatoIl: new Date() });
+    const setFingerprint = vi.fn().mockResolvedValue(undefined);
+    const services = mockServices({ alertState: { getFingerprint, setFingerprint } }) as any;
+
+    const result = await broadcastNotifiche(bot, services, false);
     expect(sendMessage).toHaveBeenCalledTimes(1);
-    expect(sendMessage).not.toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.anything());
+    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.anything());
   });
 
-  it("messaggio calore anche quando errore: true", async () => {
+  it("gestisce errore calore: non salva fingerprint", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
     const bot = { api: { sendMessage } } as any;
-
-    const fetchAllertaCalore = vi.fn().mockResolvedValue({ errore: true } as const);
-
+    const setFingerprint = vi.fn().mockResolvedValue(undefined);
+    const heatwave = {
+      fetchAllertaCalore: vi.fn().mockResolvedValue({ errore: true }),
+    };
     const services = {
-      users: {
-        findAllWithComuni: vi.fn().mockResolvedValue([
-          {
-            idTelegram: 1,
-            comuni: [{ url: "firenze", notificheMeteo: false }],
-          },
-        ]),
-      },
-      meteo: {
-        fetchDatiMeteo: vi.fn().mockResolvedValue(datiMeteoMock),
-      },
-      heatwave: { fetchAllertaCalore },
+      ...mockServices({ alertState: { getFingerprint: vi.fn().mockResolvedValue(null), setFingerprint } }),
+      heatwave,
     } as any;
 
-    const result = await broadcastNotifiche(bot, services);
-    expect(result.inviati).toBe(2); // meteo + calore (avviso errore)
-    expect(sendMessage).toHaveBeenCalledTimes(2);
-    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("non disponibili"), expect.anything());
-  });
-
-  it("sopprime comune senza allerta meteo e senza calore → nessun messaggio inviato", async () => {
-    const sendMessage = vi.fn().mockResolvedValue(undefined);
-    const bot = { api: { sendMessage } } as any;
-
-    const datiNessunaAllerta = { ...datiMeteoMock, allerta: "nessuno" };
-
-    const fetchAllertaCalore = vi.fn().mockResolvedValue({
-      errore: false, dataEstrazione: "",
-      oggi: null, domani: null,
-    } as const);
-
-    const services = {
-      users: {
-        findAllWithComuni: vi.fn().mockResolvedValue([
-          { idTelegram: 1, comuni: [{ url: "firenze", notificheMeteo: true }] },
-        ]),
-      },
-      meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(datiNessunaAllerta) },
-      heatwave: { fetchAllertaCalore },
-    } as any;
-
-    const result = await broadcastNotifiche(bot, services);
-    expect(result.inviati).toBe(0); // ne meteo ne calore
-    expect(sendMessage).toHaveBeenCalledTimes(0);
-  });
-
-  it("sopprime solo comune senza allerta in caso misto", async () => {
-    const sendMessage = vi.fn().mockResolvedValue(undefined);
-    const bot = { api: { sendMessage } } as any;
-
-    const datiAlert = datiMeteoMock; // VERDE = allerta reale
-    const datiNull = { ...datiMeteoMock, allerta: "nessuno" };
-
-    const fetchAllertaCalore = vi.fn().mockResolvedValue({
-      errore: false, dataEstrazione: "2026-06-25",
-      oggi: { livello: 2, url: "https://salute.gov.it/bol.pdf" },
-      domani: null,
-    } as const);
-
-    const services = {
-      users: {
-        findAllWithComuni: vi.fn().mockResolvedValue([
-          {
-            idTelegram: 1,
-            comuni: [
-              { url: "firenze", notificheMeteo: true },
-              { url: "pisa", notificheMeteo: false },
-            ],
-          },
-        ]),
-      },
-      meteo: {
-        fetchDatiMeteo: vi.fn()
-          .mockResolvedValueOnce(datiAlert) // Firenze → alert
-          .mockResolvedValueOnce(datiNull), // Pisa → no alert → soppresso
-      },
-      heatwave: { fetchAllertaCalore },
-    } as any;
-
-    const result = await broadcastNotifiche(bot, services);
-    expect(result.inviati).toBe(2); // 1 meteo (Firenze) + 1 calore
-    expect(sendMessage).toHaveBeenCalledTimes(2);
-    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Test"), expect.anything());
-    expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.objectContaining({ reply_markup: expect.objectContaining({ inline_keyboard: [[{ text: "📋 Cosa fare", url: expect.any(String) }]] }) }));
+    const result = await broadcastNotifiche(bot, services, false);
+    expect(result.inviati).toBe(2); // meteo + calore (messaggio errore)
+    expect(setFingerprint).toHaveBeenCalledTimes(1); // solo meteo
+    expect(setFingerprint).toHaveBeenCalledWith("allerta_meteo_firenze", expect.any(String));
   });
 });

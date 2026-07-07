@@ -65,7 +65,8 @@ export default {
 
     const { bot, services } = await getInitialized(env);
     try {
-      const result = await broadcastNotifiche(bot, services);
+      const isMattina = oraIt === 8;
+      const result = await broadcastNotifiche(bot, services, isMattina);
       console.log(`scheduled: ${result.inviati}/${result.totali} notifiche inviate`);
     } catch (err) {
       console.error("scheduled handler error", err);
