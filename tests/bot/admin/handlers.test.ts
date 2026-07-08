@@ -81,6 +81,8 @@ describe("handleAdminUtenti", () => {
     const msg = reply.mock.calls[0][0];
     expect(msg).toContain("123");
     expect(msg).toContain("@mario");
+    expect(msg).toContain("Mario");
+    expect(msg).toContain("Lucia");
   });
 });
 

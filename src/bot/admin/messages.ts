@@ -16,11 +16,11 @@ export const adminMessages = {
   riepilogoUtenti: (totale: number, comuniTotali: number) =>
     `👥 <b>Utenti registrati:</b> ${totale}\n📍 <b>Comuni seguiti:</b> ${comuniTotali}`,
 
-  listaUtenti: (users: { idTelegram: number; usernameTelegram: string | null; creatoIl: Date }[]) => {
+  listaUtenti: (users: { idTelegram: number; usernameTelegram: string | null; nomeTelegram: string; creatoIl: Date }[]) => {
     if (users.length === 0) return "❌ Nessun utente registrato.";
     const items = users.map(
       (u, i) =>
-        `${i + 1}. <code>${u.idTelegram}</code> (${u.usernameTelegram ? "@" + escHtml(u.usernameTelegram) : "—"}) — ${u.creatoIl instanceof Date ? u.creatoIl.toLocaleDateString("it-IT") : String(u.creatoIl)}`,
+        `${i + 1}. <code>${u.idTelegram}</code> ${escHtml(u.nomeTelegram)} (${u.usernameTelegram ? "@" + escHtml(u.usernameTelegram) : "—"}) — ${u.creatoIl instanceof Date ? u.creatoIl.toLocaleDateString("it-IT") : String(u.creatoIl)}`,
     );
     return `👥 <b>Utenti registrati (${users.length})</b>\n\n${items.join("\n")}`;
   },
