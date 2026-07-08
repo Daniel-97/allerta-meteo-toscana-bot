@@ -1,19 +1,34 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
-import { messages, messaggioCalore, haAllertaMeteo, fingerprintMeteo, fingerprintCalore, isStessoGiornoIt } from "./messages.js";
+import { messages, messaggioCalore, haAllertaMeteo, fingerprintMeteo, fingerprintCalore, isStessoGiornoIt, escHtml } from "./messages.js";
 import { mappeMeteoInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
+
+async function notificaAdmin(bot: Bot, adminChatId: number | undefined, testo: string) {
+  if (!adminChatId) return;
+  try {
+    await bot.api.sendMessage(adminChatId, testo);
+  } catch (err) {
+    console.error("notifica admin fallita", err);
+  }
+}
 
 export async function broadcastNotifiche(
   bot: Bot,
   services: BotServices,
-  isMattina: boolean
+  isMattina: boolean,
+  adminChatId?: number
 ): Promise<{ totali: number; inviati: number }> {
   const users = await services.users.findAllWithComuni();
   const r = await services.heatwave.fetchAllertaCalore();
-  const msgCalore = messaggioCalore(r);
+  const msgCalore = r.errore ? null : messaggioCalore(r);
   const fpCalore = fingerprintCalore(r);
   let skipCalore = false;
   let inviati = 0;
+
+  if (r.errore) {
+    const dettaglio = r.dettaglioErrore ? escHtml(r.dettaglioErrore) : "sconosciuto";
+    await notificaAdmin(bot, adminChatId, `⚠️ Recupero allerta calore fallito: ${dettaglio}`);
+  }
 
   if (!isMattina && msgCalore !== null) {
     const stored = await services.alertState.getFingerprint("allerta_calore_toscana");
@@ -21,6 +36,8 @@ export async function broadcastNotifiche(
       skipCalore = true;
     }
   }
+
+  const comuniMeteoFalliti = new Set<string>();
 
   for (const user of users) {
     for (const comune of user.comuni) {
@@ -48,20 +65,24 @@ export async function broadcastNotifiche(
         await services.alertState.setFingerprint("allerta_meteo_" + comune.url, fpMeteo);
       } catch (err) {
         console.error("notifica fallita", { user: user.idTelegram, comune: comune.nome, err });
+        if (!comuniMeteoFalliti.has(comune.url)) {
+          comuniMeteoFalliti.add(comune.url);
+          const messaggioErrore = err instanceof Error ? err.message : String(err);
+          await notificaAdmin(bot, adminChatId, `⚠️ Recupero dati meteo fallito per ${escHtml(comune.nome)}: ${escHtml(messaggioErrore)}`);
+        }
         continue;
       }
     }
 
     if (msgCalore && !skipCalore) {
       try {
-        const extra: Record<string, unknown> = { link_preview_options: { is_disabled: true } };
-        if (!r.errore) extra.reply_markup = caloreInlineKeyboard();
-        await bot.api.sendMessage(user.idTelegram, msgCalore, extra);
+        await bot.api.sendMessage(user.idTelegram, msgCalore, {
+          link_preview_options: { is_disabled: true },
+          reply_markup: caloreInlineKeyboard(),
+        });
         inviati++;
 
-        if (!r.errore) {
-          await services.alertState.setFingerprint("allerta_calore_toscana", fpCalore);
-        }
+        await services.alertState.setFingerprint("allerta_calore_toscana", fpCalore);
       } catch (err) {
         console.error("notifica calore fallita", { user: user.idTelegram, err });
       }

@@ -38,7 +38,7 @@ export function createHeatWaveService(): HeatWaveService {
         const res = await fetch(url);
         if (!res.ok) {
           console.error(`Errore HTTP ${res.status} nel fetch del CSV ondata calore`);
-          return { errore: true };
+          return { errore: true, dettaglioErrore: `HTTP ${res.status}` };
         }
         const text = await res.text();
         const lines = text.split("\n").filter(Boolean);
@@ -76,7 +76,7 @@ export function createHeatWaveService(): HeatWaveService {
         return { errore: false, dataEstrazione, oggi: oggiFound, domani: domaniFound };
       } catch (err) {
         console.error("Errore fetch/parse CSV ondata calore", err);
-        return { errore: true };
+        return { errore: true, dettaglioErrore: err instanceof Error ? err.message : String(err) };
       }
     },
   };

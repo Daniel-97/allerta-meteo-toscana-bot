@@ -15,7 +15,7 @@ function mockServices(overrides: Record<string, any> = {}) {
   return {
     users: {
       findAllWithComuni: vi.fn().mockResolvedValue([
-        { idTelegram: 1, comuni: [{ url: "firenze", notificheMeteo: true }] },
+        { idTelegram: 1, comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }] },
       ]),
     },
     meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(datiMeteoMock) },
@@ -110,7 +110,7 @@ describe("broadcastNotifiche", () => {
     expect(sendMessage).toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.anything());
   });
 
-  it("gestisce errore calore: non salva fingerprint", async () => {
+  it("gestisce errore calore: non invia nulla all'utente, non salva fingerprint, avvisa l'admin", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
     const bot = { api: { sendMessage } } as any;
     const setFingerprint = vi.fn().mockResolvedValue(undefined);
@@ -122,9 +122,24 @@ describe("broadcastNotifiche", () => {
       heatwave,
     } as any;
 
-    const result = await broadcastNotifiche(bot, services, false);
-    expect(result.inviati).toBe(2); // meteo + calore (messaggio errore)
+    const result = await broadcastNotifiche(bot, services, false, 999);
+    expect(result.inviati).toBe(1); // solo meteo, nessun messaggio calore all'utente
     expect(setFingerprint).toHaveBeenCalledTimes(1); // solo meteo
     expect(setFingerprint).toHaveBeenCalledWith("allerta_meteo_firenze", expect.any(String));
+    expect(sendMessage).not.toHaveBeenCalledWith(1, expect.stringContaining("Ondata di calore"), expect.anything());
+    expect(sendMessage).toHaveBeenCalledWith(999, expect.stringContaining("allerta calore fallito"));
+  });
+
+  it("gestisce errore recupero meteo: non invia nulla all'utente per quel comune, avvisa l'admin una sola volta", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const meteo = { fetchDatiMeteo: vi.fn().mockRejectedValue(new Error("Errore HTTP 500")) };
+    const services = { ...mockServices(), meteo } as any;
+
+    const result = await broadcastNotifiche(bot, services, true, 999);
+    expect(result.inviati).toBeGreaterThan(0); // solo calore
+    expect(sendMessage).not.toHaveBeenCalledWith(1, expect.stringContaining("Test"), expect.anything());
+    expect(sendMessage).toHaveBeenCalledWith(999, expect.stringContaining("Recupero dati meteo fallito"));
+    expect(sendMessage.mock.calls.filter((c: any[]) => c[0] === 999)).toHaveLength(1);
   });
 });

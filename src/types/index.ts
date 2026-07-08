@@ -61,4 +61,4 @@ export type RisultatoAllertaCalore =
       oggi: { livello: LivelloCalore; url: string } | null;
       domani: { livello: LivelloCalore; url: string } | null;
     }
-  | { errore: true };
+  | { errore: true; dettaglioErrore?: string };
