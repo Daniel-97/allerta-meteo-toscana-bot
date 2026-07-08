@@ -80,7 +80,7 @@ describe("handleCallbackQuery", () => {
       });
     });
 
-    it("invia messaggio di conferma con tastiera principale", async () => {
+    it("invia messaggio di conferma con la lista comuni aggiornata", async () => {
       const reply = vi.fn().mockResolvedValue(undefined);
       const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined), reply } as any;
 
@@ -88,7 +88,13 @@ describe("handleCallbackQuery", () => {
 
       expect(reply).toHaveBeenCalledWith(
         expect.stringContaining("Firenze"),
-        expect.objectContaining({}),
+        expect.objectContaining({
+          reply_markup: expect.objectContaining({
+            inline_keyboard: expect.arrayContaining([
+              expect.arrayContaining([expect.objectContaining({ text: "Firenze" })]),
+            ]),
+          }),
+        }),
       );
     });
 
@@ -151,51 +157,6 @@ describe("handleCallbackQuery", () => {
         expect.objectContaining({ notificheMeteo: false }),
       );
     });
-  });
-});
-
-describe("manage callback", () => {
-  const baseCtx = {
-    callbackQuery: { data: "manage" },
-    from: { id: 123, username: "testuser", first_name: "Test" },
-    editMessageText: vi.fn().mockResolvedValue(undefined),
-    reply: vi.fn().mockResolvedValue(undefined),
-  };
-
-  it("mostra lista comuni quando utente ne ha", async () => {
-    const findByTelegramId = vi.fn().mockResolvedValue({
-      idTelegram: 123,
-      comuni: [
-        { nome: "Firenze", url: "firenze", notificheMeteo: true },
-        { nome: "Pisa", url: "pisa", notificheMeteo: false },
-      ],
-    });
-    const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
-    const services = { users: { findByTelegramId } } as any;
-
-    await handleCallbackQuery(ctx, services);
-
-    expect(findByTelegramId).toHaveBeenCalledWith(123);
-    expect(ctx.editMessageText).toHaveBeenCalledWith(
-      expect.stringContaining("I tuoi comuni"),
-      expect.any(Object),
-    );
-  });
-
-  it("mostra messaggio se utente non ha comuni", async () => {
-    const findByTelegramId = vi.fn().mockResolvedValue({
-      idTelegram: 123,
-      comuni: [],
-    });
-    const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
-    const services = { users: { findByTelegramId } } as any;
-
-    await handleCallbackQuery(ctx, services);
-
-    expect(ctx.editMessageText).toHaveBeenCalledWith(
-      expect.stringContaining("Non hai ancora"),
-      expect.any(Object),
-    );
   });
 });
 
@@ -268,16 +229,17 @@ describe("del-confirm callback", () => {
     reply: vi.fn().mockResolvedValue(undefined),
   };
 
-  it("chiama removeComune e mostra conferma", async () => {
+  it("chiama removeComune e trasforma il messaggio nella lista comuni aggiornata", async () => {
     const removeComune = vi.fn().mockResolvedValue(undefined);
+    const findByTelegramId = vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] });
     const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
-    const services = { users: { removeComune } } as any;
+    const services = { users: { removeComune, findByTelegramId } } as any;
 
     await handleCallbackQuery(ctx, services);
 
     expect(removeComune).toHaveBeenCalledWith(123, "firenze");
-    expect(ctx.reply).toHaveBeenCalledWith(
-      expect.stringContaining("Firenze rimosso"),
+    expect(ctx.editMessageText).toHaveBeenCalledWith(
+      expect.stringContaining("Non hai ancora"),
       expect.any(Object),
     );
   });
@@ -296,56 +258,85 @@ describe("del-confirm callback", () => {
   });
 });
 
-describe("mod callback", () => {
-  it("mostra conferma con stato attuale", async () => {
+describe("comune callback", () => {
+  it("mostra il dettaglio del comune trovato", async () => {
     const editMessageText = vi.fn().mockResolvedValue(undefined);
     const ctx = {
-      callbackQuery: { data: "mod:firenze:Firenze" },
+      callbackQuery: { data: "comune:firenze:Firenze" },
       editMessageText,
       from: { id: 123 },
     } as any;
-
     const findByTelegramId = vi.fn().mockResolvedValue({
       idTelegram: 123,
-      comuni: [
-        { nome: "Firenze", url: "firenze", notificheMeteo: true },
-      ],
+      comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
     });
     const services = { users: { findByTelegramId } } as any;
 
     await handleCallbackQuery(ctx, services);
 
-    expect(ctx.editMessageText).toHaveBeenCalledWith(
+    expect(editMessageText).toHaveBeenCalledWith(
       expect.stringContaining("Firenze"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({
+          inline_keyboard: expect.arrayContaining([
+            expect.arrayContaining([expect.objectContaining({ text: "🗑️ Elimina" })]),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("torna alla lista se il comune non è più presente (fallback)", async () => {
+    const editMessageText = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "comune:firenze:Firenze" },
+      editMessageText,
+      from: { id: 123 },
+    } as any;
+    const findByTelegramId = vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] });
+    const services = { users: { findByTelegramId } } as any;
+
+    await handleCallbackQuery(ctx, services);
+
+    expect(editMessageText).toHaveBeenCalledWith(
+      expect.stringContaining("Non hai ancora"),
       expect.any(Object),
     );
   });
 });
 
-describe("mod-set callback", () => {
-  const baseCtx = {
-    callbackQuery: { data: "mod-set:firenze:Firenze:1" },
-    from: { id: 123 },
-    editMessageText: vi.fn().mockResolvedValue(undefined),
-    reply: vi.fn().mockResolvedValue(undefined),
-  };
-
-  it("chiama updateNotificheMeteo con flag corretto", async () => {
+describe("toggle callback", () => {
+  it("attiva le previsioni meteo e ri-renderizza il dettaglio", async () => {
     const updateNotificheMeteo = vi.fn().mockResolvedValue(undefined);
-    const ctx = { ...baseCtx, editMessageText: vi.fn().mockResolvedValue(undefined) } as any;
+    const editMessageText = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "toggle:firenze:Firenze:1" },
+      editMessageText,
+      from: { id: 123 },
+    } as any;
     const services = { users: { updateNotificheMeteo } } as any;
 
     await handleCallbackQuery(ctx, services);
 
     expect(updateNotificheMeteo).toHaveBeenCalledWith(123, "firenze", true);
+    expect(editMessageText).toHaveBeenCalledWith(
+      expect.stringContaining("Firenze"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({
+          inline_keyboard: expect.arrayContaining([
+            expect.arrayContaining([expect.objectContaining({ text: "🔕 Disattiva previsioni meteo" })]),
+          ]),
+        }),
+      }),
+    );
   });
 
-  it("imposta notificheMeteo a false quando flag è 0", async () => {
+  it("disattiva le previsioni meteo quando il flag è 0", async () => {
     const updateNotificheMeteo = vi.fn().mockResolvedValue(undefined);
     const ctx = {
-      ...baseCtx,
-      callbackQuery: { data: "mod-set:firenze:Firenze:0" },
+      callbackQuery: { data: "toggle:firenze:Firenze:0" },
       editMessageText: vi.fn().mockResolvedValue(undefined),
+      from: { id: 123 },
     } as any;
     const services = { users: { updateNotificheMeteo } } as any;
 
@@ -354,20 +345,73 @@ describe("mod-set callback", () => {
     expect(updateNotificheMeteo).toHaveBeenCalledWith(123, "firenze", false);
   });
 
-  it("mostra messaggio di conferma", async () => {
+  it("non fa nulla se ctx.from è undefined", async () => {
     const updateNotificheMeteo = vi.fn().mockResolvedValue(undefined);
-    const reply = vi.fn().mockResolvedValue(undefined);
     const ctx = {
-      ...baseCtx,
+      callbackQuery: { data: "toggle:firenze:Firenze:1" },
       editMessageText: vi.fn().mockResolvedValue(undefined),
-      reply,
+      from: undefined,
     } as any;
-    const services = { users: { updateNotificheMeteo } } as any;
+
+    await handleCallbackQuery(ctx, { users: { updateNotificheMeteo } } as any);
+
+    expect(updateNotificheMeteo).not.toHaveBeenCalled();
+  });
+});
+
+describe("aggiungi callback", () => {
+  it("invia il prompt per digitare il nome del comune", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { callbackQuery: { data: "aggiungi" }, reply } as any;
+
+    await handleCallbackQuery(ctx, {} as any);
+
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("almeno 3 lettere"));
+  });
+});
+
+describe("annulla callback", () => {
+  it("torna al dettaglio del comune specifico", async () => {
+    const editMessageText = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "annulla:firenze:Firenze" },
+      editMessageText,
+      from: { id: 123 },
+    } as any;
+    const findByTelegramId = vi.fn().mockResolvedValue({
+      idTelegram: 123,
+      comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: false }],
+    });
+    const services = { users: { findByTelegramId } } as any;
 
     await handleCallbackQuery(ctx, services);
 
-    expect(reply).toHaveBeenCalledWith(
+    expect(editMessageText).toHaveBeenCalledWith(
       expect.stringContaining("Firenze"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({
+          inline_keyboard: expect.arrayContaining([
+            expect.arrayContaining([expect.objectContaining({ text: "🗑️ Elimina" })]),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("torna alla lista se il comune non è più presente (fallback)", async () => {
+    const editMessageText = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "annulla:firenze:Firenze" },
+      editMessageText,
+      from: { id: 123 },
+    } as any;
+    const findByTelegramId = vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] });
+    const services = { users: { findByTelegramId } } as any;
+
+    await handleCallbackQuery(ctx, services);
+
+    expect(editMessageText).toHaveBeenCalledWith(
+      expect.stringContaining("Non hai ancora"),
       expect.any(Object),
     );
   });
@@ -838,7 +882,7 @@ describe("handleRichiestaTestoLibero", () => {
 });
 
 describe("handleGestisciComuni", () => {
-  it("mostra la lista dei comuni impostati con la sub-menu keyboard", async () => {
+  it("mostra la lista dei comuni impostati con i bottoni inline", async () => {
     const reply = vi.fn().mockResolvedValue(undefined);
     const ctx = { from: { id: 123 }, reply } as any;
     const services = {

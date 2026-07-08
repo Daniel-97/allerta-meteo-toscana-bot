@@ -8,7 +8,7 @@ import type { HeatWaveService } from "../services/heatwave.js";
 import type { AlertStateService } from "../services/alert-state.js";
 import type { RateLimiterService } from "../services/rate-limiter.js";
 import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
-import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
+import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, comuniGestioneInlineKeyboard, comuneDettaglioInlineKeyboard, confermaEliminaInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
@@ -108,17 +108,45 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   }
 }
 
+function buildListaComuniView(comuni: Array<{ nome: string; url: string; notificheMeteo: boolean }>) {
+  const text = comuni.length === 0 ? messages.nessunComune : messages.gestisciComuni(comuni);
+  return { text, reply_markup: comuniGestioneInlineKeyboard(comuni) };
+}
+
+async function renderListaComuni(ctx: Context, services: BotServices, idTelegram: number) {
+  const user = await services.users.findByTelegramId(idTelegram);
+  const view = buildListaComuniView(user?.comuni ?? []);
+  await safeEditMessageText(ctx, view.text, { reply_markup: view.reply_markup });
+}
+
+async function renderDettaglioComune(ctx: Context, url: string, nome: string, notificheMeteo: boolean) {
+  await safeEditMessageText(ctx, messages.dettaglioComune(nome, notificheMeteo), {
+    reply_markup: comuneDettaglioInlineKeyboard(url, nome, notificheMeteo),
+  });
+}
+
+async function renderDettaglioOFallbackLista(
+  ctx: Context,
+  services: BotServices,
+  idTelegram: number,
+  url: string,
+  nome: string,
+) {
+  const user = await services.users.findByTelegramId(idTelegram);
+  const comune = user?.comuni.find((c) => c.url === url);
+  if (!comune) {
+    await renderListaComuni(ctx, services, idTelegram);
+    return;
+  }
+  await renderDettaglioComune(ctx, url, nome, comune.notificheMeteo);
+}
+
 export async function handleGestisciComuni(ctx: Context, services: BotServices) {
   const id = ctx.from?.id;
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
-  if (!user || user.comuni.length === 0) {
-    await ctx.reply(messages.gestisciComuni([]), { reply_markup: gestisciSubMenuKeyboard() });
-    return;
-  }
-  await ctx.reply(messages.gestisciComuni(user.comuni), {
-    reply_markup: gestisciSubMenuKeyboard(),
-  });
+  const view = buildListaComuniView(user?.comuni ?? []);
+  await ctx.reply(view.text, { reply_markup: view.reply_markup });
 }
 
 export async function handleCredits(ctx: Context) {
@@ -166,53 +194,6 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
 
   bot.hears("📋 Gestisci comuni", (ctx) => handleGestisciComuni(ctx, services));
 
-  bot.hears("➕ Aggiungi", async (ctx) => {
-    await ctx.reply(messages.aggiungiPrompt);
-  });
-
-  bot.hears("🗑️ Elimina", async (ctx) => {
-    const id = ctx.from?.id;
-    if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
-      return;
-    }
-    await ctx.reply(messages.selezionaComuneDaEliminare, {
-      reply_markup: comuniSelezioneInlineKeyboard(user.comuni, "del"),
-    });
-  });
-
-  bot.hears("✏️ Modifica", async (ctx) => {
-    const id = ctx.from?.id;
-    if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
-      return;
-    }
-    await ctx.reply(messages.selezionaComuneDaModificare, {
-      reply_markup: comuniSelezioneInlineKeyboard(user.comuni, "mod"),
-    });
-  });
-
-  bot.hears("📋 Lista", async (ctx) => {
-    const id = ctx.from?.id;
-    if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.nessunComune, { reply_markup: mainMenuKeyboard() });
-      return;
-    }
-    await ctx.reply(messages.gestisciComuni(user.comuni), {
-      reply_markup: gestisciSubMenuKeyboard(),
-    });
-  });
-
-  bot.hears("🔙 Indietro", async (ctx) => {
-    await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
-  });
-
   bot.hears("ℹ️ Credits&Info", handleCredits);
 
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
@@ -230,23 +211,15 @@ export async function handleCallbackQuery(
   if (action === "back") {
     const id = ctx.from?.id;
     if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await safeEditMessageText(ctx, messages.nessunComune, {
-        reply_markup: { inline_keyboard: [] },
-      });
-      return;
-    }
-    await safeEditMessageText(ctx, messages.gestisciComuni(user.comuni), {
-      reply_markup: { inline_keyboard: [] },
-    });
+    await renderListaComuni(ctx, services, id);
     return;
   }
 
   if (action === "annulla") {
-    await safeEditMessageText(ctx, messages.annulla, {
-      reply_markup: { inline_keyboard: [] },
-    });
+    const [, url, nome] = parts;
+    const id = ctx.from?.id;
+    if (!id) return;
+    await renderDettaglioOFallbackLista(ctx, services, id, url, nome);
     return;
   }
 
@@ -261,7 +234,7 @@ export async function handleCallbackQuery(
   if (action === "sub") {
     const [, url, nome, flagRaw] = parts;
     const notificheMeteo = flagRaw === "1";
-    await safeEditMessageText(ctx, messages.impostaPrompt, {
+    await safeEditMessageText(ctx, messages.impostaConferma(nome), {
       reply_markup: { inline_keyboard: [] },
     });
 
@@ -289,26 +262,38 @@ export async function handleCallbackQuery(
       );
     }
 
+    const comuniAggiornati = [
+      ...(existingUser?.comuni.filter((c) => c.url !== url) ?? []),
+      { nome, url, notificheMeteo },
+    ];
+
     const msg = notificheMeteo
       ? messages.impostaOkAllerta(nome)
       : messages.impostaOk(nome);
-    await ctx.reply(msg, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(msg, { reply_markup: comuniGestioneInlineKeyboard(comuniAggiornati) });
     return;
   }
 
-  if (action === "manage") {
+  if (action === "comune") {
+    const [, url, nome] = parts;
     const id = ctx.from?.id;
     if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await safeEditMessageText(ctx, messages.nessunComune, {
-        reply_markup: { inline_keyboard: [] },
-      });
-      return;
-    }
-    await safeEditMessageText(ctx, messages.gestisciComuni(user.comuni), {
-      reply_markup: { inline_keyboard: [] },
-    });
+    await renderDettaglioOFallbackLista(ctx, services, id, url, nome);
+    return;
+  }
+
+  if (action === "toggle") {
+    const [, url, nome, flagRaw] = parts;
+    const notificheMeteo = flagRaw === "1";
+    const idTelegram = ctx.from?.id;
+    if (!idTelegram) return;
+    await services.users.updateNotificheMeteo(idTelegram, url, notificheMeteo);
+    await renderDettaglioComune(ctx, url, nome, notificheMeteo);
+    return;
+  }
+
+  if (action === "aggiungi") {
+    await ctx.reply(messages.aggiungiPrompt);
     return;
   }
 
@@ -321,43 +306,11 @@ export async function handleCallbackQuery(
   }
 
   if (action === "del-confirm") {
-    const [, url, nome] = parts;
+    const [, url] = parts;
     const idTelegram = ctx.from?.id;
     if (!idTelegram) return;
     await services.users.removeComune(idTelegram, url);
-    await safeEditMessageText(ctx, messages.eliminato(nome), {
-      reply_markup: { inline_keyboard: [] },
-    });
-    await ctx.reply(messages.eliminato(nome), { reply_markup: mainMenuKeyboard() });
-    return;
-  }
-
-  if (action === "mod") {
-    const [, url, nome] = parts;
-    const idTelegram = ctx.from?.id;
-    if (!idTelegram) return;
-    const user = await services.users.findByTelegramId(idTelegram);
-    if (!user) return;
-    const comune = user.comuni.find((c) => c.url === url);
-    if (!comune) return;
-    const stato = comune.notificheMeteo ? "ATTIVE" : "DISATTIVE";
-    await safeEditMessageText(ctx, messages.confermaModifica(nome, stato), {
-      reply_markup: confermaModificaInlineKeyboard(url, nome),
-    });
-    return;
-  }
-
-  if (action === "mod-set") {
-    const [, url, nome, flagRaw] = parts;
-    const notificheMeteo = flagRaw === "1";
-    const idTelegram = ctx.from?.id;
-    if (!idTelegram) return;
-    await services.users.updateNotificheMeteo(idTelegram, url, notificheMeteo);
-    const stato = notificheMeteo ? "ATTIVE" : "DISATTIVE";
-    await safeEditMessageText(ctx, messages.modificato(nome, stato), {
-      reply_markup: { inline_keyboard: [] },
-    });
-    await ctx.reply(messages.modificato(nome, stato), { reply_markup: mainMenuKeyboard() });
+    await renderListaComuni(ctx, services, idTelegram);
     return;
   }
 

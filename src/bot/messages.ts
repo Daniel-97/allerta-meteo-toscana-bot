@@ -124,19 +124,6 @@ export const messages = {
   confermaElimina: (nome: string) =>
     `Eliminare ${escHtml(nome)} dalla tua lista?`,
 
-  eliminato: (nome: string) =>
-    `✅ ${escHtml(nome)} rimosso dalla tua lista.`,
-
-  confermaModifica: (nome: string, stato: string) =>
-    `Notifiche meteo per ${escHtml(nome)}: attualmente ${stato}. Modificare?`,
-
-  modificato: (nome: string, stato: string) =>
-    `✅ Notifiche meteo per ${escHtml(nome)}: ${stato}.`,
-
-  selezionaComuneDaEliminare: "📍 Seleziona il comune che vuoi eliminare:",
-
-  selezionaComuneDaModificare: "📍 Seleziona il comune che vuoi modificare:",
-
   gestisciComuni: (comuni: { nome: string; notificheMeteo: boolean }[]) => {
     const items = comuni.map(
       (c) =>
@@ -145,10 +132,8 @@ export const messages = {
     return `📍 <b>I tuoi comuni:</b>\n\n${items.join("\n\n")}`;
   },
 
-  annulla: "✖️ Operazione annullata.",
-
-  impostaPrompt:
-    "🔍 Scrivi il nome del comune (almeno 3 lettere) per cercarlo.",
+  dettaglioComune: (nome: string, notificheMeteo: boolean) =>
+    `📍 <b>${escHtml(nome)}</b>\n\n🔔 Allerta meteo: ✅ sempre attiva\n🌤️ Previsioni meteo: ${notificheMeteo ? "✅ attive" : "❌ disattive"}\n\nCosa vuoi fare?`,
 
   aggiungiPrompt:
     "🔍 Digita almeno 3 lettere del nome del comune per iniziare la ricerca.",
