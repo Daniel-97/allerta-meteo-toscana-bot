@@ -1,5 +1,5 @@
 import type { LibSQLDatabase } from "drizzle-orm/libsql";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { statoAllerte } from "../db/schema.js";
 
 export interface AlertStateService {
@@ -23,13 +23,14 @@ export function createAlertStateService(
     },
 
     setFingerprint: async (chiave, fingerprint) => {
-      await db
-        .insert(statoAllerte)
-        .values({ chiave, fingerprint, aggiornatoIl: new Date() })
-        .onConflictDoUpdate({
-          target: statoAllerte.chiave,
-          set: { fingerprint, aggiornatoIl: new Date() },
-        });
+      const aggiornatoIl = Math.floor(Date.now() / 1000);
+      await db.run(sql`
+        insert into stato_allerte (chiave, fingerprint, aggiornato_il)
+        values (${chiave}, ${fingerprint}, ${aggiornatoIl})
+        on conflict (chiave) do update set
+          fingerprint = excluded.fingerprint,
+          aggiornato_il = excluded.aggiornato_il
+      `);
     },
   };
 }
