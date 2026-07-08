@@ -149,6 +149,14 @@ export async function handleGestisciComuni(ctx: Context, services: BotServices) 
   await ctx.reply(view.text, { reply_markup: view.reply_markup });
 }
 
+// Migrazione una tantum: chi aveva ancora in chat la vecchia reply keyboard di
+// gestione comuni (rimossa lato bot, ma persistente lato client finché non
+// viene sostituita) viene qui riportato alla tastiera principale + nuova UI inline.
+export async function handleMenuAggiornato(ctx: Context, services: BotServices) {
+  await ctx.reply(messages.menuAggiornato, { reply_markup: mainMenuKeyboard() });
+  await handleGestisciComuni(ctx, services);
+}
+
 export async function handleCredits(ctx: Context) {
   await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard(), link_preview_options: { is_disabled: true } });
 }
@@ -195,6 +203,10 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   bot.hears("📋 Gestisci comuni", (ctx) => handleGestisciComuni(ctx, services));
 
   bot.hears("ℹ️ Credits&Info", handleCredits);
+
+  for (const legacyLabel of ["➕ Aggiungi", "🗑️ Elimina", "✏️ Modifica", "📋 Lista", "🔙 Indietro"]) {
+    bot.hears(legacyLabel, (ctx) => handleMenuAggiornato(ctx, services));
+  }
 
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
 }

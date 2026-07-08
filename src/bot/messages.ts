@@ -115,6 +115,9 @@ export const messages = {
     "❓ /aiuto — Mostra questo messaggio\n\n" +
     "Puoi usare gli stessi comandi anche premendo i pulsanti del menu qui sotto.",
 
+  menuAggiornato:
+    "🔄 Il menu è stato aggiornato! Ora la gestione dei comuni si fa con i pulsanti qui sotto al messaggio.",
+
   nessunComune:
     "Non hai ancora impostato comuni. Premi il pulsante <b>➕ Aggiungi</b> per iniziare.",
 

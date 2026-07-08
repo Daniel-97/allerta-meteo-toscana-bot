@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { GrammyError } from "grammy";
-import { handleAllerta, handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero, handleGestisciComuni, handleCredits, handleAiuto } from "../../src/bot/handlers.js";
+import { handleAllerta, handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero, handleGestisciComuni, handleCredits, handleAiuto, handleMenuAggiornato } from "../../src/bot/handlers.js";
 
 const grammyErrorNotModified = () =>
   new GrammyError(
@@ -926,6 +926,39 @@ describe("handleGestisciComuni", () => {
 
     expect(reply).not.toHaveBeenCalled();
     expect(services.users.findByTelegramId).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleMenuAggiornato", () => {
+  it("ripristina la tastiera principale e mostra la nuova gestione comuni", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const services = {
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({
+          idTelegram: 123,
+          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+        }),
+      },
+    } as any;
+
+    await handleMenuAggiornato(ctx, services);
+
+    expect(reply).toHaveBeenCalledTimes(2);
+    expect(reply).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining("aggiornato"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({ keyboard: expect.any(Array) }),
+      }),
+    );
+    expect(reply).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining("Firenze"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({ inline_keyboard: expect.any(Array) }),
+      }),
+    );
   });
 });
 
