@@ -6,6 +6,7 @@ import { createUsersRepository } from "./services/users.js";
 import { createMeteoService } from "./services/meteo.js";
 import { createHeatWaveService } from "./services/heatwave.js";
 import { createAlertStateService } from "./services/alert-state.js";
+import { createRateLimiterService } from "./services/rate-limiter.js";
 import { createBot } from "./bot/bot.js";
 import { broadcastNotifiche } from "./bot/scheduler.js";
 
@@ -29,6 +30,7 @@ async function getInitialized(env: Env) {
     meteo: createMeteoService(),
     heatwave: createHeatWaveService(),
     alertState: createAlertStateService(db),
+    rateLimiter: createRateLimiterService(db),
   };
   const bot = createBot(config, services);
   await bot.init();

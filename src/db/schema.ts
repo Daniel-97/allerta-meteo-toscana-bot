@@ -7,6 +7,7 @@ export const utenti = sqliteTable("utenti", {
   creatoIl: integer("creato_il", { mode: "timestamp" }).$defaultFn(
     () => new Date()
   ),
+  ultimaRichiestaOnDemand: integer("ultima_richiesta_on_demand", { mode: "timestamp" }),
 });
 
 export const utentiComuni = sqliteTable(

@@ -417,6 +417,7 @@ describe("handleAllerta", () => {
       },
       meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("nessuno")) },
       heatwave: { fetchAllertaCalore: caloreNull },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
     } as any;
 
     await handleAllerta(ctx, services);
@@ -440,6 +441,7 @@ describe("handleAllerta", () => {
       },
       meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("GIALLO")) },
       heatwave: { fetchAllertaCalore: caloreNull },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
     } as any;
 
     await handleAllerta(ctx, services);
@@ -463,6 +465,7 @@ describe("handleAllerta", () => {
       },
       meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("nessuno")) },
       heatwave: { fetchAllertaCalore: caloreAlert },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
     } as any;
 
     await handleAllerta(ctx, services);
@@ -486,6 +489,7 @@ describe("handleAllerta", () => {
       },
       meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("GIALLO")) },
       heatwave: { fetchAllertaCalore: caloreAlert },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
     } as any;
 
     await handleAllerta(ctx, services);
@@ -520,6 +524,7 @@ describe("handleAllerta", () => {
           .mockResolvedValueOnce(mockDatiMeteo("nessuno")),  // Pisa → no alert
       },
       heatwave: { fetchAllertaCalore: caloreNull },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
     } as any;
 
     await handleAllerta(ctx, services);
@@ -574,6 +579,7 @@ describe("handlePrevisioni", () => {
           },
         }),
       },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
     } as any;
 
     await handlePrevisioni(ctx, services);
@@ -590,6 +596,136 @@ describe("handlePrevisioni", () => {
         }),
       }),
     );
+  });
+});
+
+describe("rate limiting richieste on-demand", () => {
+  it("handleAllerta: rate limit superato → messaggio limite, nessuna fetch esterna", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const fetchDatiMeteo = vi.fn();
+    const fetchAllertaCalore = vi.fn();
+    const services = {
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({
+          idTelegram: 123,
+          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+        }),
+      },
+      meteo: { fetchDatiMeteo },
+      heatwave: { fetchAllertaCalore },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(false) },
+    } as any;
+
+    await handleAllerta(ctx, services);
+
+    expect(reply).toHaveBeenCalledTimes(1);
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("una volta al minuto"),
+      expect.objectContaining({ reply_markup: expect.anything() }),
+    );
+    expect(fetchDatiMeteo).not.toHaveBeenCalled();
+    expect(fetchAllertaCalore).not.toHaveBeenCalled();
+  });
+
+  it("handlePrevisioni: rate limit superato → messaggio limite, nessuna fetch esterna", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const fetchDatiMeteo = vi.fn();
+    const services = {
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({
+          idTelegram: 123,
+          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+        }),
+      },
+      meteo: { fetchDatiMeteo },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(false) },
+    } as any;
+
+    await handlePrevisioni(ctx, services);
+
+    expect(reply).toHaveBeenCalledTimes(1);
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("una volta al minuto"),
+      expect.objectContaining({ reply_markup: expect.anything() }),
+    );
+    expect(fetchDatiMeteo).not.toHaveBeenCalled();
+  });
+
+  it("handleAllerta: errore nel rate limiter → messaggio di errore, nessuna fetch esterna", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const fetchDatiMeteo = vi.fn();
+    const fetchAllertaCalore = vi.fn();
+    const services = {
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({
+          idTelegram: 123,
+          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+        }),
+      },
+      meteo: { fetchDatiMeteo },
+      heatwave: { fetchAllertaCalore },
+      rateLimiter: { isAllowed: vi.fn().mockRejectedValue(new Error("db down")) },
+    } as any;
+
+    await handleAllerta(ctx, services);
+
+    expect(reply).toHaveBeenCalledTimes(1);
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("errore"));
+    expect(fetchDatiMeteo).not.toHaveBeenCalled();
+    expect(fetchAllertaCalore).not.toHaveBeenCalled();
+  });
+
+  it("handlePrevisioni: errore nel rate limiter → messaggio di errore, nessuna fetch esterna", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const fetchDatiMeteo = vi.fn();
+    const services = {
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({
+          idTelegram: 123,
+          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+        }),
+      },
+      meteo: { fetchDatiMeteo },
+      rateLimiter: { isAllowed: vi.fn().mockRejectedValue(new Error("db down")) },
+    } as any;
+
+    await handlePrevisioni(ctx, services);
+
+    expect(reply).toHaveBeenCalledTimes(1);
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("errore"));
+    expect(fetchDatiMeteo).not.toHaveBeenCalled();
+  });
+
+  it("handleAllerta: utente senza comuni non consuma il rate limiter", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const isAllowed = vi.fn().mockResolvedValue(true);
+    const services = {
+      users: { findByTelegramId: vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] }) },
+      rateLimiter: { isAllowed },
+    } as any;
+
+    await handleAllerta(ctx, services);
+
+    expect(isAllowed).not.toHaveBeenCalled();
+  });
+
+  it("handlePrevisioni: utente senza comuni non consuma il rate limiter", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const isAllowed = vi.fn().mockResolvedValue(true);
+    const services = {
+      users: { findByTelegramId: vi.fn().mockResolvedValue({ idTelegram: 123, comuni: [] }) },
+      rateLimiter: { isAllowed },
+    } as any;
+
+    await handlePrevisioni(ctx, services);
+
+    expect(isAllowed).not.toHaveBeenCalled();
   });
 });
 

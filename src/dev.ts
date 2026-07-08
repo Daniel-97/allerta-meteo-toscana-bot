@@ -5,6 +5,7 @@ import { createUsersRepository } from "./services/users.js";
 import { createMeteoService } from "./services/meteo.js";
 import { createHeatWaveService } from "./services/heatwave.js";
 import { createAlertStateService } from "./services/alert-state.js";
+import { createRateLimiterService } from "./services/rate-limiter.js";
 import { createBot } from "./bot/bot.js";
 
 // config and db are eager singletons (fail fast on missing env vars)
@@ -15,6 +16,7 @@ const services = {
   meteo: createMeteoService(),
   heatwave: createHeatWaveService(),
   alertState: createAlertStateService(_db),
+  rateLimiter: createRateLimiterService(_db),
 };
 const bot = createBot(config, services);
 

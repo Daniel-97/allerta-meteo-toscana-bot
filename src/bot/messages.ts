@@ -161,6 +161,9 @@ export const messages = {
 
   errore: "❌ Si è verificato un errore. Riprova più tardi.",
 
+  limiteRichieste:
+    "⏳ Puoi richiedere un aggiornamento al massimo una volta al minuto. Riprova tra poco.",
+
   nessunaAllerta:
     "ℹ️ Nessuna allerta in corso o prevista per i prossimi giorni.",
 

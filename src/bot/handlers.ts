@@ -6,6 +6,7 @@ import type { UsersRepository } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
 import type { HeatWaveService } from "../services/heatwave.js";
 import type { AlertStateService } from "../services/alert-state.js";
+import type { RateLimiterService } from "../services/rate-limiter.js";
 import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
 import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, gestisciSubMenuKeyboard, comuniSelezioneInlineKeyboard, confermaEliminaInlineKeyboard, confermaModificaInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
 
@@ -15,6 +16,7 @@ export interface BotServices {
   meteo: MeteoService;
   heatwave: HeatWaveService;
   alertState: AlertStateService;
+  rateLimiter: RateLimiterService;
 }
 
 async function safeEditMessageText(ctx: Context, text: string, extra?: Record<string, unknown>) {
@@ -34,6 +36,17 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
   const user = await services.users.findByTelegramId(id);
   if (!user || user.comuni.length === 0) {
     await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
+    return;
+  }
+  let allowed: boolean;
+  try {
+    allowed = await services.rateLimiter.isAllowed(id);
+  } catch {
+    await ctx.reply(messages.errore);
+    return;
+  }
+  if (!allowed) {
+    await ctx.reply(messages.limiteRichieste, { reply_markup: mainMenuKeyboard() });
     return;
   }
   const r = await services.heatwave.fetchAllertaCalore();
@@ -72,6 +85,17 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   const user = await services.users.findByTelegramId(id);
   if (!user || user.comuni.length === 0) {
     await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
+    return;
+  }
+  let allowed: boolean;
+  try {
+    allowed = await services.rateLimiter.isAllowed(id);
+  } catch {
+    await ctx.reply(messages.errore);
+    return;
+  }
+  if (!allowed) {
+    await ctx.reply(messages.limiteRichieste, { reply_markup: mainMenuKeyboard() });
     return;
   }
   for (const c of user.comuni) {
