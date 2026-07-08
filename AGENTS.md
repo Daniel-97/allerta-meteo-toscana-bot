@@ -33,7 +33,7 @@ il README.md di conseguenza (sezioni "Comandi bot", "Menu a bottoni", "Pannello 
 ## DB e Drizzle
 
 - Schema in `src/db/schema.ts` con `drizzle-orm/sqlite-core`
-- Migrazioni in `src/db/migrations/` (generate con `drizzle-kit generate`)
+- Nessuna migrazione versionata: `schema.ts` è l'unica fonte di verità, sincronizzata su Turso con `npm run db:push` (drizzle-kit push)
 - Query via Drizzle query builder, non raw SQL (tranne `LOWER()` in LIKE)
 - Transazioni per operazioni che coinvolgono più tabelle
 

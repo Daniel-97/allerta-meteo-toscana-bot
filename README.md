@@ -66,8 +66,8 @@ cp .env.example .env
 # 3. Installa dipendenze
 npm install
 
-# 4. Applica migrazioni DB (crea tabelle su Turso)
-npm run db:migrate
+# 4. Sincronizza lo schema DB su Turso (crea/aggiorna tabelle)
+npm run db:push
 
 # 5. Importa comuni (da XML LAMMA → DB)
 npm run db:seed
@@ -297,8 +297,7 @@ src/
 ├── logger.ts             # Logger (pino)
 ├── db/
 │   ├── index.ts          # DB factory (@libsql/client + Drizzle)
-│   ├── schema.ts         # Schema (utenti, utenti_comuni, sessioni, comuni)
-│   └── migrations/       # SQL migrations (drizzle-kit)
+│   └── schema.ts         # Schema (utenti, utenti_comuni, sessioni, comuni) — sincronizzato su Turso con `db:push`
 ├── services/
 │   ├── comuni.ts         # Archivio comuni (searchByPrefix, findByNome, all)
 │   ├── users.ts          # Users repository (subscribe, findByTelegramId, findAllWithComuni)
