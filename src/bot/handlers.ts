@@ -108,6 +108,27 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   }
 }
 
+export async function handleGestisciComuni(ctx: Context, services: BotServices) {
+  const id = ctx.from?.id;
+  if (!id) return;
+  const user = await services.users.findByTelegramId(id);
+  if (!user || user.comuni.length === 0) {
+    await ctx.reply(messages.gestisciComuni([]), { reply_markup: gestisciSubMenuKeyboard() });
+    return;
+  }
+  await ctx.reply(messages.gestisciComuni(user.comuni), {
+    reply_markup: gestisciSubMenuKeyboard(),
+  });
+}
+
+export async function handleCredits(ctx: Context) {
+  await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard(), link_preview_options: { is_disabled: true } });
+}
+
+export async function handleAiuto(ctx: Context) {
+  await ctx.reply(messages.aiuto, { reply_markup: mainMenuKeyboard() });
+}
+
 export async function handleRichiestaTestoLibero(
   ctx: Context,
   services: BotServices,
@@ -133,22 +154,17 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
   });
 
+  bot.command("allerta", (ctx) => handleAllerta(ctx, services));
+  bot.command("previsioni", (ctx) => handlePrevisioni(ctx, services));
+  bot.command("comuni", (ctx) => handleGestisciComuni(ctx, services));
+  bot.command("credits", handleCredits);
+  bot.command("aiuto", handleAiuto);
+
   bot.hears("🚨 Allerta meteo", (ctx) => handleAllerta(ctx, services));
 
   bot.hears("🌤️ Previsioni meteo", (ctx) => handlePrevisioni(ctx, services));
 
-  bot.hears("📋 Gestisci comuni", async (ctx) => {
-    const id = ctx.from?.id;
-    if (!id) return;
-    const user = await services.users.findByTelegramId(id);
-    if (!user || user.comuni.length === 0) {
-      await ctx.reply(messages.gestisciComuni([]), { reply_markup: gestisciSubMenuKeyboard() });
-      return;
-    }
-    await ctx.reply(messages.gestisciComuni(user.comuni), {
-      reply_markup: gestisciSubMenuKeyboard(),
-    });
-  });
+  bot.hears("📋 Gestisci comuni", (ctx) => handleGestisciComuni(ctx, services));
 
   bot.hears("➕ Aggiungi", async (ctx) => {
     await ctx.reply(messages.aggiungiPrompt);
@@ -197,9 +213,7 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
     await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
   });
 
-  bot.hears("ℹ️ Credits&Info", async (ctx) => {
-    await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard(), link_preview_options: { is_disabled: true } });
-  });
+  bot.hears("ℹ️ Credits&Info", handleCredits);
 
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
 }

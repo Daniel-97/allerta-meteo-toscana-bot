@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { GrammyError } from "grammy";
-import { handleAllerta, handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero } from "../../src/bot/handlers.js";
+import { handleAllerta, handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero, handleGestisciComuni, handleCredits, handleAiuto } from "../../src/bot/handlers.js";
 
 const grammyErrorNotModified = () =>
   new GrammyError(
@@ -834,5 +834,82 @@ describe("handleRichiestaTestoLibero", () => {
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("errore"),
     );
+  });
+});
+
+describe("handleGestisciComuni", () => {
+  it("mostra la lista dei comuni impostati con la sub-menu keyboard", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const services = {
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({
+          idTelegram: 123,
+          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+        }),
+      },
+    } as any;
+
+    await handleGestisciComuni(ctx, services);
+
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("Firenze"),
+      expect.objectContaining({ reply_markup: expect.anything() }),
+    );
+  });
+
+  it("mostra lista vuota quando l'utente non ha comuni", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const services = {
+      users: { findByTelegramId: vi.fn().mockResolvedValue(undefined) },
+    } as any;
+
+    await handleGestisciComuni(ctx, services);
+
+    expect(reply).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ reply_markup: expect.anything() }),
+    );
+  });
+
+  it("non fa nulla se manca ctx.from", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { reply } as any;
+    const services = { users: { findByTelegramId: vi.fn() } } as any;
+
+    await handleGestisciComuni(ctx, services);
+
+    expect(reply).not.toHaveBeenCalled();
+    expect(services.users.findByTelegramId).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleCredits", () => {
+  it("risponde con il messaggio credits e la main menu keyboard", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { reply } as any;
+
+    await handleCredits(ctx);
+
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("Come funziona"),
+      expect.objectContaining({
+        reply_markup: expect.anything(),
+        link_preview_options: { is_disabled: true },
+      }),
+    );
+  });
+});
+
+describe("handleAiuto", () => {
+  it("risponde con l'elenco dei comandi disponibili", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { reply } as any;
+
+    await handleAiuto(ctx);
+
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("/allerta"), expect.anything());
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("/aiuto"), expect.anything());
   });
 });

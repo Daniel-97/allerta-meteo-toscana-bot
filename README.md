@@ -176,7 +176,16 @@ invocation_logs = true
 | Comando | Azione |
 |---|---|
 | `/start` | Menu principale |
-| `/admin` | Pannello admin (solo proprietario) |
+| `/allerta` | Richiedi le allerte meteo on demand |
+| `/previsioni` | Richiedi le previsioni meteo on demand |
+| `/comuni` | Apri la gestione dei comuni monitorati |
+| `/credits` | Informazioni sul bot e le fonti dati |
+| `/aiuto` | Elenco dei comandi disponibili |
+| `/admin` | Pannello admin, solo proprietario (menu comandi) |
+| `/admin_stat` | Admin: statistiche utenti |
+| `/admin_utenti` | Admin: elenco utenti registrati |
+| `/admin_info <id>` | Admin: info su un utente |
+| `/admin_broadcast <testo>` | Admin: invia messaggio a tutti gli utenti |
 
 > 💡 **Suggerimento:** In qualsiasi momento, puoi digitare 3 o più lettere del nome di un comune (es. "pis") per cercarlo direttamente, senza usare nessun comando.
 

@@ -28,11 +28,20 @@ interface CommandScope {
 
 const publicCommands: BotCommand[] = [
   { command: "start", description: "Avvia il bot" },
+  { command: "allerta", description: "Richiedi le allerte meteo" },
+  { command: "previsioni", description: "Richiedi le previsioni meteo" },
+  { command: "comuni", description: "Gestisci i comuni monitorati" },
+  { command: "credits", description: "Informazioni sul bot" },
+  { command: "aiuto", description: "Elenco comandi disponibili" },
 ];
 
 const adminCommands: BotCommand[] = [
   ...publicCommands,
   { command: "admin", description: "Pannello amministrazione" },
+  { command: "admin_stat", description: "Statistiche utenti" },
+  { command: "admin_utenti", description: "Elenco utenti registrati" },
+  { command: "admin_info", description: "Info su un utente (id)" },
+  { command: "admin_broadcast", description: "Invia messaggio a tutti gli utenti" },
 ];
 
 const defaultScope: CommandScope = { type: "default" };

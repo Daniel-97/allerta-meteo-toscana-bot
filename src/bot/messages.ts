@@ -106,6 +106,15 @@ export const messages = {
     "🔗 Per ulteriori informazioni: <a href=\"https://www.regione.toscana.it/allertameteo\">Regione Toscana — Allerta Meteo</a>\n\n" +
     "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA, alla Regione Toscana né al Ministero della Salute.</i>",
 
+  aiuto:
+    "🤖 <b>Comandi disponibili</b>\n\n" +
+    "🚨 /allerta — Richiedi le allerte meteo (e ondate di calore) per i tuoi comuni\n\n" +
+    "🌤️ /previsioni — Richiedi le previsioni meteo per i tuoi comuni\n\n" +
+    "📋 /comuni — Gestisci i comuni monitorati (aggiungi, modifica, elimina, lista)\n\n" +
+    "ℹ️ /credits — Informazioni sul bot e le fonti dati\n\n" +
+    "❓ /aiuto — Mostra questo messaggio\n\n" +
+    "Puoi usare gli stessi comandi anche premendo i pulsanti del menu qui sotto.",
+
   nessunComune:
     "Non hai ancora impostato comuni. Premi il pulsante <b>➕ Aggiungi</b> per iniziare.",
 

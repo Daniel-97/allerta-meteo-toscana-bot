@@ -8,10 +8,10 @@ export const adminMessages = {
   welcome:
     "👑 <b>Pannello Admin</b>\n\n" +
     "/admin — Mostra questo messaggio\n" +
-    "/admin stat — Statistiche utenti\n" +
-    "/admin utenti — Elenco utenti registrati\n" +
-    "/admin info &lt;id&gt; — Info su un utente\n" +
-    "/admin broadcast &lt;testo&gt; — Invia messaggio a tutti gli utenti",
+    "/admin_stat — Statistiche utenti\n" +
+    "/admin_utenti — Elenco utenti registrati\n" +
+    "/admin_info &lt;id&gt; — Info su un utente\n" +
+    "/admin_broadcast &lt;testo&gt; — Invia messaggio a tutti gli utenti",
 
   riepilogoUtenti: (totale: number, comuniTotali: number) =>
     `👥 <b>Utenti registrati:</b> ${totale}\n📍 <b>Comuni seguiti:</b> ${comuniTotali}`,
@@ -43,5 +43,5 @@ export const adminMessages = {
       ? `✅ Messaggio inviato a ${inviato}/${totale} utenti.`
       : `⚠️ Messaggio inviato a ${inviato}/${totale} utenti (${falliti} falliti).`,
 
-  broadcastVuoto: "❌ Inserisci un messaggio da inviare: /admin broadcast &lt;testo&gt;",
+  broadcastVuoto: "❌ Inserisci un messaggio da inviare: /admin_broadcast &lt;testo&gt;",
 };

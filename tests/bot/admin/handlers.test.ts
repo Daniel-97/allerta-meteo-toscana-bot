@@ -134,7 +134,7 @@ describe("handleAdminInfo", () => {
     await handleAdminInfo(ctx, {} as any, "");
 
     expect(reply).toHaveBeenCalledWith(
-      "❌ Specifica un ID Telegram: /admin info &lt;id&gt;",
+      "❌ Specifica un ID Telegram: /admin_info &lt;id&gt;",
     );
   });
 });

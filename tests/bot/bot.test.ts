@@ -102,23 +102,33 @@ describe("createBot - ordinamento middleware", () => {
     expect(services.comuni.searchByPrefix).toHaveBeenCalledWith("pis");
   });
 
-  it("utente non-admin che digita /admin non trigga searchByPrefix (fallthrough a admin)", async () => {
+  it("utente non-admin che digita /admin_stat non trigga searchByPrefix (fallthrough a admin)", async () => {
     const services = makeServices();
     const bot = await setupBot("999", services);
 
-    await bot.handleUpdate(textUpdate("/admin stat", 111));
+    await bot.handleUpdate(textUpdate("/admin_stat", 111));
 
     expect(services.comuni.searchByPrefix).not.toHaveBeenCalled();
     expect(services.users.findAllWithComuni).not.toHaveBeenCalled();
   });
 
-  it("admin che digita /admin stat trigga admin handler (findAllWithComuni)", async () => {
+  it("admin che digita /admin_stat trigga admin handler (findAllWithComuni)", async () => {
     const services = makeServices();
     const bot = await setupBot("111", services);
 
-    await bot.handleUpdate(textUpdate("/admin stat", 111));
+    await bot.handleUpdate(textUpdate("/admin_stat", 111));
 
     expect(services.users.findAllWithComuni).toHaveBeenCalledTimes(1);
     expect(services.comuni.searchByPrefix).not.toHaveBeenCalled();
+  });
+
+  it("admin che digita /admin_info <id> passa l'argomento all'handler", async () => {
+    const services = makeServices();
+    services.users.findByTelegramId = vi.fn().mockResolvedValue(undefined);
+    const bot = await setupBot("111", services);
+
+    await bot.handleUpdate(textUpdate("/admin_info 123", 111));
+
+    expect(services.users.findByTelegramId).toHaveBeenCalledWith(123);
   });
 });

@@ -25,7 +25,7 @@ export async function handleAdminUtenti(ctx: Context, services: BotServices) {
 
 export async function handleAdminInfo(ctx: Context, services: BotServices, id: string) {
   if (!id) {
-    await ctx.reply("❌ Specifica un ID Telegram: /admin info &lt;id&gt;");
+    await ctx.reply("❌ Specifica un ID Telegram: /admin_info &lt;id&gt;");
     return;
   }
   const idNum = Number(id);
@@ -77,17 +77,13 @@ export function registerAdminHandlers(
   composer: Composer<Context>,
   services: BotServices,
 ) {
-  composer.command("admin", async (ctx) => {
-    const fullText = (ctx.match as string)?.trim() ?? "";
-    const parts = fullText.split(/\s+/);
-    const sub = parts[0]?.toLowerCase() ?? "";
-
-    if (sub === "stat") return handleAdminStat(ctx, services);
-    if (sub === "utenti") return handleAdminUtenti(ctx, services);
-    if (sub === "info")
-      return handleAdminInfo(ctx, services, parts.slice(1).join(" "));
-    if (sub === "broadcast")
-      return handleAdminBroadcast(ctx, services, parts.slice(1).join(" "));
-    return handleAdmin(ctx, services);
-  });
+  composer.command("admin", (ctx) => handleAdmin(ctx, services));
+  composer.command("admin_stat", (ctx) => handleAdminStat(ctx, services));
+  composer.command("admin_utenti", (ctx) => handleAdminUtenti(ctx, services));
+  composer.command("admin_info", (ctx) =>
+    handleAdminInfo(ctx, services, (ctx.match as string)?.trim() ?? ""),
+  );
+  composer.command("admin_broadcast", (ctx) =>
+    handleAdminBroadcast(ctx, services, (ctx.match as string)?.trim() ?? ""),
+  );
 }
