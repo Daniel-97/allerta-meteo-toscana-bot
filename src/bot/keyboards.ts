@@ -1,16 +1,3 @@
-import { Keyboard } from "grammy";
-
-export function mainMenuKeyboard() {
-  return new Keyboard()
-    .text("🚨 Allerta meteo")
-    .text("🌤️ Previsioni meteo")
-    .row()
-    .text("📋 Gestisci comuni")
-    .text("ℹ️ Credits&Info")
-    .row()
-    .resized();
-}
-
 export function comuniGestioneInlineKeyboard(
   comuni: Array<{ nome: string; url: string }>
 ) {

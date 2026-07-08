@@ -1,26 +1,21 @@
 import type { Composer, Context } from "grammy";
 import type { BotServices } from "../handlers.js";
 import { adminMessages } from "./messages.js";
-import { mainMenuKeyboard } from "../keyboards.js";
 
 export async function handleAdmin(ctx: Context, _services: BotServices) {
-  await ctx.reply(adminMessages.welcome, { reply_markup: mainMenuKeyboard() });
+  await ctx.reply(adminMessages.welcome);
 }
 
 export async function handleAdminStat(ctx: Context, services: BotServices) {
   const users = await services.users.findAllWithComuni();
   const totaleUtenti = users.length;
   const totaleComuni = users.reduce((sum, u) => sum + u.comuni.length, 0);
-  await ctx.reply(adminMessages.riepilogoUtenti(totaleUtenti, totaleComuni), {
-    reply_markup: mainMenuKeyboard(),
-  });
+  await ctx.reply(adminMessages.riepilogoUtenti(totaleUtenti, totaleComuni));
 }
 
 export async function handleAdminUtenti(ctx: Context, services: BotServices) {
   const users = await services.users.findAllWithComuni();
-  await ctx.reply(adminMessages.listaUtenti(users), {
-    reply_markup: mainMenuKeyboard(),
-  });
+  await ctx.reply(adminMessages.listaUtenti(users));
 }
 
 export async function handleAdminInfo(ctx: Context, services: BotServices, id: string) {
@@ -35,14 +30,10 @@ export async function handleAdminInfo(ctx: Context, services: BotServices, id: s
   }
   const user = await services.users.findByTelegramId(idNum);
   if (!user) {
-    await ctx.reply(adminMessages.utenteNonTrovato, {
-      reply_markup: mainMenuKeyboard(),
-    });
+    await ctx.reply(adminMessages.utenteNonTrovato);
     return;
   }
-  await ctx.reply(adminMessages.infoUtente(user), {
-    reply_markup: mainMenuKeyboard(),
-  });
+  await ctx.reply(adminMessages.infoUtente(user));
 }
 
 export async function handleAdminBroadcast(
@@ -51,9 +42,7 @@ export async function handleAdminBroadcast(
   testo: string,
 ) {
   if (!testo) {
-    await ctx.reply(adminMessages.broadcastVuoto, {
-      reply_markup: mainMenuKeyboard(),
-    });
+    await ctx.reply(adminMessages.broadcastVuoto);
     return;
   }
   const users = await services.users.findAllWithComuni();
@@ -67,10 +56,7 @@ export async function handleAdminBroadcast(
       falliti++;
     }
   }
-  await ctx.reply(
-    adminMessages.broadcastRiepilogo(inviati, users.length, falliti),
-    { reply_markup: mainMenuKeyboard() },
-  );
+  await ctx.reply(adminMessages.broadcastRiepilogo(inviati, users.length, falliti));
 }
 
 export function registerAdminHandlers(

@@ -189,26 +189,7 @@ invocation_logs = true
 
 > 💡 **Suggerimento:** In qualsiasi momento, puoi digitare 3 o più lettere del nome di un comune (es. "pis") per cercarlo direttamente, senza usare nessun comando.
 
-### Menu a bottoni
-
-```
-┌─ Menu principale ─────────────────┐
-│ 🚨 Allerta meteo                  │
-│ 🌤️ Previsioni meteo              │
-│ 📋 Gestisci comuni                │
-│ ℹ️ Credits&Info                   │
-└───────────────────────────────────┘
-
-         ▼ (clicca "Gestisci comuni")
-
-┌─ Sottomenu gestione ──────────────┐
-│ ➕ Aggiungi (digita il nome)        │
-│ 🗑️ Elimina (rimuovi comune)      │
-│ ✏️ Modifica (notifiche on/off)   │
-│ 📋 Lista (mostra elenco)          │
-│ 🔙 Indietro (torna al menu)       │
-└───────────────────────────────────┘
-```
+Tutte le funzionalità sono disponibili tramite i comandi descritti nella tabella; la gestione dei comuni (`/comuni`) è a bottoni inline sotto il messaggio.
 
 ## Pannello Admin
 
@@ -217,10 +198,10 @@ I comandi admin sono accessibili solo dall'utente configurato come `ADMIN_CHAT_I
 | Comando | Azione |
 |---|---|
 | `/admin` | Mostra il pannello admin |
-| `/admin stat` | Statistiche: utenti registrati e comuni seguiti |
-| `/admin utenti` | Elenco completo degli utenti registrati |
-| `/admin info <id>` | Info dettagliate su un utente specifico |
-| `/admin broadcast <testo>` | Invia un messaggio a tutti gli utenti registrati |
+| `/admin_stat` | Statistiche: utenti registrati e comuni seguiti |
+| `/admin_utenti` | Elenco completo degli utenti registrati |
+| `/admin_info <id>` | Info dettagliate su un utente specifico |
+| `/admin_broadcast <testo>` | Invia un messaggio a tutti gli utenti registrati |
 
 ## Fonti dati
 

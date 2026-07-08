@@ -92,7 +92,7 @@ export const messages = {
     "🌤️ Le previsioni meteo vengono inviate solo se hai attivato le notifiche meteo per quel comune\n\n" +
     "⏰ Le notifiche vengono inviate 2 volte al giorno (08:00 e 15:00 ora italiana)\n\n" +
     "⚠️ <i>Questo bot non è ufficiale e non è affiliato al consorzio LAMMA, alla Regione Toscana né al Ministero della Salute.</i>\n\n" +
-    "Per iniziare aggiungi un comune premendo sul tasto <b>Gestisci comuni → Aggiungi</b>",
+    "Per iniziare aggiungi un comune con il comando /comuni",
 
   credits:
     "ℹ️ <b>Come funziona</b>\n\n" +
@@ -112,17 +112,13 @@ export const messages = {
     "🌤️ /previsioni — Richiedi le previsioni meteo per i tuoi comuni\n\n" +
     "📋 /comuni — Gestisci i comuni monitorati (aggiungi, modifica, elimina, lista)\n\n" +
     "ℹ️ /credits — Informazioni sul bot e le fonti dati\n\n" +
-    "❓ /aiuto — Mostra questo messaggio\n\n" +
-    "Puoi usare gli stessi comandi anche premendo i pulsanti del menu qui sotto.",
-
-  menuAggiornato:
-    "🔄 Il menu è stato aggiornato! Ora la gestione dei comuni si fa con i pulsanti qui sotto al messaggio.",
+    "❓ /aiuto — Mostra questo messaggio",
 
   nessunComune:
     "Non hai ancora impostato comuni. Premi il pulsante <b>➕ Aggiungi</b> per iniziare.",
 
   nessunComunePrevisioni:
-    "Imposta almeno un comune da monitorare prima premendo sul tasto <b>Gestisci comuni → Aggiungi</b>",
+    "Imposta almeno un comune da monitorare prima con il comando /comuni",
 
   confermaElimina: (nome: string) =>
     `Eliminare ${escHtml(nome)} dalla tua lista?`,

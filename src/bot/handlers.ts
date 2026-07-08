@@ -8,7 +8,7 @@ import type { HeatWaveService } from "../services/heatwave.js";
 import type { AlertStateService } from "../services/alert-state.js";
 import type { RateLimiterService } from "../services/rate-limiter.js";
 import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
-import { mainMenuKeyboard, mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, comuniGestioneInlineKeyboard, comuneDettaglioInlineKeyboard, confermaEliminaInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
+import { mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, comuniGestioneInlineKeyboard, comuneDettaglioInlineKeyboard, confermaEliminaInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
@@ -35,7 +35,7 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
   if (!user || user.comuni.length === 0) {
-    await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.nessunComunePrevisioni);
     return;
   }
   let allowed: boolean;
@@ -46,7 +46,7 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
     return;
   }
   if (!allowed) {
-    await ctx.reply(messages.limiteRichieste, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.limiteRichieste);
     return;
   }
   const r = await services.heatwave.fetchAllertaCalore();
@@ -66,11 +66,11 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
   const haCalore = msgCalore !== null;
 
   if (!haMeteo && !haCalore) {
-    await ctx.reply(messages.nessunaAllerta, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.nessunaAllerta);
     return;
   }
   for (const dati of comuniConAllerta) {
-    await ctx.reply(messages.allerta(dati), { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.allerta(dati));
   }
   if (msgCalore) {
     const extra: Record<string, unknown> = { link_preview_options: { is_disabled: true } };
@@ -84,7 +84,7 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   if (!id) return;
   const user = await services.users.findByTelegramId(id);
   if (!user || user.comuni.length === 0) {
-    await ctx.reply(messages.nessunComunePrevisioni, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.nessunComunePrevisioni);
     return;
   }
   let allowed: boolean;
@@ -95,7 +95,7 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
     return;
   }
   if (!allowed) {
-    await ctx.reply(messages.limiteRichieste, { reply_markup: mainMenuKeyboard() });
+    await ctx.reply(messages.limiteRichieste);
     return;
   }
   for (const c of user.comuni) {
@@ -149,20 +149,12 @@ export async function handleGestisciComuni(ctx: Context, services: BotServices) 
   await ctx.reply(view.text, { reply_markup: view.reply_markup });
 }
 
-// Migrazione una tantum: chi aveva ancora in chat la vecchia reply keyboard di
-// gestione comuni (rimossa lato bot, ma persistente lato client finché non
-// viene sostituita) viene qui riportato alla tastiera principale + nuova UI inline.
-export async function handleMenuAggiornato(ctx: Context, services: BotServices) {
-  await ctx.reply(messages.menuAggiornato, { reply_markup: mainMenuKeyboard() });
-  await handleGestisciComuni(ctx, services);
-}
-
 export async function handleCredits(ctx: Context) {
-  await ctx.reply(messages.credits, { reply_markup: mainMenuKeyboard(), link_preview_options: { is_disabled: true } });
+  await ctx.reply(messages.credits, { link_preview_options: { is_disabled: true } });
 }
 
 export async function handleAiuto(ctx: Context) {
-  await ctx.reply(messages.aiuto, { reply_markup: mainMenuKeyboard() });
+  await ctx.reply(messages.aiuto);
 }
 
 export async function handleRichiestaTestoLibero(
@@ -187,7 +179,9 @@ export async function handleRichiestaTestoLibero(
 
 export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: number) {
   bot.command("start", async (ctx) => {
-    await ctx.reply(messages.welcome, { reply_markup: mainMenuKeyboard() });
+    // remove_keyboard pulisce eventuali reply keyboard rimaste agganciate lato
+    // client da versioni precedenti del bot (Telegram non le rimuove da sola).
+    await ctx.reply(messages.welcome, { reply_markup: { remove_keyboard: true } });
   });
 
   bot.command("allerta", (ctx) => handleAllerta(ctx, services));
@@ -195,18 +189,6 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   bot.command("comuni", (ctx) => handleGestisciComuni(ctx, services));
   bot.command("credits", handleCredits);
   bot.command("aiuto", handleAiuto);
-
-  bot.hears("🚨 Allerta meteo", (ctx) => handleAllerta(ctx, services));
-
-  bot.hears("🌤️ Previsioni meteo", (ctx) => handlePrevisioni(ctx, services));
-
-  bot.hears("📋 Gestisci comuni", (ctx) => handleGestisciComuni(ctx, services));
-
-  bot.hears("ℹ️ Credits&Info", handleCredits);
-
-  for (const legacyLabel of ["➕ Aggiungi", "🗑️ Elimina", "✏️ Modifica", "📋 Lista", "🔙 Indietro"]) {
-    bot.hears(legacyLabel, (ctx) => handleMenuAggiornato(ctx, services));
-  }
 
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
 }

@@ -15,10 +15,7 @@ describe("handleAdmin", () => {
 
     await handleAdmin(ctx, {} as any);
 
-    expect(reply).toHaveBeenCalledWith(
-      adminMessages.welcome,
-      expect.objectContaining({}),
-    );
+    expect(reply).toHaveBeenCalledWith(adminMessages.welcome);
   });
 });
 
@@ -38,10 +35,7 @@ describe("handleAdminStat", () => {
     await handleAdminStat(ctx, services);
 
     expect(services.users.findAllWithComuni).toHaveBeenCalledTimes(1);
-    expect(reply).toHaveBeenCalledWith(
-      expect.stringContaining("2"),
-      expect.objectContaining({}),
-    );
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("2"));
   });
 });
 
@@ -74,10 +68,7 @@ describe("handleAdminUtenti", () => {
     await handleAdminUtenti(ctx, services);
 
     expect(services.users.findAllWithComuni).toHaveBeenCalledTimes(1);
-    expect(reply).toHaveBeenCalledWith(
-      expect.stringContaining("Utenti registrati (2)"),
-      expect.any(Object),
-    );
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("Utenti registrati (2)"));
     const msg = reply.mock.calls[0][0];
     expect(msg).toContain("123");
     expect(msg).toContain("@mario");
@@ -106,10 +97,7 @@ describe("handleAdminInfo", () => {
     await handleAdminInfo(ctx, services, "123");
 
     expect(services.users.findByTelegramId).toHaveBeenCalledWith(123);
-    expect(reply).toHaveBeenCalledWith(
-      expect.stringContaining("123"),
-      expect.objectContaining({}),
-    );
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("123"));
   });
 
   it("mostra errore per ID non trovato", async () => {
@@ -123,10 +111,7 @@ describe("handleAdminInfo", () => {
 
     await handleAdminInfo(ctx, services, "999");
 
-    expect(reply).toHaveBeenCalledWith(
-      adminMessages.utenteNonTrovato,
-      expect.any(Object),
-    );
+    expect(reply).toHaveBeenCalledWith(adminMessages.utenteNonTrovato);
   });
 
   it("mostra errore se id è vuoto", async () => {
@@ -160,10 +145,7 @@ describe("handleAdminBroadcast", () => {
     expect(sendMessage).toHaveBeenCalledTimes(2);
     expect(sendMessage).toHaveBeenCalledWith(1, "Ciao a tutti!");
     expect(sendMessage).toHaveBeenCalledWith(2, "Ciao a tutti!");
-    expect(reply).toHaveBeenCalledWith(
-      expect.stringContaining("2/2"),
-      expect.any(Object),
-    );
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("2/2"));
   });
 
   it("mostra errore se messaggio è vuoto", async () => {
@@ -172,10 +154,7 @@ describe("handleAdminBroadcast", () => {
 
     await handleAdminBroadcast(ctx, {} as any, "");
 
-    expect(reply).toHaveBeenCalledWith(
-      adminMessages.broadcastVuoto,
-      expect.any(Object),
-    );
+    expect(reply).toHaveBeenCalledWith(adminMessages.broadcastVuoto);
   });
 
   it("gestisce errori di invio e riporta falliti", async () => {
@@ -197,9 +176,6 @@ describe("handleAdminBroadcast", () => {
     await handleAdminBroadcast(ctx, services, "test");
 
     expect(sendMessage).toHaveBeenCalledTimes(2);
-    expect(reply).toHaveBeenCalledWith(
-      expect.stringContaining("1 falliti"),
-      expect.any(Object),
-    );
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("1 falliti"));
   });
 });

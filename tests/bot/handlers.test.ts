@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { GrammyError } from "grammy";
-import { handleAllerta, handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero, handleGestisciComuni, handleCredits, handleAiuto, handleMenuAggiornato } from "../../src/bot/handlers.js";
+import { handleAllerta, handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero, handleGestisciComuni, handleCredits, handleAiuto } from "../../src/bot/handlers.js";
 
 const grammyErrorNotModified = () =>
   new GrammyError(
@@ -469,7 +469,6 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Nessuna allerta in corso o prevista"),
-      expect.objectContaining({ reply_markup: expect.anything() }),
     );
   });
 
@@ -493,7 +492,6 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Allerta meteo"),
-      expect.anything(),
     );
   });
 
@@ -541,7 +539,6 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(2);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Allerta meteo"),
-      expect.anything(),
     );
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Ondata di calore"),
@@ -576,7 +573,6 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Firenze"),
-      expect.anything(),
     );
   });
 });
@@ -666,7 +662,6 @@ describe("rate limiting richieste on-demand", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("una volta al minuto"),
-      expect.objectContaining({ reply_markup: expect.anything() }),
     );
     expect(fetchDatiMeteo).not.toHaveBeenCalled();
     expect(fetchAllertaCalore).not.toHaveBeenCalled();
@@ -692,7 +687,6 @@ describe("rate limiting richieste on-demand", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("una volta al minuto"),
-      expect.objectContaining({ reply_markup: expect.anything() }),
     );
     expect(fetchDatiMeteo).not.toHaveBeenCalled();
   });
@@ -929,41 +923,8 @@ describe("handleGestisciComuni", () => {
   });
 });
 
-describe("handleMenuAggiornato", () => {
-  it("ripristina la tastiera principale e mostra la nuova gestione comuni", async () => {
-    const reply = vi.fn().mockResolvedValue(undefined);
-    const ctx = { from: { id: 123 }, reply } as any;
-    const services = {
-      users: {
-        findByTelegramId: vi.fn().mockResolvedValue({
-          idTelegram: 123,
-          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
-        }),
-      },
-    } as any;
-
-    await handleMenuAggiornato(ctx, services);
-
-    expect(reply).toHaveBeenCalledTimes(2);
-    expect(reply).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining("aggiornato"),
-      expect.objectContaining({
-        reply_markup: expect.objectContaining({ keyboard: expect.any(Array) }),
-      }),
-    );
-    expect(reply).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining("Firenze"),
-      expect.objectContaining({
-        reply_markup: expect.objectContaining({ inline_keyboard: expect.any(Array) }),
-      }),
-    );
-  });
-});
-
 describe("handleCredits", () => {
-  it("risponde con il messaggio credits e la main menu keyboard", async () => {
+  it("risponde con il messaggio credits", async () => {
     const reply = vi.fn().mockResolvedValue(undefined);
     const ctx = { reply } as any;
 
@@ -971,10 +932,7 @@ describe("handleCredits", () => {
 
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Come funziona"),
-      expect.objectContaining({
-        reply_markup: expect.anything(),
-        link_preview_options: { is_disabled: true },
-      }),
+      { link_preview_options: { is_disabled: true } },
     );
   });
 });
@@ -986,7 +944,7 @@ describe("handleAiuto", () => {
 
     await handleAiuto(ctx);
 
-    expect(reply).toHaveBeenCalledWith(expect.stringContaining("/allerta"), expect.anything());
-    expect(reply).toHaveBeenCalledWith(expect.stringContaining("/aiuto"), expect.anything());
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("/allerta"));
+    expect(reply).toHaveBeenCalledWith(expect.stringContaining("/aiuto"));
   });
 });
