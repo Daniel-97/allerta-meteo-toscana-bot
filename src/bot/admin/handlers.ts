@@ -50,7 +50,10 @@ export async function handleAdminBroadcast(
   let falliti = 0;
   for (const u of users) {
     try {
-      await ctx.api.sendMessage(u.idTelegram, testo);
+      // remove_keyboard pulisce anche eventuali reply keyboard rimaste agganciate
+      // lato client da versioni precedenti del bot, anche per chi non ha mai
+      // rilanciato /start.
+      await ctx.api.sendMessage(u.idTelegram, testo, { reply_markup: { remove_keyboard: true } });
       inviati++;
     } catch {
       falliti++;

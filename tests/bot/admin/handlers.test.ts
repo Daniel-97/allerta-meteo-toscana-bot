@@ -143,8 +143,8 @@ describe("handleAdminBroadcast", () => {
     await handleAdminBroadcast(ctx, services, "Ciao a tutti!");
 
     expect(sendMessage).toHaveBeenCalledTimes(2);
-    expect(sendMessage).toHaveBeenCalledWith(1, "Ciao a tutti!");
-    expect(sendMessage).toHaveBeenCalledWith(2, "Ciao a tutti!");
+    expect(sendMessage).toHaveBeenCalledWith(1, "Ciao a tutti!", { reply_markup: { remove_keyboard: true } });
+    expect(sendMessage).toHaveBeenCalledWith(2, "Ciao a tutti!", { reply_markup: { remove_keyboard: true } });
     expect(reply).toHaveBeenCalledWith(expect.stringContaining("2/2"));
   });
 
