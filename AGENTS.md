@@ -28,6 +28,7 @@ il README.md di conseguenza (sezioni "Comandi bot", "Menu a bottoni", "Pannello 
 - Stile commit: `tipo: messaggio in italiano` (tipi: `feat`, `fix`, `refactor`, `chore`, `docs`, `style`)
 - Branches: lavorare su `main` (repo mono-branch)
 - Nessun commit di secret, `.env`, o `dist/`
+- Commit e push vanno fatti con l'identità git dell'utente (`git config user.name`/`user.email`), mai come "Claude" e senza riga `Co-Authored-By: Claude`
 
 ## DB e Drizzle
 
