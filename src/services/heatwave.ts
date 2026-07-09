@@ -1,12 +1,46 @@
 import type { RisultatoAllertaCalore, LivelloCalore } from "../types/index.js";
 
 const CSV_URL = "https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_latest.csv";
+// raw.githubusercontent.com applica rate limiting per IP sorgente e gli IP in uscita di
+// Cloudflare Workers sono condivisi tra migliaia di worker: bastano pochi 429 sporadici
+// per il traffico aggregato altrui. jsDelivr rispecchia lo stesso repo GitHub su una CDN
+// dedicata che non soffre dello stesso throttling condiviso.
+const CSV_URL_FALLBACK = "https://cdn.jsdelivr.net/gh/ondata/ondate-calore@main/data/ondate-calore_latest.csv";
 
-export interface HeatWaveService {
-  fetchAllertaCalore(oggi?: Date, url?: string): Promise<RisultatoAllertaCalore>;
+const RETRY_TENTATIVI_PRIMARIO = 3;
+const RETRY_TENTATIVI_FALLBACK = 2;
+const RETRY_BASE_MS = 300;
+
+function statusRitentabile(status: number): boolean {
+  return status === 429 || status >= 500;
 }
 
-export function createHeatWaveService(): HeatWaveService {
+export interface HeatWaveService {
+  fetchAllertaCalore(oggi?: Date, url?: string, urlFallback?: string): Promise<RisultatoAllertaCalore>;
+}
+
+export function createHeatWaveService(deps: { sleep?: (ms: number) => Promise<void> } = {}): HeatWaveService {
+  const sleep = deps.sleep ?? ((ms: number) => new Promise((resolve) => setTimeout(resolve, ms)));
+
+  async function fetchConRetry(url: string, tentativiMax: number): Promise<Response> {
+    let ultimoErrore: unknown;
+    for (let tentativo = 1; tentativo <= tentativiMax; tentativo++) {
+      try {
+        const res = await fetch(url);
+        if (res.ok || !statusRitentabile(res.status)) {
+          return res;
+        }
+        ultimoErrore = new Error(`HTTP ${res.status}`);
+      } catch (err) {
+        ultimoErrore = err;
+      }
+      if (tentativo < tentativiMax) {
+        await sleep(RETRY_BASE_MS * 2 ** (tentativo - 1));
+      }
+    }
+    throw ultimoErrore;
+  }
+
   function oggiDomaniISO(ref: Date) {
     const fmt = (d: Date) =>
       new Intl.DateTimeFormat("en-CA", {
@@ -31,11 +65,27 @@ export function createHeatWaveService(): HeatWaveService {
   }
 
   return {
-    fetchAllertaCalore: async (oggiDate?: Date, overrideUrl?: string): Promise<RisultatoAllertaCalore> => {
+    fetchAllertaCalore: async (
+      oggiDate?: Date,
+      overrideUrl?: string,
+      overrideUrlFallback?: string
+    ): Promise<RisultatoAllertaCalore> => {
       try {
         const ref = oggiDate ?? new Date();
         const url = overrideUrl ?? CSV_URL;
-        const res = await fetch(url);
+        const urlFallback = overrideUrlFallback ?? CSV_URL_FALLBACK;
+
+        let res: Response;
+        try {
+          res = await fetchConRetry(url, RETRY_TENTATIVI_PRIMARIO);
+        } catch (errPrimario) {
+          try {
+            res = await fetchConRetry(urlFallback, RETRY_TENTATIVI_FALLBACK);
+          } catch {
+            throw errPrimario;
+          }
+        }
+
         if (!res.ok) {
           console.error(`Errore HTTP ${res.status} nel fetch del CSV ondata calore`);
           return { errore: true, dettaglioErrore: `HTTP ${res.status}` };

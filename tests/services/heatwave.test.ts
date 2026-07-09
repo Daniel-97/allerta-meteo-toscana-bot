@@ -19,13 +19,26 @@ ROMA,2026-06-26,Livello1,2026-06-25,https://www.salute.gov.it/bol16239_roma_2026
 
 const CSV_VUOTO = `citta,data,livello,data_estrazione,URL`;
 
+function creaServizio() {
+  return createHeatWaveService({ sleep: async () => {} });
+}
+
 describe("createHeatWaveService", () => {
   const originalFetch = globalThis.fetch;
   let mockFetch: ReturnType<typeof vi.fn>;
+  const flakyCounts = new Map<string, number>();
 
   beforeAll(() => {
     vi.useFakeTimers().setSystemTime(new Date("2026-06-26T10:00:00Z"));
     mockFetch = vi.fn(async (url: string) => {
+      if (url.includes("flaky-429-poi-ok")) {
+        const n = (flakyCounts.get(url) ?? 0) + 1;
+        flakyCounts.set(url, n);
+        if (n < 3) {
+          return { ok: false, status: 429, text: async () => "Too Many Requests" } as Response;
+        }
+        return { ok: true, text: async () => CSV_FIRENZE_OGGI_DOMANI } as Response;
+      }
       if (url.includes("firenze-oggi-domani")) {
         return { ok: true, text: async () => CSV_FIRENZE_OGGI_DOMANI } as Response;
       }
@@ -47,6 +60,15 @@ describe("createHeatWaveService", () => {
       if (url.includes("malformed")) {
         return { ok: true, text: async () => "not,valid,csv" } as Response;
       }
+      if (url.includes("sempre-429")) {
+        return { ok: false, status: 429, text: async () => "Too Many Requests" } as Response;
+      }
+      if (url.includes("sempre-503")) {
+        return { ok: false, status: 503, text: async () => "Service Unavailable" } as Response;
+      }
+      if (url.includes("sempre-network-error")) {
+        throw new Error("Network failure");
+      }
       if (url.includes("network-error")) {
         throw new Error("Network failure");
       }
@@ -61,7 +83,7 @@ describe("createHeatWaveService", () => {
   });
 
   it("restituisce oggi e domani per FIRENZE con CSV valido", async () => {
-    const service = createHeatWaveService();
+    const service = creaServizio();
     const r = await service.fetchAllertaCalore(new Date(), "https://fake.url/firenze-oggi-domani");
     expect(r.errore).toBe(false);
     if (r.errore) return;
@@ -71,7 +93,7 @@ describe("createHeatWaveService", () => {
   });
 
   it("oggi Livello0 domani Livello1", async () => {
-    const service = createHeatWaveService();
+    const service = creaServizio();
     const r = await service.fetchAllertaCalore(new Date(), "https://fake.url/oggi-l0-domani-l1");
     expect(r.errore).toBe(false);
     if (r.errore) return;
@@ -80,7 +102,7 @@ describe("createHeatWaveService", () => {
   });
 
   it("solo oggi presente (domani fuori range)", async () => {
-    const service = createHeatWaveService();
+    const service = creaServizio();
     const r = await service.fetchAllertaCalore(new Date(), "https://fake.url/solo-oggi-l2");
     expect(r.errore).toBe(false);
     if (r.errore) return;
@@ -89,7 +111,7 @@ describe("createHeatWaveService", () => {
   });
 
   it("FIRENZE assente dal CSV", async () => {
-    const service = createHeatWaveService();
+    const service = creaServizio();
     const r = await service.fetchAllertaCalore(new Date(), "https://fake.url/firenze-assente");
     expect(r.errore).toBe(false);
     if (r.errore) return;
@@ -98,7 +120,7 @@ describe("createHeatWaveService", () => {
   });
 
   it("CSV vuoto (solo header)", async () => {
-    const service = createHeatWaveService();
+    const service = creaServizio();
     const r = await service.fetchAllertaCalore(new Date(), "https://fake.url/vuoto");
     expect(r.errore).toBe(false);
     if (r.errore) return;
@@ -106,14 +128,16 @@ describe("createHeatWaveService", () => {
     expect(r.domani).toBeNull();
   });
 
-  it("HTTP 404 restituisce errore: true", async () => {
-    const service = createHeatWaveService();
+  it("HTTP 404 restituisce errore: true senza ritentare (errore non transitorio)", async () => {
+    const service = creaServizio();
+    mockFetch.mockClear();
     const r = await service.fetchAllertaCalore(new Date(), "https://fake.url/404");
     expect(r.errore).toBe(true);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 
   it("body malformato restituisce errore false con dati null", async () => {
-    const service = createHeatWaveService();
+    const service = creaServizio();
     const r = await service.fetchAllertaCalore(new Date(), "https://fake.url/malformed");
     expect(r.errore).toBe(false);
     if (r.errore) return;
@@ -121,9 +145,53 @@ describe("createHeatWaveService", () => {
     expect(r.domani).toBeNull();
   });
 
-  it("rete down restituisce errore: true", async () => {
-    const service = createHeatWaveService();
-    const r = await service.fetchAllertaCalore(new Date(), "https://fake.url/network-error");
+  it("rete down su primario e fallback restituisce errore: true dopo aver ritentato", async () => {
+    const service = creaServizio();
+    mockFetch.mockClear();
+    const r = await service.fetchAllertaCalore(
+      new Date(),
+      "https://fake.url/sempre-network-error",
+      "https://fake.url/sempre-network-error-fallback"
+    );
     expect(r.errore).toBe(true);
+    // 3 tentativi sul primario + 2 tentativi sul fallback
+    expect(mockFetch).toHaveBeenCalledTimes(5);
+  });
+
+  it("429 transitorio: ritenta e recupera al terzo tentativo sul primario", async () => {
+    const service = creaServizio();
+    mockFetch.mockClear();
+    const url = "https://fake.url/flaky-429-poi-ok";
+    const r = await service.fetchAllertaCalore(new Date(), url);
+    expect(r.errore).toBe(false);
+    expect(mockFetch).toHaveBeenCalledTimes(3);
+    expect(mockFetch.mock.calls.every(([calledUrl]) => calledUrl === url)).toBe(true);
+  });
+
+  it("429 persistente sul primario: dopo 3 tentativi passa al fallback jsDelivr", async () => {
+    const service = creaServizio();
+    mockFetch.mockClear();
+    const r = await service.fetchAllertaCalore(
+      new Date(),
+      "https://fake.url/sempre-429",
+      "https://fake.url/firenze-oggi-domani-fallback"
+    );
+    expect(r.errore).toBe(false);
+    if (r.errore) return;
+    expect(r.oggi).toEqual({ livello: 2, url: "https://www.salute.gov.it/bol16170_firenze_20260625.pdf" });
+    // 3 tentativi falliti sul primario + 1 tentativo riuscito sul fallback
+    expect(mockFetch).toHaveBeenCalledTimes(4);
+  });
+
+  it("503 persistente su primario e fallback restituisce errore: true", async () => {
+    const service = creaServizio();
+    mockFetch.mockClear();
+    const r = await service.fetchAllertaCalore(
+      new Date(),
+      "https://fake.url/sempre-503",
+      "https://fake.url/sempre-503"
+    );
+    expect(r.errore).toBe(true);
+    expect(mockFetch).toHaveBeenCalledTimes(5);
   });
 });
