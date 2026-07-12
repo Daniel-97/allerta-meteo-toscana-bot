@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Logo Allerta Meteo Toscana">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a64bd"/>
+      <stop offset="0.45" stop-color="#2f97dd"/>
+      <stop offset="1" stop-color="#4fd0ec"/>
+    </linearGradient>
+    <radialGradient id="sole" cx="0.4" cy="0.35" r="0.9">
+      <stop offset="0" stop-color="#ffdf5e"/>
+      <stop offset="1" stop-color="#f5a623"/>
+    </radialGradient>
+    <linearGradient id="nuvola" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#dfeaf1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Sfondo: quadrato arrotondato stile icona app -->
+  <rect width="512" height="512" rx="114" fill="url(#cielo)"/>
+
+  <!-- Sole in alto a sinistra -->
+  <circle cx="205" cy="205" r="98" fill="url(#sole)"/>
+
+  <!-- Nuvola in basso a destra, sovrapposta al sole -->
+  <g fill="url(#nuvola)">
+    <circle cx="262" cy="268" r="64"/>
+    <circle cx="330" cy="252" r="80"/>
+    <circle cx="396" cy="292" r="58"/>
+    <circle cx="196" cy="308" r="52"/>
+    <rect x="196" y="284" width="200" height="76" rx="38"/>
+  </g>
+</svg>
