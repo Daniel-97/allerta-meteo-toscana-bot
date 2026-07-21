@@ -18,14 +18,14 @@ import type { DatiMeteo, RisultatoAllertaCalore } from "../../src/types/index.js
 const datiFixture: DatiMeteo = {
   comune: "Firenze",
   aggiornamento: "22/06/2026 12:00",
-  allerta: "GIALLO",
+  allerta: "basso",
   rischi: {
-    idraulico: "MODERATO",
-    idrogeologico: "BASSO",
-    temporali: "ASSENTE",
-    vento: "ELEVATO",
-    neve: "ASSENTE",
-    ghiaccio: "ASSENTE",
+    idraulico: "moderato",
+    idrogeologico: "basso",
+    temporali: "nessuno",
+    vento: "elevato",
+    neve: "nessuno",
+    ghiaccio: "nessuno",
   },
   temperatura: { min: 15, max: 28 },
   temperaturaAttuale: 22,
@@ -65,28 +65,28 @@ const datiNessunaAllerta: DatiMeteo = {
 
 const datiConDomani: DatiMeteo = {
   ...datiFixture,
-  allertaDomani: "ARANCIONE",
+  allertaDomani: "moderato",
   rischiDomani: {
-    idraulico: "MODERATO",
-    idrogeologico: "ELEVATO",
-    temporali: "ASSENTE",
-    vento: "BASSO",
-    neve: "ASSENTE",
-    ghiaccio: "ASSENTE",
+    idraulico: "moderato",
+    idrogeologico: "elevato",
+    temporali: "nessuno",
+    vento: "basso",
+    neve: "nessuno",
+    ghiaccio: "nessuno",
   },
   nomeGiornoDomani: "Sabato",
 };
 
 const datiNessunaAllertaConDomani: DatiMeteo = {
   ...datiNessunaAllerta,
-  allertaDomani: "ARANCIONE",
+  allertaDomani: "moderato",
   rischiDomani: {
-    idraulico: "MODERATO",
-    idrogeologico: "ELEVATO",
-    temporali: "ASSENTE",
-    vento: "BASSO",
-    neve: "ASSENTE",
-    ghiaccio: "ASSENTE",
+    idraulico: "moderato",
+    idrogeologico: "elevato",
+    temporali: "nessuno",
+    vento: "basso",
+    neve: "nessuno",
+    ghiaccio: "nessuno",
   },
   nomeGiornoDomani: "Sabato",
 };
@@ -100,14 +100,14 @@ describe("messages.allerta", () => {
 
   it("include livello allerta", () => {
     const msg = messages.allerta(datiFixture);
-    expect(msg).toContain("GIALLO");
+    expect(msg).toContain("basso");
   });
 
   it("include solo rischi attivi", () => {
     const msg = messages.allerta(datiFixture);
-    expect(msg).toContain("Idraulico: MODERATO");
-    expect(msg).toContain("Idrogeologico: BASSO");
-    expect(msg).toContain("Vento: ELEVATO");
+    expect(msg).toContain("Idraulico: moderato");
+    expect(msg).toContain("Idrogeologico: basso");
+    expect(msg).toContain("Vento: elevato");
     expect(msg).not.toContain("Temporali:");
     expect(msg).not.toContain("Neve:");
     expect(msg).not.toContain("Ghiaccio:");
@@ -134,8 +134,8 @@ describe("messages.allerta", () => {
   it("include previsioni per domani quando presenti", () => {
     const msg = messages.allerta(datiConDomani);
     expect(msg).toContain("Previsioni per Sabato");
-    expect(msg).toContain("<b>ARANCIONE</b>");
-    expect(msg).toContain("Idrogeologico: ELEVATO");
+    expect(msg).toContain("<b>moderato</b>");
+    expect(msg).toContain("Idrogeologico: elevato");
   });
 
   it("NON include previsioni per domani quando assenti", () => {
@@ -146,7 +146,7 @@ describe("messages.allerta", () => {
   it("include previsioni per domani anche quando oggi non ha allerta", () => {
     const msg = messages.allerta(datiNessunaAllertaConDomani);
     expect(msg).toContain("Previsioni per Sabato");
-    expect(msg).toContain("<b>ARANCIONE</b>");
+    expect(msg).toContain("<b>moderato</b>");
     expect(msg).toContain("Nessuna allerta in corso");
   });
 });
@@ -188,10 +188,10 @@ describe("messages.previsioni", () => {
 describe("messages.completo", () => {
   it("include allerta e previsioni", () => {
     const msg = messages.completo(datiFixture);
-    expect(msg).toContain("Allerta: GIALLO");
-    expect(msg).toContain("Idraulico: MODERATO");
-    expect(msg).toContain("Idrogeologico: BASSO");
-    expect(msg).toContain("Vento: ELEVATO");
+    expect(msg).toContain("Allerta: basso");
+    expect(msg).toContain("Idraulico: moderato");
+    expect(msg).toContain("Idrogeologico: basso");
+    expect(msg).toContain("Vento: elevato");
     expect(msg).not.toContain("Temporali:");
     expect(msg).not.toContain("Neve:");
     expect(msg).not.toContain("Ghiaccio:");
@@ -222,7 +222,7 @@ describe("messages.completo", () => {
   it("completo include previsioni per domani quando presenti", () => {
     const msg = messages.completo(datiConDomani);
     expect(msg).toContain("Previsioni per Sabato");
-    expect(msg).toContain("<b>ARANCIONE</b>");
+    expect(msg).toContain("<b>moderato</b>");
   });
 
   it("completo NON include previsioni per domani quando assenti", () => {
@@ -385,7 +385,7 @@ describe("messaggioCalore", () => {
 });
 
 describe("haAllertaMeteo", () => {
-  it("allerta=GIALLO → true", () => {
+  it("allerta=basso → true", () => {
     expect(haAllertaMeteo(datiFixture)).toBe(true);
   });
 
@@ -393,34 +393,51 @@ describe("haAllertaMeteo", () => {
     expect(haAllertaMeteo(datiNessunaAllerta)).toBe(false);
   });
 
-  it("allerta=nessuno con domani ARANCIONE → true", () => {
+  it("allerta=nessuno con domani moderato → true", () => {
     expect(haAllertaMeteo(datiNessunaAllertaConDomani)).toBe(true);
   });
 
-  it("allerta=VERDE → true (VERDE e' un allerta reale)", () => {
-    const datiVerde: DatiMeteo = { ...datiFixture, allerta: "VERDE" };
-    expect(haAllertaMeteo(datiVerde)).toBe(true);
+  it("allerta=nessuno con domani basso → true (bug cron mattutino: oggi nello slot domani del bollettino stale)", () => {
+    const datiStale: DatiMeteo = {
+      ...datiNessunaAllerta,
+      allertaDomani: "basso",
+      rischiDomani: {
+        idraulico: "nessuno",
+        idrogeologico: "nessuno",
+        temporali: "basso",
+        vento: "nessuno",
+        neve: "nessuno",
+        ghiaccio: "nessuno",
+      },
+      nomeGiornoDomani: "Martedì",
+    };
+    expect(haAllertaMeteo(datiStale)).toBe(true);
+  });
+
+  it("allerta=nessuno con domani NA → false", () => {
+    const dati: DatiMeteo = { ...datiNessunaAllerta, allertaDomani: undefined };
+    expect(haAllertaMeteo(dati)).toBe(false);
   });
 });
 
 describe("formatRischi", () => {
   const baseRischi = {
-    idraulico: "ASSENTE" as const,
+    idraulico: "nessuno" as const,
     idrogeologico: "nessuno" as const,
-    temporali: "ASSENTE" as const,
-    vento: "ASSENTE" as const,
-    neve: "ASSENTE" as const,
-    ghiaccio: "ASSENTE" as const,
+    temporali: "nessuno" as const,
+    vento: "nessuno" as const,
+    neve: "nessuno" as const,
+    ghiaccio: "nessuno" as const,
   };
 
   it("restituisce null se tutti i rischi sono assenti", () => {
     expect(formatRischi(baseRischi)).toBeNull();
   });
 
-  it("filtra ASSENTE e nessuno e mostra solo quelli attivi", () => {
-    const rischi = { ...baseRischi, idrogeologico: "MODERATO", vento: "BASSO" };
+  it("filtra nessuno, NA e stringa vuota e mostra solo quelli attivi", () => {
+    const rischi = { ...baseRischi, idrogeologico: "moderato", vento: "basso" };
     const result = formatRischi(rischi);
-    expect(result).toBe("⛰️ Idrogeologico: MODERATO\n💨 Vento: BASSO");
+    expect(result).toBe("⛰️ Idrogeologico: moderato\n💨 Vento: basso");
   });
 
   it("filtra stringa vuota", () => {
@@ -429,22 +446,28 @@ describe("formatRischi", () => {
     expect(result).toBeNull();
   });
 
+  it("filtra NA", () => {
+    const rischi = { ...baseRischi, idrogeologico: "NA" };
+    const result = formatRischi(rischi);
+    expect(result).toBeNull();
+  });
+
   it("mostra tutti i rischi se tutti sono attivi", () => {
     const rischi = {
-      idraulico: "MODERATO",
-      idrogeologico: "ELEVATO",
-      temporali: "BASSO",
-      vento: "MOLTO ELEVATO",
-      neve: "BASSO",
-      ghiaccio: "MODERATO",
+      idraulico: "moderato",
+      idrogeologico: "elevato",
+      temporali: "basso",
+      vento: "molto elevato",
+      neve: "basso",
+      ghiaccio: "moderato",
     };
     const result = formatRischi(rischi);
-    expect(result).toContain("💧 Idraulico: MODERATO");
-    expect(result).toContain("⛰️ Idrogeologico: ELEVATO");
-    expect(result).toContain("⚡ Temporali: BASSO");
-    expect(result).toContain("💨 Vento: MOLTO ELEVATO");
-    expect(result).toContain("❄️ Neve: BASSO");
-    expect(result).toContain("🧊 Ghiaccio: MODERATO");
+    expect(result).toContain("💧 Idraulico: moderato");
+    expect(result).toContain("⛰️ Idrogeologico: elevato");
+    expect(result).toContain("⚡ Temporali: basso");
+    expect(result).toContain("💨 Vento: molto elevato");
+    expect(result).toContain("❄️ Neve: basso");
+    expect(result).toContain("🧊 Ghiaccio: moderato");
   });
 });
 
@@ -460,10 +483,10 @@ describe("fingerprintMeteo", () => {
   const baseDati: DatiMeteo = {
     comune: "Firenze",
     aggiornamento: "01/07/2026",
-    allerta: "VERDE",
+    allerta: "basso",
     rischi: {
-      idraulico: "ASSENTE", idrogeologico: "ASSENTE", temporali: "ASSENTE",
-      vento: "ASSENTE", neve: "ASSENTE", ghiaccio: "ASSENTE",
+      idraulico: "nessuno", idrogeologico: "nessuno", temporali: "nessuno",
+      vento: "nessuno", neve: "nessuno", ghiaccio: "nessuno",
     },
     temperatura: { min: 10, max: 20 },
     temperaturaAttuale: 15, temperaturaPercepita: 14,
@@ -473,23 +496,23 @@ describe("fingerprintMeteo", () => {
 
   it("include allerta e 6 rischi oggi", () => {
     const fp = fingerprintMeteo(baseDati);
-    expect(fp).toContain("VERDE");
-    expect(fp).toContain("ASSENTE");
+    expect(fp).toContain("basso");
+    expect(fp).toContain("nessuno");
   });
 
   it("include allertaDomani e rischiDomani se presenti", () => {
     const dati = {
       ...baseDati,
-      allertaDomani: "GIALLO" as const,
+      allertaDomani: "basso" as const,
       rischiDomani: {
-        idraulico: "MODERATO", idrogeologico: "ASSENTE", temporali: "ASSENTE",
-        vento: "ASSENTE", neve: "ASSENTE", ghiaccio: "ASSENTE",
+        idraulico: "moderato", idrogeologico: "nessuno", temporali: "nessuno",
+        vento: "nessuno", neve: "nessuno", ghiaccio: "nessuno",
       },
       nomeGiornoDomani: "Martedì",
     };
     const fp = fingerprintMeteo(dati);
-    expect(fp).toContain("GIALLO");
-    expect(fp).toContain("MODERATO");
+    expect(fp).toContain("basso");
+    expect(fp).toContain("moderato");
   });
 
   it("non include domani se absent", () => {

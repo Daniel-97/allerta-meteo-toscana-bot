@@ -3,9 +3,9 @@ import { broadcastNotifiche } from "../../src/bot/scheduler.js";
 import { fingerprintMeteo } from "../../src/bot/messages.js";
 
 const datiMeteoMock = {
-  comune: "Test", aggiornamento: "01/01/2026", allerta: "VERDE",
-  rischi: { idraulico: "ASSENTE", idrogeologico: "ASSENTE", temporali: "ASSENTE",
-            vento: "ASSENTE", neve: "ASSENTE", ghiaccio: "ASSENTE" },
+  comune: "Test", aggiornamento: "01/01/2026", allerta: "basso",
+  rischi: { idraulico: "nessuno", idrogeologico: "nessuno", temporali: "nessuno",
+            vento: "nessuno", neve: "nessuno", ghiaccio: "nessuno" },
   temperatura: { min: 10, max: 20 }, temperaturaAttuale: 15, temperaturaPercepita: 14,
   uv: 4, quotaNeve: 2000, umidita: 50, probabilitaPioggia: 0,
   alba: "06:00", tramonto: "18:00", parteGiorno: "mattina",

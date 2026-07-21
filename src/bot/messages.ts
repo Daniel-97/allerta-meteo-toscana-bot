@@ -2,11 +2,12 @@ import { InputMediaBuilder } from "grammy";
 import type { DatiMeteo, ParteGiorno, RisultatoAllertaCalore, LivelloCalore } from "../types/index.js";
 
 const EMOJI_ALLERTA: Record<string, string> = {
-  VERDE: "🟢",
-  GIALLO: "🟡",
-  ARANCIONE: "🟠",
-  ROSSO: "🔴",
-  nessuno: "⚪",
+  "basso": "🟡",
+  "moderato": "🟠",
+  "elevato": "🔴",
+  "molto elevato": "🔴",
+  "nessuno": "🟢",
+  "NA": "⚪",
 };
 
 const RISCHIO_MAP: Record<keyof DatiMeteo["rischi"], { emoji: string; label: string }> = {
@@ -18,16 +19,22 @@ const RISCHIO_MAP: Record<keyof DatiMeteo["rischi"], { emoji: string; label: str
   ghiaccio: { emoji: "🧊", label: "Ghiaccio" },
 };
 
+const LIVELLI_ALLERTA_REALI = ["basso", "moderato", "elevato", "molto elevato"];
+
 function isAllertaReale(allerta: string | undefined): boolean {
   if (!allerta) return false;
-  return ["VERDE", "GIALLO", "ARANCIONE", "ROSSO"].includes(allerta);
+  return LIVELLI_ALLERTA_REALI.includes(allerta);
+}
+
+function isAllertaPresente(allerta: string | undefined): boolean {
+  return allerta !== undefined && allerta !== "" && allerta !== "nessuno" && allerta !== "NA";
 }
 
 export function formatRischi(
   rischi: DatiMeteo["rischi"],
 ): string | null {
   const entries = (Object.keys(RISCHIO_MAP) as (keyof DatiMeteo["rischi"])[])
-    .filter(k => rischi[k] !== "ASSENTE" && rischi[k] !== "nessuno" && rischi[k] !== "")
+    .filter(k => isAllertaPresente(rischi[k]))
     .map(k => `${RISCHIO_MAP[k].emoji} ${RISCHIO_MAP[k].label}: ${rischi[k]}`);
   return entries.length > 0 ? entries.join("\n") : null;
 }
@@ -81,7 +88,7 @@ export function messaggioCalore(r: RisultatoAllertaCalore): string | null {
 }
 
 export function haAllertaMeteo(d: DatiMeteo): boolean {
-  return d.allerta !== "nessuno" || isAllertaReale(d.allertaDomani);
+  return isAllertaReale(d.allerta) || isAllertaReale(d.allertaDomani);
 }
 
 export const messages = {
@@ -161,7 +168,7 @@ export const messages = {
     "ℹ️ Nessuna allerta in corso o prevista per i prossimi giorni.",
 
   allerta: (d: DatiMeteo) => {
-    const haAllerta = d.allerta !== "nessuno";
+    const haAllerta = isAllertaReale(d.allerta);
     let msg =
       `🚨 <b>Allerta meteo</b> — ${escHtml(d.comune)}\n` +
       `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
@@ -182,7 +189,7 @@ export const messages = {
   },
 
   completo: (d: DatiMeteo) => {
-    const haAllerta = d.allerta !== "nessuno";
+    const haAllerta = isAllertaReale(d.allerta);
     let sezioneAllerta =
       `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} <b>Allerta: ${d.allerta}</b>`;
     if (haAllerta) {

@@ -425,8 +425,8 @@ describe("handleAllerta", () => {
     allerta,
     allertaDomani,
     rischi: {
-      idraulico: "nullo", idrogeologico: "nullo", temporali: "nullo",
-      vento: "nullo", neve: "nullo", ghiaccio: "nullo",
+      idraulico: "nessuno", idrogeologico: "nessuno", temporali: "nessuno",
+      vento: "nessuno", neve: "nessuno", ghiaccio: "nessuno",
     },
     temperatura: { min: 10, max: 20 },
     temperaturaAttuale: 15,
@@ -482,7 +482,7 @@ describe("handleAllerta", () => {
           comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
         }),
       },
-      meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("GIALLO")) },
+      meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("basso")) },
       heatwave: { fetchAllertaCalore: caloreNull },
       rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
     } as any;
@@ -529,7 +529,7 @@ describe("handleAllerta", () => {
           comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
         }),
       },
-      meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("GIALLO")) },
+      meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("basso")) },
       heatwave: { fetchAllertaCalore: caloreAlert },
       rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
     } as any;
@@ -561,7 +561,7 @@ describe("handleAllerta", () => {
       },
       meteo: {
         fetchDatiMeteo: vi.fn()
-          .mockResolvedValueOnce(mockDatiMeteo("GIALLO"))   // Firenze → alert
+          .mockResolvedValueOnce(mockDatiMeteo("basso"))   // Firenze → alert
           .mockResolvedValueOnce(mockDatiMeteo("nessuno")),  // Pisa → no alert
       },
       heatwave: { fetchAllertaCalore: caloreNull },
@@ -599,7 +599,7 @@ describe("handlePrevisioni", () => {
           comune: "Firenze",
           parteGiorno: "mattina",
           aggiornamento: "2024-01-01",
-          allerta: "VERDE",
+          allerta: "basso",
           temperaturaAttuale: 15,
           temperaturaPercepita: 14,
           uv: 2,
@@ -610,12 +610,12 @@ describe("handlePrevisioni", () => {
           tramonto: "17:00",
           temperatura: { min: 10, max: 20 },
           rischi: {
-            idraulico: "nullo",
-            idrogeologico: "nullo",
-            temporali: "nullo",
-            vento: "nullo",
-            neve: "nullo",
-            ghiaccio: "nullo",
+            idraulico: "nessuno",
+            idrogeologico: "nessuno",
+            temporali: "nessuno",
+            vento: "nessuno",
+            neve: "nessuno",
+            ghiaccio: "nessuno",
           },
         }),
       },

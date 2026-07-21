@@ -60,14 +60,14 @@ export default {
       new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "numeric", hourCycle: "h23" }).format(now),
       10,
     );
-    if (oraIt !== 8 && oraIt !== 15) {
+    if (oraIt !== 9 && oraIt !== 15) {
       console.log(`scheduled: skipped (Italian hour ${oraIt})`);
       return;
     }
 
     const { bot, services } = await getInitialized(env);
     try {
-      const isMattina = oraIt === 8;
+      const isMattina = oraIt === 9;
       const adminChatId = Number(env.ADMIN_CHAT_ID);
       const result = await broadcastNotifiche(bot, services, isMattina, adminChatId);
       console.log(`scheduled: ${result.inviati}/${result.totali} notifiche inviate`);

@@ -10,10 +10,10 @@
 
 ### Funzionalità
 
-- 🚨 **Allerte meteo** — livelli VERDE / GIALLO / ARANCIONE / ROSSO per ogni comune
+- 🚨 **Allerte meteo** — livelli basso / moderato / elevato / molto elevato per ogni comune (valori LAMMA originali, corrispondenti alle fasi di criticità)
 - 🌤️ **Previsioni** — temperatura, umidità, pioggia, UV, quota neve, alba/tramonto
 - 🖼️ **Mappe meteo** — 9 immagini (3 giorni × 3 fasce orarie)
-- 🔔 **Notifiche** — 2 volte al giorno (08:00 e 15:00 ora italiana); inviate solo per i comuni con allerta in corso; il messaggio delle 15:00 è soppresso se i dati sono invariati rispetto alle 08:00
+- 🔔 **Notifiche** — 2 volte al giorno (09:00 e 15:00 ora italiana); inviate solo per i comuni con allerta in corso; il messaggio delle 15:00 è soppresso se i dati sono invariati rispetto alle 09:00
 - 🌡️ **Ondata di calore** — messaggio autonomo "Ondata di calore — Toscana" insieme alle allerte meteo, con link al bollettino del Ministero della Salute
 - 💬 **Messaggio generico** — se non ci sono allerte (meteo o calore), l'on-demand mostra un unico messaggio "Nessuna allerta in corso o prevista per i prossimi giorni"
 - 📍 **Comuni multipli** — aggiungi, elimina e gestisci più comuni
@@ -28,7 +28,7 @@ Cloudflare Worker (webhook)──► grammY ──► Telegram Bot API
        │                          │
        ├── Turso (libSQL)          └── Admin (solo ADMIN_CHAT_ID)
        ├── LAMMA XML API
-       └── Cron Trigger (9:30, 15:30 UTC) — notifiche programmate
+       └── Cron Trigger (7-14 UTC) — notifiche programmate
 ```
 
 | Componente | Tecnologia |
@@ -84,7 +84,7 @@ Apri Telegram, cerca il tuo bot e scrivi `/start`.
 
 ```bash
 npm run dev        # tsx watch — riavvio automatico su modifiche
-npm test           # 79 test, nessuna dipendenza esterna
+npm test           # 178+ test, nessuna dipendenza esterna
 ```
 
 Tutte le funzionalità funzionano in polling: comandi, callback query, search comuni, fetch LAMMA. Il polling e il webhook sono **mutuamente esclusivi** — Telegram invia gli update solo a uno dei due.
@@ -143,16 +143,16 @@ npm run webhook -- info          # Mostra stato webhook (URL, errori, coda)
 
 ## Notifiche programmate
 
-Il bot invia notifiche meteo 2 volte al giorno (08:00 e 15:00 ora italiana, corrispondenti a UTC 6–14) a tutti gli utenti iscritti. Il broadcast invia messaggi solo per i comuni che hanno un'allerta in corso (oggi o domani); i comuni senza allerta vengono soppressi. Durante ogni broadcast viene inviato anche il messaggio "Ondata di calore — Toscana" (se presente un'allerta per oggi o domani). Se non c'è nessuna allerta né meteo né calore, l'utente non riceve alcuna notifica programmata in quella fascia oraria.
+Il bot invia notifiche meteo 2 volte al giorno (09:00 e 15:00 ora italiana, corrispondenti a UTC 7–14) a tutti gli utenti iscritti. Il broadcast invia messaggi solo per i comuni che hanno un'allerta in corso (oggi o domani); i comuni senza allerta vengono soppressi. Durante ogni broadcast viene inviato anche il messaggio "Ondata di calore — Toscana" (se presente un'allerta per oggi o domani). Se non c'è nessuna allerta né meteo né calore, l'utente non riceve alcuna notifica programmata in quella fascia oraria.
 
-**Deduplica pomeridiana:** Il messaggio delle 15:00 viene inviato solo se i dati di allerta (livello + rischi per meteo, livelli oggi/domani per calore) sono cambiati rispetto alle 08:00 dello stesso giorno. Se i dati sono invariati, il messaggio viene soppresso per evitare duplicati. Lo stato delle allerte viene salvato in una tabella `stato_allerte` con un fingerprint che viene confrontato prima dell'invio pomeridiano.
+**Deduplica pomeridiana:** Il messaggio delle 15:00 viene inviato solo se i dati di allerta (livello + rischi per meteo, livelli oggi/domani per calore) sono cambiati rispetto alle 09:00 dello stesso giorno. Se i dati sono invariati, il messaggio viene soppresso per evitare duplicati. Lo stato delle allerte viene salvato in una tabella `stato_allerte` con un fingerprint che viene confrontato prima dell'invio pomeridiano.
 
 Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
 
 Configurazione in `wrangler.toml`:
 ```toml
 [triggers]
-crons = ["0 6-14 * * *"]
+crons = ["0 7-14 * * *"]
 ```
 
 Per testare il cron localmente con `wrangler dev`:
@@ -219,18 +219,18 @@ Le informazioni meteorologiche provengono dal [Consorzio LAMMA](https://www.lamm
 
 ```xml
 <dati>
-  <comune>Firenze</comune>
-  <aggiornamento>2025-01-15 11:30</aggiornamento>
-  <previsione ora="giorno">
-    <allerta value="GIALLO"/>
-    <rischio value="MODERATO"/>    <!-- idraulico -->
-    <rischio value="BASSO"/>       <!-- idrogeologico -->
-    <rischio value="ASSENTE"/>     <!-- temporali -->
-    <rischio value="ASSENTE"/>     <!-- vento -->
-    <rischio value="ASSENTE"/>     <!-- neve -->
-    <rischio value="ASSENTE"/>     <!-- ghiaccio -->
-    <temp>12</temp>                <!-- min -->
-    <temp>22</temp>                <!-- max -->
+  <comune>Cascina</comune>
+  <aggiornamento>21/07/2026 08:39</aggiornamento>
+  <previsione idday="1" ora="giorno" datadescr="Martedì">
+    <allerta value="basso"/>
+    <rischio descr="idraulico" value="nessuno"/>
+    <rischio descr="idrogeologico" value="nessuno"/>
+    <rischio descr="temporali" value="basso"/>
+    <rischio descr="vento" value="nessuno"/>
+    <rischio descr="neve" value="nessuno"/>
+    <rischio descr="ghiaccio" value="nessuno"/>
+    <temp temp_type="min">15</temp>
+    <temp temp_type="max">28</temp>
   </previsione>
   <previsione ora="mattina|pomeriggio|sera">...</previsione>
   <almanacco>
@@ -244,8 +244,10 @@ Le informazioni meteorologiche provengono dal [Consorzio LAMMA](https://www.lamm
 
 | Campo | Valori |
 |---|---|
-| Allerta | `VERDE` · `GIALLO` · `ARANCIONE` · `ROSSO` |
-| Rischio | `ASSENTE` · `BASSO` · `MODERATO` · `ELEVATO` · `MOLTO ELEVATO` |
+| Allerta | `basso` · `moderato` · `elevato` · `molto elevato` · `nessuno` · `NA` |
+| Rischio | `basso` · `moderato` · `elevato` · `molto elevato` · `nessuno` · `NA` |
+
+> I valori `basso`, `moderato`, `elevato`, `molto elevato` corrispondono alle fasi di criticità LAMMA (equivalenti rispettivamente a Giallo, Arancione, Rosso della Allertameteo regionale toscana).
 
 #### Album immagini meteo
 
@@ -333,7 +335,7 @@ tests/
 ## Test
 
 ```bash
-npm test              # Esegue tutti i test (79)
+npm test              # Esegue tutti i test (178+)
 npm run test:watch    # Modalità watch
 ```
 

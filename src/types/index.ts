@@ -5,14 +5,23 @@ export interface Comune {
 
 export type ParteGiorno = "mattina" | "mattina2" | "pomeriggio" | "pomeriggio2" | "sera" | "sera2";
 
-export type LivelloAllerta = "VERDE" | "GIALLO" | "ARANCIONE" | "ROSSO" | "nessuno";
+export type LivelloAllerta =
+  | "basso"
+  | "moderato"
+  | "elevato"
+  | "molto elevato"
+  | "nessuno"
+  | "NA";
+
+export type LivelloAllertaReale = Exclude<LivelloAllerta, "nessuno" | "NA">;
 
 export type LivelloRischio =
-  | "ASSENTE"
-  | "BASSO"
-  | "MODERATO"
-  | "ELEVATO"
-  | "MOLTO ELEVATO"
+  | "basso"
+  | "moderato"
+  | "elevato"
+  | "molto elevato"
+  | "nessuno"
+  | "NA"
   | string;
 
 export interface DatiMeteo {
