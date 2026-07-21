@@ -21,26 +21,6 @@
 
 Bot Telegram per allerte meteo della Toscana, basato sui dati resi disponibili dal [Consorzio LAMMA](https://www.lamma.toscana.it/).
 
-## Architettura
-
-```
-Cloudflare Worker (webhook)──► grammY ──► Telegram Bot API
-       │                          │
-       ├── Turso (libSQL)          └── Admin (solo ADMIN_CHAT_ID)
-       ├── LAMMA XML API
-       └── Cron Trigger (7-14 UTC) — notifiche programmate
-```
-
-| Componente | Tecnologia |
-|---|---|
-| Hosting | Cloudflare Workers (serverless, zero self-hosting) |
-| Database | Turso (SQLite gestito, HTTP-based) |
-| Bot framework | grammY |
-| ORM | Drizzle ORM |
-| Stato bot | Stateless — inline keyboard + callback_data (nessuna sessione) |
-| Dev locale | Polling (`bot.start()`), nessun webhook necessario |
-| Deploy | `wrangler deploy` + Telegram webhook |
-
 ## Prerequisiti
 
 - **Node.js 18+**
@@ -89,28 +69,6 @@ npm test           # 178+ test, nessuna dipendenza esterna
 
 Tutte le funzionalità funzionano in polling: comandi, callback query, search comuni, fetch LAMMA. Il polling e il webhook sono **mutuamente esclusivi** — Telegram invia gli update solo a uno dei due.
 
-## Test webhook in locale (wrangler dev)
-
-Se vuoi testare il percorso webhook (esattamente come sarà in produzione):
-
-```bash
-# Terminale 1: avvia Worker locale con URL pubblico
-npx wrangler dev
-
-# L'output mostra un URL pubblico (https://<subdomain>.trycloudflare.com/)
-# Copia l'URL
-
-# Terminale 2: imposta webhook su quell'URL
-npm run webhook -- set https://<subdomain>.trycloudflare.com/
-
-# Testa il bot su Telegram...
-
-# Quando finisci: elimina webhook per tornare a polling
-npm run webhook -- delete
-```
-
-`wrangler dev` simula l'ambiente Cloudflare Workers localmente e fornisce un URL pubblico tramite Cloudflare Tunnel.
-
 ## Deploy produzione
 
 ```bash
@@ -133,14 +91,6 @@ npm run webhook -- set https://allerta-meteo-toscana-bot.<account>.workers.dev/
 npm run webhook -- info
 ```
 
-## Gestione webhook
-
-```bash
-npm run webhook -- set <url>     # Imposta webhook su un URL
-npm run webhook -- delete        # Elimina webhook (torna a polling)
-npm run webhook -- info          # Mostra stato webhook (URL, errori, coda)
-```
-
 ## Notifiche programmate
 
 Il bot invia notifiche meteo 2 volte al giorno (09:00 e 15:00 ora italiana, corrispondenti a UTC 7–14) a tutti gli utenti iscritti. Il broadcast invia messaggi solo per i comuni che hanno un'allerta in corso (oggi o domani); i comuni senza allerta vengono soppressi. Durante ogni broadcast viene inviato anche il messaggio "Ondata di calore — Toscana" (se presente un'allerta per oggi o domani). Se non c'è nessuna allerta né meteo né calore, l'utente non riceve alcuna notifica programmata in quella fascia oraria.
@@ -158,17 +108,6 @@ crons = ["0 7-14 * * *"]
 Per testare il cron localmente con `wrangler dev`:
 ```bash
 curl "http://localhost:8787/__scheduled"
-```
-
-## Observability (log)
-
-I log del Worker sono abilitati via Workers Logs. I `console.log`/`console.error` emessi dal codice (handler fetch/scheduled, errori di notifica, config mancante) vengono catturati nel dashboard Cloudflare: **Workers & Pages > [worker] > Logs**. Gli invocation logs registrano automaticamente start/end, status e durata di ogni richiesta e ogni esecuzione del cron.
-
-Configurazione in `wrangler.toml`:
-```toml
-[observability.logs]
-enabled = true
-invocation_logs = true
 ```
 
 ## Comandi bot
@@ -249,19 +188,6 @@ Le informazioni meteorologiche provengono dal [Consorzio LAMMA](https://www.lamm
 
 > I valori `basso`, `moderato`, `elevato`, `molto elevato` corrispondono alle fasi di criticità LAMMA (equivalenti rispettivamente a Giallo, Arancione, Rosso della Allertameteo regionale toscana).
 
-#### Album immagini meteo
-
-Il bot non invia più l'album immagini di default. Sotto il messaggio di previsioni
-meteo (o di notifica programmata) compare un pulsante **🖼️ Mostra mappe meteo**:
-cliccandolo, il bot invia l'album di 9 immagini (3 giorni × 3 fasce orarie).
-
-```
-URL: https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg
-
-N = 1 (oggi), 2 (domani), 3 (dopodomani)
-F = M (mattina ~8), P (pomeriggio ~14), S (sera ~20)
-```
-
 ### Bollettino ondata di calore (Ministero della Salute / OnData)
 
 I bollettini ufficiali del [Ministero della Salute](https://www.salute.gov.it/new/it/tema/ondate-di-calore/bollettini-sulle-ondate-di-calore-0/) sono raccolti e resi disponibili in formato CSV dall'associazione [OnData](https://github.com/ondata/ondate-calore). Il bot utilizza il capoluogo **Firenze** come riferimento regionale per la Toscana (il bollettino nazionale copre 27 città capoluogo).
@@ -278,59 +204,6 @@ I bollettini ufficiali del [Ministero della Salute](https://www.salute.gov.it/ne
 | `Livello1` | Gialla | 🟡 | allerta |
 | `Livello2` | Arancione | 🟠 | allerta |
 | `Livello3` | Rossa | 🔴 | allerta |
-
-## Struttura del progetto
-
-```
-src/
-├── index.ts              # Worker entry point (webhook + cron)
-├── dev.ts                # Dev entry point (polling)
-├── config.ts             # Config factory (Zod validation)
-├── logger.ts             # Logger (pino)
-├── db/
-│   ├── index.ts          # DB factory (@libsql/client + Drizzle)
-│   └── schema.ts         # Schema (utenti, utenti_comuni, sessioni, comuni) — sincronizzato su Turso con `db:push`
-├── services/
-│   ├── comuni.ts         # Archivio comuni (searchByPrefix, findByNome, all)
-│   ├── users.ts          # Users repository (subscribe, findByTelegramId, findAllWithComuni)
-│   ├── meteo.ts          # Meteo service (fetch + parse XML LAMMA → DatiMeteo)
-│   ├── heatwave.ts       # Ondata di calore service (fetch + parse CSV → RisultatoAllertaCalore)
-│   └── messaggi.ts       # Message formatters (allerta, previsioni, completo, image URL)
-├── bot/
-│   ├── admin/
-│   │   ├── handlers.ts   # Admin command handlers (scoped via Composer)
-│   │   ├── messages.ts   # Admin message templates
-│   │   └── middleware.ts # Admin auth middleware (isAdmin)
-│   ├── handlers.ts       # Command + callback query handlers
-│   ├── bot.ts            # Bot factory (createBot, ordine middleware)
-│   ├── strings.ts        # Message templates
-│   ├── keyboards.ts      # Custom + inline keyboard builders
-│   └── scheduler.ts      # Notifica programmata (broadcastNotifiche)
-└── types/
-    └── index.ts          # Tipi condivisi (Comune, DatiMeteo, LivelloAllerta, ...)
-
-scripts/
-├── seed-comuni.ts        # Import XML comuni → Turso
-└── webhook.ts            # Gestione webhook Telegram
-
-tests/
-├── config.test.ts
-├── services/
-│   ├── comuni.test.ts
-│   ├── users.test.ts
-│   ├── meteo.test.ts
-│   └── messaggi.test.ts
-├── bot/
-│   ├── admin/
-│   │   └── handlers.test.ts
-│   ├── bot.test.ts       # createBot: ordinamento middleware (admin vs testo libero)
-│   ├── handlers.test.ts
-│   ├── logging.test.ts
-│   ├── messages.test.ts
-│   └── scheduler.test.ts
-└── helpers/
-    └── test-db.ts        # createTestDb (:memory: libsql + migrate)
-```
 
 ## Test
 
