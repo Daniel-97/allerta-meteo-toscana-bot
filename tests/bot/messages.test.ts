@@ -149,6 +149,11 @@ describe("messages.allerta", () => {
     expect(msg).toContain("<b>moderato</b>");
     expect(msg).toContain("Nessuna allerta in corso");
   });
+
+  it("termina con la riga Aggiornamento", () => {
+    const msg = messages.allerta(datiFixture);
+    expect(msg.endsWith("<i>Aggiornamento: 22/06/2026 12:00</i>")).toBe(true);
+  });
 });
 
 describe("messages.previsioni", () => {
@@ -182,6 +187,11 @@ describe("messages.previsioni", () => {
     const msg = messages.previsioni(datiFixture);
     expect(msg).not.toContain("Allerta");
     expect(msg).not.toContain("Idraulico");
+  });
+
+  it("termina con la riga Aggiornamento", () => {
+    const msg = messages.previsioni(datiFixture);
+    expect(msg.endsWith("<i>Aggiornamento: 22/06/2026 12:00</i>")).toBe(true);
   });
 });
 
@@ -228,6 +238,11 @@ describe("messages.completo", () => {
   it("completo NON include previsioni per domani quando assenti", () => {
     const msg = messages.completo(datiFixture);
     expect(msg).not.toContain("Previsioni per");
+  });
+
+  it("termina con la riga Aggiornamento", () => {
+    const msg = messages.completo(datiFixture);
+    expect(msg.endsWith("<i>Aggiornamento: 22/06/2026 12:00</i>")).toBe(true);
   });
 });
 
@@ -381,6 +396,11 @@ describe("messaggioCalore", () => {
       oggi: null, domani: null,
     };
     expect(messaggioCalore(r)).toBeNull();
+  });
+
+  it("termina con la riga Aggiornamento", () => {
+    const msg = messaggioCalore(rAlert);
+    expect(msg!.endsWith("<i>Aggiornamento: 2026-06-25</i>")).toBe(true);
   });
 });
 

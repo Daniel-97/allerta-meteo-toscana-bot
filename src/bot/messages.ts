@@ -80,10 +80,10 @@ export function messaggioCalore(r: RisultatoAllertaCalore): string | null {
 
   const url = r.oggi?.url ?? r.domani?.url ?? "";
   return (
-    `🌡️ <b>Ondata di calore — Toscana</b>\n` +
-    `<i>Aggiornamento: ${r.dataEstrazione}</i>\n\n` +
+    `🌡️ <b>Ondata di calore — Toscana</b>\n\n` +
     righe.join("\n") + "\n\n" +
-    `📄 <a href="${url}">Bollettino calore</a>`
+    `📄 <a href="${url}">Bollettino calore</a>\n\n` +
+    `<i>Aggiornamento: ${r.dataEstrazione}</i>`
   );
 }
 
@@ -170,8 +170,7 @@ export const messages = {
   allerta: (d: DatiMeteo) => {
     const haAllerta = isAllertaReale(d.allerta);
     let msg =
-      `🚨 <b>Allerta meteo</b> — ${escHtml(d.comune)}\n` +
-      `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
+      `🚨 <b>Allerta meteo</b> — ${escHtml(d.comune)}\n\n` +
       `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} Livello allerta: <b>${d.allerta}</b>`;
     if (haAllerta) {
       const rischiStr = formatRischi(d.rischi);
@@ -185,7 +184,7 @@ export const messages = {
       const rischiDomaniStr = d.rischiDomani ? formatRischi(d.rischiDomani) : null;
       if (rischiDomaniStr) msg += `\n${rischiDomaniStr}`;
     }
-    return msg;
+    return msg + `\n\n<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>`;
   },
 
   completo: (d: DatiMeteo) => {
@@ -203,8 +202,7 @@ export const messages = {
       if (rischiDomaniStr) sezioneAllerta += `\n${rischiDomaniStr}`;
     }
     return (
-      `📊 <b>Dati meteo</b> — ${escHtml(d.comune)}\n` +
-      `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
+      `📊 <b>Dati meteo</b> — ${escHtml(d.comune)}\n\n` +
       sezioneAllerta + `\n\n` +
       `🌡️ <b>Previsioni (${parteGiornoStr(d.parteGiorno)})</b>\n` +
       `🌡️ Temperatura: ${d.temperaturaAttuale}°\n` +
@@ -214,13 +212,13 @@ export const messages = {
       `☀️ UV: ${d.uv}\n` +
       `❄️ Quota neve: ${d.quotaNeve} m\n\n` +
       `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
-      `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`
+      `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>\n\n` +
+      `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>`
     );
   },
 
   previsioni: (d: DatiMeteo) =>
-    `🌡️ <b>Previsioni meteo</b> — ${escHtml(d.comune)} (${parteGiornoStr(d.parteGiorno)})\n` +
-    `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>\n\n` +
+    `🌡️ <b>Previsioni meteo</b> — ${escHtml(d.comune)} (${parteGiornoStr(d.parteGiorno)})\n\n` +
     `🌡️ Temperatura: ${d.temperaturaAttuale}°\n` +
     `🤒 Percepita: ${d.temperaturaPercepita}°\n` +
     `💧 Umidità: ${d.umidita}%\n` +
@@ -230,7 +228,8 @@ export const messages = {
     `🌅 Alba: ${d.alba}\n` +
     `🌇 Tramonto: ${d.tramonto}\n\n` +
     `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
-    `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>`,
+    `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>\n\n` +
+    `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>`,
 };
 
 export function ottieniUrlImmagine(
