@@ -6,8 +6,58 @@ import type {
   ParteGiorno,
 } from "../types/index.js";
 
+/**
+ * Calcola di quanti giorni il file XML è indietro rispetto alla data attuale.
+ *
+ * Esempio: se il file è stato aggiornato ieri, restituisce 1, quindi
+ * idday=2 diventa "oggi" e idday=3 diventa "domani".
+ *
+ * @param aggiornamento stringa nel formato "dd/MM/yyyy HH:mm"
+ * @param oggi data di riferimento (default: new Date()) — parametrizzabile per test
+ * @returns offset in giorni (0 = file aggiornato oggi, 1 = ieri, ecc.)
+ */
+export function calcolaOffsetGiorni(
+  aggiornamento: string,
+  oggi?: Date,
+): number {
+  if (!aggiornamento) return 0;
+
+  // Parse "dd/MM/yyyy HH:mm"
+  const parts = aggiornamento.split(" ");
+  if (parts.length < 1) return 0;
+
+  const datePart = parts[0];
+  const dateSegments = datePart.split("/");
+  if (dateSegments.length !== 3) return 0;
+
+  const day = Number(dateSegments[0]);
+  const month = Number(dateSegments[1]);
+  const year = Number(dateSegments[2]);
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return 0;
+
+  const ref = oggi ?? new Date();
+  const fmt = (d: Date) =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Rome",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(d);
+
+  const oggiStr = fmt(ref);
+  const aggStr = fmt(new Date(year, month - 1, day));
+
+  const oggiDate = new Date(oggiStr + "T00:00:00");
+  const aggDate = new Date(aggStr + "T00:00:00");
+
+  const diffMs = oggiDate.getTime() - aggDate.getTime();
+  const diffDays = Math.round(diffMs / 86400000);
+
+  return Math.max(0, diffDays);
+}
+
 export interface MeteoService {
-  fetchDatiMeteo(comuneUrl: string): Promise<DatiMeteo>;
+  fetchDatiMeteo(comuneUrl: string, oggi?: Date): Promise<DatiMeteo>;
 }
 
 export function createMeteoService(): MeteoService {
@@ -33,7 +83,7 @@ export function createMeteoService(): MeteoService {
   }
 
   return {
-    fetchDatiMeteo: async (comuneUrl) => {
+    fetchDatiMeteo: async (comuneUrl, oggi) => {
       const url = `https://www.lamma.toscana.it/previ/ita/xml/comuni_web/dati/${comuneUrl}.xml`;
       const res = await fetch(url);
       if (!res.ok) {
@@ -53,13 +103,24 @@ export function createMeteoService(): MeteoService {
 
       const parteGiorno = calcolaParteGiorno();
       const previsioni = root.previsione;
-      const findPrev = (ora: string) =>
-        previsioni.find((p: { ora: string }) => p.ora === ora);
-      const giornoPrev = findPrev("giorno") ?? previsioni[0];
-      const subPrev = findPrev(parteGiorno);
-      const giorno2 = previsioni.find(
-        (p: { idday: string; ora: string }) => p.idday === "2" && p.ora === "giorno"
-      );
+      const offset = calcolaOffsetGiorni(String(root.aggiornamento ?? ""), oggi);
+      const idOggi = String(1 + offset);
+      const idDomani = String(2 + offset);
+
+      const findPrev = (ora: string, idday?: string) => {
+        if (idday) {
+          return previsioni.find(
+            (p: { ora: string; idday: string }) => p.ora === ora && p.idday === idday,
+          );
+        }
+        return previsioni.find((p: { ora: string }) => p.ora === ora);
+      };
+
+      const giornoPrev = findPrev("giorno", idOggi) ?? findPrev("giorno") ?? previsioni[0];
+      const subPrev = findPrev(parteGiorno, idOggi) ?? findPrev(parteGiorno);
+      const giorno2 = offset === 0
+        ? findPrev("giorno", "2")
+        : findPrev("giorno", idDomani);
 
       return {
         comune: String(root.comune ?? ""),

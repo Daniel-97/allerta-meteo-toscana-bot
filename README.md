@@ -156,6 +156,8 @@ Le informazioni meteorologiche provengono dal [Consorzio LAMMA](https://www.lamm
 
 #### Struttura XML (dati comune)
 
+Ogni `<previsione>` ha un attributo `idday` che indica la data di validità: `1` = oggi, `2` = domani, `3` = dopodomani, ecc. Il bot calcola automaticamente un offset nel caso in cui il file XML non sia ancora stato aggiornato per la giornata corrente: se la data in `<aggiornamento>` è di ieri, usa `idday=2` per "oggi" e `idday=3` per "domani" (e così via). La funzione `calcolaOffsetGiorni()` in `src/services/meteo.ts` gestisce questo calcolo.
+
 ```xml
 <dati>
   <comune>Cascina</comune>
@@ -171,7 +173,8 @@ Le informazioni meteorologiche provengono dal [Consorzio LAMMA](https://www.lamm
     <temp temp_type="min">15</temp>
     <temp temp_type="max">28</temp>
   </previsione>
-  <previsione ora="mattina|pomeriggio|sera">...</previsione>
+  <previsione idday="1" ora="mattina|pomeriggio|sera">...</previsione>
+  <previsione idday="2" ora="giorno" datadescr="Giovedì">...</previsione>
   <almanacco>
     <sole_sorge>07:30</sole_sorge>
     <sole_tramonta>17:00</sole_tramonta>
@@ -204,6 +207,59 @@ I bollettini ufficiali del [Ministero della Salute](https://www.salute.gov.it/ne
 | `Livello1` | Gialla | 🟡 | allerta |
 | `Livello2` | Arancione | 🟠 | allerta |
 | `Livello3` | Rossa | 🔴 | allerta |
+
+## Struttura del progetto
+
+```
+src/
+├── index.ts              # Worker entry point (webhook + cron)
+├── dev.ts                # Dev entry point (polling)
+├── config.ts             # Config factory (Zod validation)
+├── logger.ts             # Logger (pino)
+├── db/
+│   ├── index.ts          # DB factory (@libsql/client + Drizzle)
+│   └── schema.ts         # Schema (utenti, utenti_comuni, sessioni, comuni) — sincronizzato su Turso con `db:push`
+├── services/
+│   ├── comuni.ts         # Archivio comuni (searchByPrefix, findByNome, all)
+│   ├── users.ts          # Users repository (subscribe, findByTelegramId, findAllWithComuni)
+│   ├── meteo.ts          # Meteo service (fetch + parse XML LAMMA → DatiMeteo, offset automatico con calcolaOffsetGiorni)
+│   ├── heatwave.ts       # Ondata di calore service (fetch + parse CSV → RisultatoAllertaCalore)
+│   └── messaggi.ts       # Message formatters (allerta, previsioni, completo, image URL)
+├── bot/
+│   ├── admin/
+│   │   ├── handlers.ts   # Admin command handlers (scoped via Composer)
+│   │   ├── messages.ts   # Admin message templates
+│   │   └── middleware.ts # Admin auth middleware (isAdmin)
+│   ├── handlers.ts       # Command + callback query handlers
+│   ├── bot.ts            # Bot factory (createBot, ordine middleware)
+│   ├── strings.ts        # Message templates
+│   ├── keyboards.ts      # Custom + inline keyboard builders
+│   └── scheduler.ts      # Notifica programmata (broadcastNotifiche)
+└── types/
+    └── index.ts          # Tipi condivisi (Comune, DatiMeteo, LivelloAllerta, ...)
+
+scripts/
+├── seed-comuni.ts        # Import XML comuni → Turso
+└── webhook.ts            # Gestione webhook Telegram
+
+tests/
+├── config.test.ts
+├── services/
+│   ├── comuni.test.ts
+│   ├── users.test.ts
+│   ├── meteo.test.ts
+│   └── messaggi.test.ts
+├── bot/
+│   ├── admin/
+│   │   └── handlers.test.ts
+│   ├── bot.test.ts       # createBot: ordinamento middleware (admin vs testo libero)
+│   ├── handlers.test.ts
+│   ├── logging.test.ts
+│   ├── messages.test.ts
+│   └── scheduler.test.ts
+└── helpers/
+    └── test-db.ts        # createTestDb (:memory: libsql + migrate)
+```
 
 ## Test
 
