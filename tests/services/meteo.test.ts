@@ -24,8 +24,8 @@ const XML_FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
     <temp temp_type="max">28</temp>
   </previsione>
   <previsione idday="2" ora="giorno" datadescr="Mercoledì">
-    <allerta value="moderato"/>
-    <rischio descr="idraulico" value="moderato"/>
+    <allerta value="medio"/>
+    <rischio descr="idraulico" value="medio"/>
     <rischio descr="idrogeologico" value="elevato"/>
     <rischio descr="temporali" value="nessuno"/>
     <rischio descr="vento" value="basso"/>
@@ -176,8 +176,8 @@ describe("createMeteoService", () => {
   it("fetchDatiMeteo popola allertaDomani e rischiDomani quando presenti", async () => {
     const service = createMeteoService();
     const dati = await service.fetchDatiMeteo("firenze", OGGI_FIXTURE);
-    expect(dati.allertaDomani).toBe("moderato");
-    expect(dati.rischiDomani?.idraulico).toBe("moderato");
+    expect(dati.allertaDomani).toBe("medio");
+    expect(dati.rischiDomani?.idraulico).toBe("medio");
     expect(dati.rischiDomani?.idrogeologico).toBe("elevato");
     expect(dati.rischiDomani?.vento).toBe("basso");
     expect(dati.nomeGiornoDomani).toBe("Mercoledì");
