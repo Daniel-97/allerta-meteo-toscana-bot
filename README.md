@@ -10,7 +10,7 @@
 
 ### Funzionalità
 
-- 🚨 **Allerte meteo** — livelli basso / moderato / elevato / molto elevato per ogni comune (valori LAMMA originali, corrispondenti alle fasi di criticità)
+- 🚨 **Allerte meteo** — livelli basso / medio / elevato / molto elevato per ogni comune (valori LAMMA originali, corrispondenti alle fasi di criticità)
 - 🌤️ **Previsioni** — temperatura, umidità, pioggia, UV, quota neve, alba/tramonto
 - 🖼️ **Mappe meteo** — 9 immagini (3 giorni × 3 fasce orarie)
 - 🔔 **Notifiche** — 2 volte al giorno (09:00 e 15:00 ora italiana); inviate solo per i comuni con allerta in corso; il messaggio delle 15:00 è soppresso se i dati sono invariati rispetto alle 09:00
@@ -186,10 +186,10 @@ Ogni `<previsione>` ha un attributo `idday` che indica la data di validità: `1`
 
 | Campo | Valori |
 |---|---|
-| Allerta | `basso` · `moderato` · `elevato` · `molto elevato` · `nessuno` · `NA` |
-| Rischio | `basso` · `moderato` · `elevato` · `molto elevato` · `nessuno` · `NA` |
+| Allerta | `basso` · `medio` · `elevato` · `molto elevato` · `nessuno` · `NA` |
+| Rischio | `basso` · `medio` · `elevato` · `molto elevato` · `nessuno` · `NA` |
 
-> I valori `basso`, `moderato`, `elevato`, `molto elevato` corrispondono alle fasi di criticità LAMMA (equivalenti rispettivamente a Giallo, Arancione, Rosso della Allertameteo regionale toscana).
+> I valori `basso`, `medio`, `elevato`, `molto elevato` corrispondono alle fasi di criticità LAMMA (equivalenti rispettivamente a Giallo, Arancione, Rosso della Allertameteo regionale toscana). Il bot considera come "allerta presente" ogni livello diverso da `nessuno`/`NA`/vuoto: futuri cambi di vocabolo LAMMA vengono gestiti automaticamente.
 
 ### Bollettino ondata di calore (Ministero della Salute / OnData)
 
