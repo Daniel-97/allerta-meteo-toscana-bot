@@ -3,6 +3,10 @@ import type { BotServices } from "./handlers.js";
 import { messages, messaggioCalore, haAllertaMeteo, fingerprintMeteo, fingerprintCalore, isStessoGiornoIt, escHtml } from "./messages.js";
 import { mappeMeteoInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
 
+function isUtenteHaBloccatoBot(err: unknown): boolean {
+  return err instanceof Error && err.message.includes("blocked by the user");
+}
+
 async function notificaAdmin(bot: Bot, adminChatId: number | undefined, testo: string) {
   if (!adminChatId) return;
   try {
@@ -65,6 +69,7 @@ export async function broadcastNotifiche(
         await services.alertState.setFingerprint("allerta_meteo_" + comune.url, fpMeteo);
       } catch (err) {
         console.error("notifica fallita", { user: user.idTelegram, comune: comune.nome, err });
+        if (isUtenteHaBloccatoBot(err)) continue;
         if (!comuniMeteoFalliti.has(comune.url)) {
           comuniMeteoFalliti.add(comune.url);
           const messaggioErrore = err instanceof Error ? err.message : String(err);

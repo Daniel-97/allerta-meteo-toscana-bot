@@ -130,6 +130,17 @@ describe("broadcastNotifiche", () => {
     expect(sendMessage).toHaveBeenCalledWith(999, expect.stringContaining("allerta calore fallito"));
   });
 
+  it("utente che ha bloccato il bot: logga l'errore senza avvisare l'admin", async () => {
+    const sendMessage = vi.fn()
+      .mockRejectedValue(new Error("Call to 'sendMessage' failed! (403: Forbidden: bot was blocked by the user)"));
+    const bot = { api: { sendMessage } } as any;
+    const services = mockServices() as any;
+
+    const result = await broadcastNotifiche(bot, services, true, 999);
+    expect(result.inviati).toBe(0);
+    expect(sendMessage).not.toHaveBeenCalledWith(999, expect.anything());
+  });
+
   it("gestisce errore recupero meteo: non invia nulla all'utente per quel comune, avvisa l'admin una sola volta", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
     const bot = { api: { sendMessage } } as any;
