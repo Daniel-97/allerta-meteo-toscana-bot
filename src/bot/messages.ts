@@ -3,11 +3,10 @@ import type { DatiMeteo, ParteGiorno, RisultatoAllertaCalore, LivelloCalore } fr
 
 const EMOJI_ALLERTA: Record<string, string> = {
   "basso": "🟡",
-  "moderato": "🟠",
+  "medio": "🟠",
   "elevato": "🔴",
   "molto elevato": "🔴",
   "nessuno": "🟢",
-  "NA": "⚪",
 };
 
 const RISCHIO_MAP: Record<keyof DatiMeteo["rischi"], { emoji: string; label: string }> = {
@@ -19,15 +18,14 @@ const RISCHIO_MAP: Record<keyof DatiMeteo["rischi"], { emoji: string; label: str
   ghiaccio: { emoji: "🧊", label: "Ghiaccio" },
 };
 
-const LIVELLI_ALLERTA_REALI = ["basso", "moderato", "elevato", "molto elevato"];
-
-function isAllertaReale(allerta: string | undefined): boolean {
-  if (!allerta) return false;
-  return LIVELLI_ALLERTA_REALI.includes(allerta);
-}
-
 function isAllertaPresente(allerta: string | undefined): boolean {
   return allerta !== undefined && allerta !== "" && allerta !== "nessuno" && allerta !== "NA";
+}
+
+export function emojiAllerta(level: string | undefined): string {
+  if (level === "nessuno") return "🟢";
+  if (!level || level === "NA" || level === "") return "⚪";
+  return EMOJI_ALLERTA[level] ?? "🟠";
 }
 
 export function formatRischi(
@@ -88,7 +86,7 @@ export function messaggioCalore(r: RisultatoAllertaCalore): string | null {
 }
 
 export function haAllertaMeteo(d: DatiMeteo): boolean {
-  return isAllertaReale(d.allerta) || isAllertaReale(d.allertaDomani);
+  return isAllertaPresente(d.allerta) || isAllertaPresente(d.allertaDomani);
 }
 
 export const messages = {
@@ -168,19 +166,19 @@ export const messages = {
     "ℹ️ Nessuna allerta in corso o prevista per i prossimi giorni.",
 
   allerta: (d: DatiMeteo) => {
-    const haAllerta = isAllertaReale(d.allerta);
+    const haAllerta = isAllertaPresente(d.allerta);
     let msg =
       `🚨 <b>Allerta meteo</b> — ${escHtml(d.comune)}\n\n` +
-      `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} Livello allerta: <b>${d.allerta}</b>`;
+      `${emojiAllerta(d.allerta)} Livello allerta: <b>${d.allerta}</b>`;
     if (haAllerta) {
       const rischiStr = formatRischi(d.rischi);
       if (rischiStr) msg += `\n\n${rischiStr}`;
     } else {
       msg += `\n\nNessuna allerta in corso.`;
     }
-    if (d.allertaDomani && isAllertaReale(d.allertaDomani)) {
+    if (d.allertaDomani && isAllertaPresente(d.allertaDomani)) {
       msg += `\n\n🚨 <b>Previsioni per ${escHtml(d.nomeGiornoDomani ?? "domani")}</b>\n` +
-        `${EMOJI_ALLERTA[d.allertaDomani] ?? "⚪"} Allerta: <b>${d.allertaDomani}</b>`;
+        `${emojiAllerta(d.allertaDomani)} Allerta: <b>${d.allertaDomani}</b>`;
       const rischiDomaniStr = d.rischiDomani ? formatRischi(d.rischiDomani) : null;
       if (rischiDomaniStr) msg += `\n${rischiDomaniStr}`;
     }
@@ -188,16 +186,16 @@ export const messages = {
   },
 
   completo: (d: DatiMeteo) => {
-    const haAllerta = isAllertaReale(d.allerta);
+    const haAllerta = isAllertaPresente(d.allerta);
     let sezioneAllerta =
-      `${EMOJI_ALLERTA[d.allerta] ?? "⚪"} <b>Allerta: ${d.allerta}</b>`;
+      `${emojiAllerta(d.allerta)} <b>Allerta: ${d.allerta}</b>`;
     if (haAllerta) {
       const rischiStr = formatRischi(d.rischi);
       if (rischiStr) sezioneAllerta += `\n${rischiStr}`;
     }
-    if (d.allertaDomani && isAllertaReale(d.allertaDomani)) {
+    if (d.allertaDomani && isAllertaPresente(d.allertaDomani)) {
       sezioneAllerta += `\n\n🚨 <b>Previsioni per ${escHtml(d.nomeGiornoDomani ?? "domani")}</b>\n` +
-        `${EMOJI_ALLERTA[d.allertaDomani] ?? "⚪"} Allerta: <b>${d.allertaDomani}</b>`;
+        `${emojiAllerta(d.allertaDomani)} Allerta: <b>${d.allertaDomani}</b>`;
       const rischiDomaniStr = d.rischiDomani ? formatRischi(d.rischiDomani) : null;
       if (rischiDomaniStr) sezioneAllerta += `\n${rischiDomaniStr}`;
     }

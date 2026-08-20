@@ -8,6 +8,7 @@ import {
   livelloCaloreToEmoji,
   livelloCaloreToNome,
   haAllertaMeteo,
+  emojiAllerta,
   formatRischi,
   fingerprintMeteo,
   fingerprintCalore,
@@ -437,6 +438,47 @@ describe("haAllertaMeteo", () => {
   it("allerta=nessuno con domani NA → false", () => {
     const dati: DatiMeteo = { ...datiNessunaAllerta, allertaDomani: undefined };
     expect(haAllertaMeteo(dati)).toBe(false);
+  });
+
+  it("allerta=medio → true", () => {
+    expect(haAllertaMeteo({ ...datiFixture, allerta: "medio" })).toBe(true);
+  });
+
+  it("allerta=catastrofico (vocabolo sconosciuto) → true", () => {
+    expect(haAllertaMeteo({ ...datiFixture, allerta: "catastrofico" })).toBe(true);
+  });
+});
+
+describe("emojiAllerta", () => {
+  it("mappa i livelli noti", () => {
+    expect(emojiAllerta("basso")).toBe("🟡");
+    expect(emojiAllerta("medio")).toBe("🟠");
+    expect(emojiAllerta("elevato")).toBe("🔴");
+    expect(emojiAllerta("nessuno")).toBe("🟢");
+  });
+
+  it("default 🟠 per livelli positivi sconosciuti", () => {
+    expect(emojiAllerta("catastrofico")).toBe("🟠");
+  });
+
+  it("NA, vuoto e undefined → ⚪", () => {
+    expect(emojiAllerta("NA")).toBe("⚪");
+    expect(emojiAllerta("")).toBe("⚪");
+    expect(emojiAllerta(undefined)).toBe("⚪");
+  });
+});
+
+describe("messages.allerta con livello sconosciuto", () => {
+  it("mostra default emoji e i rischi, non 'Nessuna allerta'", () => {
+    const dati: DatiMeteo = {
+      ...datiFixture,
+      allerta: "catastrofico",
+      rischi: { ...datiFixture.rischi, temporali: "catastrofico" },
+    };
+    const msg = messages.allerta(dati);
+    expect(msg).toContain("🟠");
+    expect(msg).toContain("Temporali: catastrofico");
+    expect(msg).not.toContain("Nessuna allerta in corso");
   });
 });
 
