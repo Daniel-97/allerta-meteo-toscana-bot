@@ -7,17 +7,18 @@ export type ParteGiorno = "mattina" | "mattina2" | "pomeriggio" | "pomeriggio2" 
 
 export type LivelloAllerta =
   | "basso"
-  | "moderato"
+  | "medio"
   | "elevato"
   | "molto elevato"
   | "nessuno"
-  | "NA";
+  | "NA"
+  | string;
 
 export type LivelloAllertaReale = Exclude<LivelloAllerta, "nessuno" | "NA">;
 
 export type LivelloRischio =
   | "basso"
-  | "moderato"
+  | "medio"
   | "elevato"
   | "molto elevato"
   | "nessuno"
