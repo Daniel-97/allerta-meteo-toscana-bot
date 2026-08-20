@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { createMeteoService, calcolaOffsetGiorni } from "../../src/services/meteo.js";
 
+const OGGI_FIXTURE = new Date(2026, 5, 22); // 22/06/2026, coincide con il giorno del file
+
 const XML_FIXTURE = `<?xml version="1.0" encoding="UTF-8"?>
 <dati>
   <comune>Firenze</comune>
@@ -92,6 +94,36 @@ const XML_NA_DOMANI = `<?xml version="1.0" encoding="UTF-8"?>
   </previsione>
 </dati>`;
 
+const XML_SENZA_IDDAY = `<?xml version="1.0" encoding="UTF-8"?>
+<dati>
+  <comune>Firenze</comune>
+  <aggiornamento>22/07/2026 12:00</aggiornamento>
+  <time_ms>123</time_ms>
+  <almanacco>
+    <sole_sorge>05:30</sole_sorge>
+    <sole_tramonta>21:00</sole_tramonta>
+  </almanacco>
+  <previsione ora="giorno">
+    <allerta value="VERDE">Allerta Verde</allerta>
+    <rischio value="ASSENTE">Idraulico</rischio>
+    <rischio value="BASSO">Idrogeologico</rischio>
+    <rischio value="MODERATO">Temporali</rischio>
+    <rischio value="ELEVATO">Vento</rischio>
+    <rischio value="ASSENTE">Neve</rischio>
+    <rischio value="ASSENTE">Ghiaccio</rischio>
+    <temp temp_type="min">15</temp>
+    <temp temp_type="max">28</temp>
+  </previsione>
+  <previsione ora="mattina">
+    <temp temp_type="">22</temp>
+    <temp temp_type="perc">21</temp>
+    <um>45</um>
+    <prob_rain>10</prob_rain>
+    <uv>3</uv>
+    <quota_neve>1800</quota_neve>
+  </previsione>
+</dati>`;
+
 describe("createMeteoService", () => {
   const originalFetch = globalThis.fetch;
   let mockFetch: ReturnType<typeof vi.fn>;
@@ -143,7 +175,7 @@ describe("createMeteoService", () => {
 
   it("fetchDatiMeteo popola allertaDomani e rischiDomani quando presenti", async () => {
     const service = createMeteoService();
-    const dati = await service.fetchDatiMeteo("firenze");
+    const dati = await service.fetchDatiMeteo("firenze", OGGI_FIXTURE);
     expect(dati.allertaDomani).toBe("moderato");
     expect(dati.rischiDomani?.idraulico).toBe("moderato");
     expect(dati.rischiDomani?.idrogeologico).toBe("elevato");
@@ -360,7 +392,7 @@ describe("createMeteoService con offset idday", () => {
         return { ok: true, text: async () => xml } as Response;
       }
       if (url.includes("firenze-senza-idday")) {
-        return { ok: true, text: async () => XML_FIXTURE } as Response;
+        return { ok: true, text: async () => XML_SENZA_IDDAY } as Response;
       }
       return { ok: false, status: 404, text: async () => "Not Found" } as Response;
     });
