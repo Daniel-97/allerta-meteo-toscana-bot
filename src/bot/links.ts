@@ -10,4 +10,5 @@ export const RISORSE: Array<{ text: string; url: string }> = [
   { text: "⚡ Fulminazioni (tempo reale)", url: "https://map.blitzortung.org/#5.26/41.709/13.462" },
   { text: "📡 Radar meteo", url: "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/radar" },
   { text: "🌡️ Temperature stazioni", url: "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/temperature-tempo-reale" },
+  { text: "🛰️ Satellite Meteosat", url: "https://www.lamma.toscana.it/meteo/osservazioni-satellite/meteosat" },
 ];
