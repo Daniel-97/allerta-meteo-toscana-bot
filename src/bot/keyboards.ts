@@ -57,13 +57,10 @@ export function comuniInlineKeyboard(
   };
 }
 
-export function mappeMeteoInlineKeyboard() {
+export function previsioniCompleteInlineKeyboard() {
   return {
     inline_keyboard: [
-      [
-        { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
-        { text: "📄 Bollettino del giorno", url: "https://www.lamma.toscana.it/previ/ita/bollettino.pdf" },
-      ],
+      [{ text: "🖼️ Previsioni complete", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" }],
     ],
   };
 }
@@ -90,11 +87,11 @@ export function allertaInlineKeyboard() {
   };
 }
 
-export function allertaConMappeInlineKeyboard() {
+export function allertaConPrevisioniInlineKeyboard() {
   return {
     inline_keyboard: [
       ...allertaInlineKeyboard().inline_keyboard,
-      ...mappeMeteoInlineKeyboard().inline_keyboard,
+      ...previsioniCompleteInlineKeyboard().inline_keyboard,
     ],
   };
 }

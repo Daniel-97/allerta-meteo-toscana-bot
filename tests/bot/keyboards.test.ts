@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { allertaInlineKeyboard, allertaConMappeInlineKeyboard, caloreInlineKeyboard, mappeMeteoInlineKeyboard } from "../../src/bot/keyboards.js";
+import { allertaInlineKeyboard, allertaConPrevisioniInlineKeyboard, caloreInlineKeyboard, previsioniCompleteInlineKeyboard } from "../../src/bot/keyboards.js";
 
 const URL_MAPPE = "https://www.regione.toscana.it/allertameteo";
 const URL_COSA_FARE = "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento";
+const URL_PREVISIONI_COMPLETE = "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana";
 
 describe("allertaInlineKeyboard", () => {
   it("restituisce una riga con i 2 link allerta", () => {
@@ -16,30 +17,26 @@ describe("allertaInlineKeyboard", () => {
   });
 });
 
-describe("allertaConMappeInlineKeyboard", () => {
-  it("riga 1: i 2 link; riga 2: pulsante album img", () => {
-    const kb = allertaConMappeInlineKeyboard();
+describe("allertaConPrevisioniInlineKeyboard", () => {
+  it("riga 1: i 2 link; riga 2: pulsante Previsioni complete", () => {
+    const kb = allertaConPrevisioniInlineKeyboard();
     expect(kb.inline_keyboard).toEqual([
       [
         { text: "🗺️ Mappe allerta", url: URL_MAPPE },
         { text: "📋 Cosa fare", url: URL_COSA_FARE },
       ],
       [
-        { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
-        { text: "📄 Bollettino del giorno", url: "https://www.lamma.toscana.it/previ/ita/bollettino.pdf" },
+        { text: "🖼️ Previsioni complete", url: URL_PREVISIONI_COMPLETE },
       ],
     ]);
   });
 });
 
-describe("mappeMeteoInlineKeyboard", () => {
-  it("riga con Mostra mappe meteo e Bollettino del giorno", () => {
-    const kb = mappeMeteoInlineKeyboard();
+describe("previsioniCompleteInlineKeyboard", () => {
+  it("restituisce il pulsante Previsioni complete", () => {
+    const kb = previsioniCompleteInlineKeyboard();
     expect(kb.inline_keyboard).toEqual([
-      [
-        { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
-        { text: "📄 Bollettino del giorno", url: "https://www.lamma.toscana.it/previ/ita/bollettino.pdf" },
-      ],
+      [{ text: "🖼️ Previsioni complete", url: URL_PREVISIONI_COMPLETE }],
     ]);
   });
 });
