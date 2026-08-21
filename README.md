@@ -12,7 +12,6 @@
 
 - 🚨 **Allerte meteo** — livelli basso / medio / elevato / molto elevato per ogni comune (valori LAMMA originali, corrispondenti alle fasi di criticità)
 - 🌤️ **Previsioni** — temperatura, umidità, pioggia, UV, quota neve, alba/tramonto
-- 🖼️ **Mappe meteo** — 9 immagini (3 giorni × 3 fasce orarie)
 - 🔔 **Notifiche** — 2 volte al giorno (09:00 e 15:00 ora italiana); inviate solo per i comuni con allerta in corso; il messaggio delle 15:00 è soppresso se i dati sono invariati rispetto alle 09:00
 - 🌡️ **Ondata di calore** — messaggio autonomo "Ondata di calore — Toscana" insieme alle allerte meteo, con pulsanti inline "📋 Cosa fare" e "📄 Bollettino" (quest'ultimo rimanda al bollettino del Ministero della Salute)
 - 💬 **Messaggio generico** — se non ci sono allerte (meteo o calore), l'on-demand mostra un unico messaggio "Nessuna allerta in corso o prevista per i prossimi giorni"
@@ -97,7 +96,7 @@ Il bot invia notifiche meteo 2 volte al giorno (09:00 e 15:00 ora italiana, corr
 
 **Deduplica pomeridiana:** Il messaggio delle 15:00 viene inviato solo se i dati di allerta (livello + rischi per meteo, livelli oggi/domani per calore) sono cambiati rispetto alle 09:00 dello stesso giorno. Se i dati sono invariati, il messaggio viene soppresso per evitare duplicati. Lo stato delle allerte viene salvato in una tabella `stato_allerte` con un fingerprint che viene confrontato prima dell'invio pomeridiano.
 
-**Pulsanti nei messaggi di allerta:** Quando è presente un'allerta meteo (oggi o domani), i messaggi di allerta includono un inline keyboard con i pulsanti "🗺️ Mappe allerta" (→ `https://www.regione.toscana.it/allertameteo`) e "📋 Cosa fare" (→ `https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento`). I pulsanti compaiono solo se l'allerta è presente; nei messaggi con previsioni complete restano disponibili anche "🖼️ Mostra mappe meteo" e "📄 Bollettino del giorno" (→ `https://www.lamma.toscana.it/previ/ita/bollettino.pdf`).
+**Pulsanti nei messaggi di allerta:** Quando è presente un'allerta meteo (oggi o domani), i messaggi di allerta includono un inline keyboard con i pulsanti "🗺️ Mappe allerta" (→ `https://www.regione.toscana.it/allertameteo`) e "📋 Cosa fare" (→ `https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento`). Nei messaggi di previsioni è presente il pulsante "🖼️ Previsioni complete" (→ `https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana`).
 
 Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
 
@@ -154,7 +153,6 @@ Le informazioni meteorologiche provengono dal [Consorzio LAMMA](https://www.lamm
 |---|---|
 | `https://www.lamma.toscana.it/previ/ita/xml/lista_comuni.xml` | Elenco completo dei comuni toscani (formato XML) — usato da `npm run db:seed` per popolare il DB |
 | `https://www.lamma.toscana.it/previ/ita/xml/comuni_web/dati/{url}.xml` | Dati meteo e allerta per un singolo comune — `url` è l'identificativo breve (es. `firenze`, `pisa`) |
-| `https://www.lamma.toscana.it/previ/ita/immagini/image_{N}_{F}.jpg` | Mappa meteorologica — `N` = 1 (oggi), 2 (domani), 3 (dopodomani); `F` = M (mattina ~8), P (pomeriggio ~14), S (sera ~20) |
 
 #### Struttura XML (dati comune)
 
@@ -226,7 +224,7 @@ src/
 │   ├── users.ts          # Users repository (subscribe, findByTelegramId, findAllWithComuni)
 │   ├── meteo.ts          # Meteo service (fetch + parse XML LAMMA → DatiMeteo, offset automatico con calcolaOffsetGiorni)
 │   ├── heatwave.ts       # Ondata di calore service (fetch + parse CSV → RisultatoAllertaCalore)
-│   └── messaggi.ts       # Message formatters (allerta, previsioni, completo, image URL)
+│   └── messaggi.ts       # Message formatters (allerta, previsioni, completo)
 ├── bot/
 │   ├── admin/
 │   │   ├── handlers.ts   # Admin command handlers (scoped via Composer)

@@ -625,13 +625,11 @@ describe("handleAllerta", () => {
 });
 
 describe("handlePrevisioni", () => {
-  it("invia messaggio di previsioni con pulsante mappe meteo e senza album", async () => {
+  it("invia messaggio di previsioni con pulsante previsioni complete", async () => {
     const reply = vi.fn().mockResolvedValue(undefined);
-    const replyWithMediaGroup = vi.fn().mockResolvedValue(undefined);
     const ctx = {
       from: { id: 123 },
       reply,
-      replyWithMediaGroup,
     } as any;
 
     const services = {
@@ -672,7 +670,6 @@ describe("handlePrevisioni", () => {
     await handlePrevisioni(ctx, services);
 
     expect(reply).toHaveBeenCalledTimes(1);
-    expect(replyWithMediaGroup).not.toHaveBeenCalled();
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Firenze"),
       expect.objectContaining({

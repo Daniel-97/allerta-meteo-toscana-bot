@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { InputMediaBuilder } from "grammy";
 import {
   messages,
-  ottieniUrlImmagine,
-  costruisciAlbumImmagini,
   messaggioCalore,
   livelloCaloreToEmoji,
   livelloCaloreToNome,
@@ -242,72 +239,6 @@ describe("messages.completo", () => {
   it("termina con la riga Aggiornamento", () => {
     const msg = messages.completo(datiFixture);
     expect(msg.endsWith("<i>Aggiornamento: 22/06/2026 12:00</i>")).toBe(true);
-  });
-});
-
-describe("ottieniUrlImmagine", () => {
-  it("dovrebbe restituire l'URL per oggi mattina", () => {
-    const url = ottieniUrlImmagine(1, "mattina");
-    expect(url).toBe(
-      "https://www.lamma.toscana.it/previ/ita/immagini/image_1_M.jpg",
-    );
-  });
-
-  it("dovrebbe restituire l'URL per oggi pomeriggio", () => {
-    const url = ottieniUrlImmagine(1, "pomeriggio");
-    expect(url).toBe(
-      "https://www.lamma.toscana.it/previ/ita/immagini/image_1_P.jpg",
-    );
-  });
-
-  it("dovrebbe restituire l'URL per oggi sera", () => {
-    const url = ottieniUrlImmagine(1, "sera");
-    expect(url).toBe(
-      "https://www.lamma.toscana.it/previ/ita/immagini/image_1_S.jpg",
-    );
-  });
-
-  it("dovrebbe restituire l'URL per domani mattina", () => {
-    const url = ottieniUrlImmagine(2, "mattina");
-    expect(url).toBe(
-      "https://www.lamma.toscana.it/previ/ita/immagini/image_2_M.jpg",
-    );
-  });
-
-  it("dovrebbe restituire l'URL per dopodomani sera", () => {
-    const url = ottieniUrlImmagine(3, "sera");
-    expect(url).toBe(
-      "https://www.lamma.toscana.it/previ/ita/immagini/image_3_S.jpg",
-    );
-  });
-});
-
-describe("costruisciAlbumImmagini", () => {
-  it("dovrebbe restituire 9 InputMediaPhoto", () => {
-    const album = costruisciAlbumImmagini();
-    expect(album).toHaveLength(9);
-  });
-
-  it("dovrebbe contenere URL per tutte le combinazioni giorno/fascia", () => {
-    const album = costruisciAlbumImmagini();
-    const urls = album.map((m) => m.media);
-
-    expect(urls[0]).toContain("image_1_M.jpg");
-    expect(urls[1]).toContain("image_1_P.jpg");
-    expect(urls[2]).toContain("image_1_S.jpg");
-    expect(urls[3]).toContain("image_2_M.jpg");
-    expect(urls[4]).toContain("image_2_P.jpg");
-    expect(urls[5]).toContain("image_2_S.jpg");
-    expect(urls[6]).toContain("image_3_M.jpg");
-    expect(urls[7]).toContain("image_3_P.jpg");
-    expect(urls[8]).toContain("image_3_S.jpg");
-  });
-
-  it("tutti gli elementi dovrebbero essere di tipo photo", () => {
-    const album = costruisciAlbumImmagini();
-    for (const media of album) {
-      expect(media.type).toBe("photo");
-    }
   });
 });
 

@@ -1,4 +1,3 @@
-import { InputMediaBuilder } from "grammy";
 import type { DatiMeteo, ParteGiorno, RisultatoAllertaCalore, LivelloCalore } from "../types/index.js";
 
 const EMOJI_ALLERTA: Record<string, string> = {
@@ -225,31 +224,6 @@ export const messages = {
     `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
     `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>`,
 };
-
-export function ottieniUrlImmagine(
-  giorno: number,
-  parteGiorno: ParteGiorno,
-): string {
-  const base = "https://www.lamma.toscana.it/previ/ita/immagini/image_";
-  const suffix = parteGiorno === "mattina" || parteGiorno === "mattina2" ? "M"
-    : parteGiorno === "pomeriggio" || parteGiorno === "pomeriggio2" ? "P"
-    : "S";
-  return `${base}${giorno}_${suffix}.jpg`;
-}
-
-export function costruisciAlbumImmagini(): ReturnType<typeof InputMediaBuilder.photo>[] {
-  const fasce: ParteGiorno[] = ["mattina", "pomeriggio", "sera"];
-  const album: ReturnType<typeof InputMediaBuilder.photo>[] = [];
-
-  for (let giorno = 1; giorno <= 3; giorno++) {
-    for (const fascia of fasce) {
-      const url = ottieniUrlImmagine(giorno, fascia);
-      album.push(InputMediaBuilder.photo(url));
-    }
-  }
-
-  return album;
-}
 
 export function fingerprintMeteo(d: DatiMeteo): string {
   const oggi = [

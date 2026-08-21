@@ -185,7 +185,7 @@ describe("broadcastNotifiche", () => {
     );
   });
 
-  it("broadcast completo (notificheMeteo): keyboard allerta + album", async () => {
+  it("broadcast completo (notificheMeteo): keyboard allerta + previsioni complete", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
     const bot = { api: { sendMessage } } as any;
     const services = mockServices() as any; // notificheMeteo: true di default

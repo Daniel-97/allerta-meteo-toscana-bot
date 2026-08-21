@@ -7,7 +7,7 @@ import type { MeteoService } from "../services/meteo.js";
 import type { HeatWaveService } from "../services/heatwave.js";
 import type { AlertStateService } from "../services/alert-state.js";
 import type { RateLimiterService } from "../services/rate-limiter.js";
-import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
+import { messages, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
 import { previsioniCompleteInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, comuniGestioneInlineKeyboard, comuneDettaglioInlineKeyboard, confermaEliminaInlineKeyboard, caloreInlineKeyboard, allertaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
@@ -305,12 +305,6 @@ export async function handleCallbackQuery(
     if (!idTelegram) return;
     await services.users.removeComune(idTelegram, url);
     await renderListaComuni(ctx, services, idTelegram);
-    return;
-  }
-
-  if (action === "img") {
-    await ctx.answerCallbackQuery();
-    await ctx.replyWithMediaGroup(costruisciAlbumImmagini());
     return;
   }
 
