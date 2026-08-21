@@ -97,7 +97,7 @@ Il bot invia notifiche meteo 2 volte al giorno (09:00 e 15:00 ora italiana, corr
 
 **Deduplica pomeridiana:** Il messaggio delle 15:00 viene inviato solo se i dati di allerta (livello + rischi per meteo, livelli oggi/domani per calore) sono cambiati rispetto alle 09:00 dello stesso giorno. Se i dati sono invariati, il messaggio viene soppresso per evitare duplicati. Lo stato delle allerte viene salvato in una tabella `stato_allerte` con un fingerprint che viene confrontato prima dell'invio pomeridiano.
 
-**Pulsanti nei messaggi di allerta:** Quando è presente un'allerta meteo (oggi o domani), i messaggi di allerta includono un inline keyboard con i pulsanti "🗺️ Mappe allerta" (→ `https://www.regione.toscana.it/allertameteo`) e "📋 Cosa fare" (→ `https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento`). I pulsanti compaiono solo se l'allerta è presente; nei messaggi con previsioni complete resta disponibile anche "🖼️ Mostra mappe meteo".
+**Pulsanti nei messaggi di allerta:** Quando è presente un'allerta meteo (oggi o domani), i messaggi di allerta includono un inline keyboard con i pulsanti "🗺️ Mappe allerta" (→ `https://www.regione.toscana.it/allertameteo`) e "📋 Cosa fare" (→ `https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento`). I pulsanti compaiono solo se l'allerta è presente; nei messaggi con previsioni complete restano disponibili anche "🖼️ Mostra mappe meteo" e "📄 Bollettino del giorno" (→ `https://www.lamma.toscana.it/previ/ita/bollettino.pdf`).
 
 Su produzione, Cloudflare Cron Trigger esegue lo `scheduled` handler del Worker.
 
