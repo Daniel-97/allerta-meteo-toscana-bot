@@ -208,7 +208,6 @@ export const messages = {
       `☀️ UV: ${d.uv}\n` +
       `❄️ Quota neve: ${d.quotaNeve} m\n\n` +
       `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
-      `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>\n\n` +
       `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>`
     );
   },
@@ -224,7 +223,6 @@ export const messages = {
     `🌅 Alba: ${d.alba}\n` +
     `🌇 Tramonto: ${d.tramonto}\n\n` +
     `⬇️ Min: ${d.temperatura.min}°   ⬆️ Max: ${d.temperatura.max}°\n\n` +
-    `📄 <a href="https://www.lamma.toscana.it/previ/ita/bollettino.pdf">Bollettino del giorno</a>\n\n` +
     `<i>Aggiornamento: ${escHtml(d.aggiornamento)}</i>`,
 };
 

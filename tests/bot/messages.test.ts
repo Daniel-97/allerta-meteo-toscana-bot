@@ -180,8 +180,7 @@ describe("messages.previsioni", () => {
 
   it("include link bollettino del giorno", () => {
     const msg = messages.previsioni(datiFixture);
-    expect(msg).toContain("Bollettino del giorno");
-    expect(msg).toContain("https://www.lamma.toscana.it/previ/ita/bollettino.pdf");
+    expect(msg).not.toContain("Bollettino del giorno");
   });
 
   it("NON include rischi", () => {
@@ -213,8 +212,7 @@ describe("messages.completo", () => {
 
   it("include link bollettino del giorno", () => {
     const msg = messages.completo(datiFixture);
-    expect(msg).toContain("Bollettino del giorno");
-    expect(msg).toContain("https://www.lamma.toscana.it/previ/ita/bollettino.pdf");
+    expect(msg).not.toContain("Bollettino del giorno");
   });
 
   it("quando allerta = nessuno, non mostra rischi ma mantiene previsioni", () => {
