@@ -21,6 +21,48 @@ function isAllertaPresente(allerta: string | undefined): boolean {
   return allerta !== undefined && allerta !== "" && allerta !== "nessuno" && allerta !== "NA";
 }
 
+export function formatoGiornoDomani(
+  nomeGiorno: string,
+  aggiornamento: string,
+  oggi?: Date,
+): string {
+  const norm = (s: string) => s.toLocaleLowerCase("it-IT").replace(/[^\p{L}]/gu, "");
+  const fmtWeekday = (d: Date) =>
+    new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", weekday: "long" }).format(d);
+  const fmtDate = (d: Date) => {
+    const iso = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit",
+    }).format(d);
+    const [, mm, dd] = iso.split("-");
+    return `${dd}/${mm}`;
+  };
+
+  if (!nomeGiorno) return nomeGiorno;
+  const target = norm(nomeGiorno);
+
+  const now = oggi ?? new Date();
+  const domani = new Date(now);
+  domani.setDate(domani.getDate() + 1);
+  if (norm(fmtWeekday(domani)) === target) {
+    return `Domani (${nomeGiorno} ${fmtDate(domani)})`;
+  }
+
+  const datePart = aggiornamento.split(" ")[0];
+  const seg = datePart.split("/");
+  if (seg.length !== 3) return nomeGiorno;
+  const g = Number(seg[0]);
+  const m = Number(seg[1]);
+  const a = Number(seg[2]);
+  if (isNaN(g) || isNaN(m) || isNaN(a)) return nomeGiorno;
+
+  let cand = new Date(a, m - 1, g);
+  cand.setDate(cand.getDate() + 1);
+  while (norm(fmtWeekday(cand)) !== target) {
+    cand.setDate(cand.getDate() + 1);
+  }
+  return `${nomeGiorno} ${fmtDate(cand)}`;
+}
+
 export function emojiAllerta(level: string | undefined): string {
   if (level === "nessuno") return "🟢";
   if (!level || level === "NA" || level === "") return "⚪";
@@ -166,15 +208,13 @@ export const messages = {
     const haAllerta = isAllertaPresente(d.allerta);
     let msg =
       `🚨 <b>Allerta meteo</b> — ${escHtml(d.comune)}\n\n` +
-      `${emojiAllerta(d.allerta)} Livello allerta: <b>${d.allerta}</b>`;
+      `${emojiAllerta(d.allerta)} <b>Oggi</b> — Livello allerta: <b>${d.allerta}</b>`;
     if (haAllerta) {
       const rischiStr = formatRischi(d.rischi);
-      if (rischiStr) msg += `\n\n${rischiStr}`;
-    } else {
-      msg += `\n\nNessuna allerta in corso.`;
+      if (rischiStr) msg += `\n${rischiStr}`;
     }
     if (d.allertaDomani && isAllertaPresente(d.allertaDomani)) {
-      msg += `\n\n🚨 <b>Previsioni per ${escHtml(d.nomeGiornoDomani ?? "domani")}</b>\n` +
+      msg += `\n\n🚨 <b>${formatoGiornoDomani(d.nomeGiornoDomani ?? "domani", d.aggiornamento)}</b>\n` +
         `${emojiAllerta(d.allertaDomani)} Allerta: <b>${d.allertaDomani}</b>`;
       const rischiDomaniStr = d.rischiDomani ? formatRischi(d.rischiDomani) : null;
       if (rischiDomaniStr) msg += `\n${rischiDomaniStr}`;
@@ -185,13 +225,13 @@ export const messages = {
   completo: (d: DatiMeteo) => {
     const haAllerta = isAllertaPresente(d.allerta);
     let sezioneAllerta =
-      `${emojiAllerta(d.allerta)} <b>Allerta: ${d.allerta}</b>`;
+      `${emojiAllerta(d.allerta)} <b>Oggi</b> — Allerta: <b>${d.allerta}</b>`;
     if (haAllerta) {
       const rischiStr = formatRischi(d.rischi);
       if (rischiStr) sezioneAllerta += `\n${rischiStr}`;
     }
     if (d.allertaDomani && isAllertaPresente(d.allertaDomani)) {
-      sezioneAllerta += `\n\n🚨 <b>Previsioni per ${escHtml(d.nomeGiornoDomani ?? "domani")}</b>\n` +
+      sezioneAllerta += `\n\n🚨 <b>${formatoGiornoDomani(d.nomeGiornoDomani ?? "domani", d.aggiornamento)}</b>\n` +
         `${emojiAllerta(d.allertaDomani)} Allerta: <b>${d.allertaDomani}</b>`;
       const rischiDomaniStr = d.rischiDomani ? formatRischi(d.rischiDomani) : null;
       if (rischiDomaniStr) sezioneAllerta += `\n${rischiDomaniStr}`;

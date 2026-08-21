@@ -10,6 +10,7 @@ import {
   fingerprintMeteo,
   fingerprintCalore,
   isStessoGiornoIt,
+  formatoGiornoDomani,
 } from "../../src/bot/messages.js";
 import type { DatiMeteo, RisultatoAllertaCalore } from "../../src/types/index.js";
 
@@ -120,7 +121,8 @@ describe("messages.allerta", () => {
   it("quando allerta = nessuno, non mostra rischi e mostra messaggio", () => {
     const msg = messages.allerta(datiNessunaAllerta);
     expect(msg).toContain("nessuno");
-    expect(msg).toContain("Nessuna allerta in corso");
+    expect(msg).toContain("Oggi");
+    expect(msg).not.toContain("Nessuna allerta in corso");
     expect(msg).not.toContain("Idraulico:");
     expect(msg).not.toContain("Idrogeologico:");
     expect(msg).not.toContain("Temporali:");
@@ -131,7 +133,8 @@ describe("messages.allerta", () => {
 
   it("include previsioni per domani quando presenti", () => {
     const msg = messages.allerta(datiConDomani);
-    expect(msg).toContain("Previsioni per Sabato");
+    expect(msg).toContain("Sabato");
+    expect(msg).not.toContain("Previsioni per");
     expect(msg).toContain("<b>medio</b>");
     expect(msg).toContain("Idrogeologico: elevato");
   });
@@ -143,9 +146,11 @@ describe("messages.allerta", () => {
 
   it("include previsioni per domani anche quando oggi non ha allerta", () => {
     const msg = messages.allerta(datiNessunaAllertaConDomani);
-    expect(msg).toContain("Previsioni per Sabato");
+    expect(msg).toContain("Sabato");
+    expect(msg).not.toContain("Previsioni per");
     expect(msg).toContain("<b>medio</b>");
-    expect(msg).toContain("Nessuna allerta in corso");
+    expect(msg).toContain("Oggi");
+    expect(msg).not.toContain("Nessuna allerta in corso");
   });
 
   it("termina con la riga Aggiornamento", () => {
@@ -195,7 +200,7 @@ describe("messages.previsioni", () => {
 describe("messages.completo", () => {
   it("include allerta e previsioni", () => {
     const msg = messages.completo(datiFixture);
-    expect(msg).toContain("Allerta: basso");
+    expect(msg).toContain("Allerta: <b>basso</b>");
     expect(msg).toContain("Idraulico: medio");
     expect(msg).toContain("Idrogeologico: basso");
     expect(msg).toContain("Vento: elevato");
@@ -227,7 +232,8 @@ describe("messages.completo", () => {
 
   it("completo include previsioni per domani quando presenti", () => {
     const msg = messages.completo(datiConDomani);
-    expect(msg).toContain("Previsioni per Sabato");
+    expect(msg).toContain("Sabato");
+    expect(msg).not.toContain("Previsioni per");
     expect(msg).toContain("<b>medio</b>");
   });
 
@@ -544,5 +550,26 @@ describe("isStessoGiornoIt", () => {
     const ieri = new Date();
     ieri.setDate(ieri.getDate() - 1);
     expect(isStessoGiornoIt(ieri)).toBe(false);
+  });
+});
+
+describe("formatoGiornoDomani", () => {
+  const oggi = new Date(2026, 7, 21); // venerdì 21/08/2026
+
+  it("giorno = domani reale → 'Domani (Sabato 22/08)'", () => {
+    expect(formatoGiornoDomani("Sabato", "21/08/2026 10:00", oggi)).toBe("Domani (Sabato 22/08)");
+  });
+
+  it("giorno oltre domani → 'Lunedì 24/08'", () => {
+    expect(formatoGiornoDomani("Lunedì", "21/08/2026 10:00", oggi)).toBe("Lunedì 24/08");
+  });
+
+  it("aggiornamento vuoto o non valido → solo nome giorno", () => {
+    expect(formatoGiornoDomani("Lunedì", "", oggi)).toBe("Lunedì");
+    expect(formatoGiornoDomani("Lunedì", "non è una data", oggi)).toBe("Lunedì");
+  });
+
+  it("nomeGiorno vuoto → stringa vuota", () => {
+    expect(formatoGiornoDomani("", "21/08/2026", oggi)).toBe("");
   });
 });
