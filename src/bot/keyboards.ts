@@ -81,17 +81,9 @@ export function allertaInlineKeyboard() {
     inline_keyboard: [
       [
         { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
-        { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
+        { text: "🌤️ Meteo", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
       ],
-    ],
-  };
-}
-
-export function allertaConPrevisioniInlineKeyboard() {
-  return {
-    inline_keyboard: [
-      ...allertaInlineKeyboard().inline_keyboard,
-      ...previsioniCompleteInlineKeyboard().inline_keyboard,
+      [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
     ],
   };
 }

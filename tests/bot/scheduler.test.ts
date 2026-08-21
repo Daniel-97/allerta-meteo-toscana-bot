@@ -177,15 +177,16 @@ describe("broadcastNotifiche", () => {
           inline_keyboard: [
             [
               { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
-              { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
+              { text: "🌤️ Meteo", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
             ],
+            [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
           ],
         }),
       }),
     );
   });
 
-  it("broadcast completo (notificheMeteo): keyboard allerta + previsioni complete", async () => {
+  it("broadcast completo: stessa keyboard allerta", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
     const bot = { api: { sendMessage } } as any;
     const services = mockServices() as any; // notificheMeteo: true di default
@@ -200,11 +201,9 @@ describe("broadcastNotifiche", () => {
           inline_keyboard: [
             [
               { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
-              { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
+              { text: "🌤️ Meteo", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
             ],
-            [
-              { text: "🖼️ Previsioni complete", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
-            ],
+            [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
           ],
         }),
       }),
