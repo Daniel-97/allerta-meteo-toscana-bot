@@ -13,7 +13,7 @@ describe("allertaInlineKeyboard", () => {
         { text: "🌤️ Meteo Cascina", url: "https://www.lamma.toscana.it/meteo/meteo-cascina" },
       ],
       [{ text: "📋 Cosa fare", url: URL_COSA_FARE }],
-      [{ text: "🔗 Altre risorse", callback_data: "risorse:allerta:Cascina:cascina" }],
+      [{ text: "🔗 Altre risorse", callback_data: "risorse:allerta:cascina" }],
     ]);
   });
 });
@@ -26,7 +26,7 @@ describe("previsioniCompleteInlineKeyboard", () => {
         { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
         { text: "🌤️ Meteo Cascina", url: "https://www.lamma.toscana.it/meteo/meteo-cascina" },
       ],
-      [{ text: "🔗 Altre risorse", callback_data: "risorse:previsioni:Cascina:cascina" }],
+      [{ text: "🔗 Altre risorse", callback_data: "risorse:previsioni:cascina" }],
     ]);
   });
 });
@@ -41,7 +41,7 @@ describe("allertaConMeteoToscanaInlineKeyboard", () => {
       ],
       [{ text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" }],
       [{ text: "📋 Cosa fare", url: URL_COSA_FARE }],
-      [{ text: "🔗 Altre risorse", callback_data: "risorse:completo:Cascina:cascina" }],
+      [{ text: "🔗 Altre risorse", callback_data: "risorse:completo:cascina" }],
     ]);
   });
 });
@@ -68,12 +68,22 @@ describe("risorseInlineKeyboard", () => {
     ]);
   });
 
-  it("con tipo/nome/url: riga finale Indietro", () => {
-    const kb = risorseInlineKeyboard("allerta", "Cascina", "cascina");
+  it("con tipo/url: riga finale Indietro", () => {
+    const kb = risorseInlineKeyboard("allerta", "cascina");
     expect(kb.inline_keyboard).toHaveLength(4);
     expect(kb.inline_keyboard[3]).toEqual([
-      { text: "← Indietro", callback_data: "risorse-back:allerta:Cascina:cascina" },
+      { text: "← Indietro", callback_data: "risorse-back:allerta:cascina" },
     ]);
+  });
+});
+
+describe("callback_data entro 64 byte", () => {
+  it("callback_data entro 64 byte per nomi comuni lunghi", () => {
+    const nome = "Castello di Sambuca Pistoiese";
+    const url = "castellodisambucapse";
+    const kb = allertaInlineKeyboard(nome, url);
+    const data = kb.inline_keyboard.at(-1)[0].callback_data as string;
+    expect(Buffer.byteLength(data, "utf8")).toBeLessThanOrEqual(64);
   });
 });
 

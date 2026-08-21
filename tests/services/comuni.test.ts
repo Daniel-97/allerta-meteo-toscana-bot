@@ -66,6 +66,18 @@ describe("ArchivioComuni", () => {
     expect(res).toBeUndefined();
   });
 
+  it("findByUrl match esatto", async () => {
+    const res = await archivio.findByUrl("firenze");
+    expect(res).toBeDefined();
+    expect(res!.nome).toBe("Firenze");
+    expect(res!.url).toBe("firenze");
+  });
+
+  it("findByUrl nessun match", async () => {
+    const res = await archivio.findByUrl("non-esiste");
+    expect(res).toBeUndefined();
+  });
+
   it("all ritorna tutti i comuni ordinati", async () => {
     const res = await archivio.all();
     expect(res).toHaveLength(4);

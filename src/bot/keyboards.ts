@@ -66,7 +66,7 @@ export function previsioniCompleteInlineKeyboard(nome: string, url: string) {
         { text: "🌤️ Meteo Toscana", url: LINKS.meteoToscana },
         { text: `🌤️ Meteo ${nome}`, url: LINKS.meteoComune(url) },
       ],
-      rigaAltreRisorse("previsioni", nome, url),
+      rigaAltreRisorse("previsioni", url),
     ],
   };
 }
@@ -90,7 +90,7 @@ export function allertaInlineKeyboard(nome: string, url: string) {
         { text: `🌤️ Meteo ${nome}`, url: LINKS.meteoComune(url) },
       ],
       [{ text: "📋 Cosa fare", url: LINKS.cosaFare }],
-      rigaAltreRisorse("allerta", nome, url),
+      rigaAltreRisorse("allerta", url),
     ],
   };
 }
@@ -104,7 +104,7 @@ export function allertaConMeteoToscanaInlineKeyboard(nome: string, url: string) 
       ],
       [{ text: "🌤️ Meteo Toscana", url: LINKS.meteoToscana }],
       [{ text: "📋 Cosa fare", url: LINKS.cosaFare }],
-      rigaAltreRisorse("completo", nome, url),
+      rigaAltreRisorse("completo", url),
     ],
   };
 }
@@ -120,16 +120,16 @@ export function confermaInlineKeyboard(url: string, nome: string) {
   };
 }
 
-function rigaAltreRisorse(tipo: string, nome: string, url: string) {
-  return [{ text: "🔗 Altre risorse", callback_data: `risorse:${tipo}:${nome}:${url}` }];
+function rigaAltreRisorse(tipo: string, url: string) {
+  return [{ text: "🔗 Altre risorse", callback_data: `risorse:${tipo}:${url}` }];
 }
 
-export function risorseInlineKeyboard(tipo?: string, nome?: string, url?: string) {
+export function risorseInlineKeyboard(tipo?: string, url?: string) {
   const kb: {
     inline_keyboard: Array<Array<{ text: string; url: string } | { text: string; callback_data: string }>>;
   } = { inline_keyboard: RISORSE.map((r) => [{ text: r.text, url: r.url }]) };
   if (tipo) {
-    kb.inline_keyboard.push([{ text: "← Indietro", callback_data: `risorse-back:${tipo}:${nome}:${url}` }]);
+    kb.inline_keyboard.push([{ text: "← Indietro", callback_data: `risorse-back:${tipo}:${url}` }]);
   }
   return kb;
 }

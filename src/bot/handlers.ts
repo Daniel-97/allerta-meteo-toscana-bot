@@ -314,16 +314,19 @@ export async function handleCallbackQuery(
   }
 
   if (action === "risorse") {
-    const [, tipo, nome, url] = parts;
+    const [, tipo, url] = parts;
     await ctx.answerCallbackQuery();
-    await ctx.editMessageReplyMarkup({ reply_markup: risorseInlineKeyboard(tipo, nome, url) });
+    await ctx.editMessageReplyMarkup({ reply_markup: risorseInlineKeyboard(tipo, url) });
     return;
   }
 
   if (action === "risorse-back") {
-    const [, tipo, nome, url] = parts;
+    const [, tipo, url] = parts;
+    const comune = await services.comuni.findByUrl(url);
     await ctx.answerCallbackQuery();
-    await ctx.editMessageReplyMarkup({ reply_markup: keyboardMeteoPerTipo(tipo, nome, url) });
+    if (comune) {
+      await ctx.editMessageReplyMarkup({ reply_markup: keyboardMeteoPerTipo(tipo, comune.nome, url) });
+    }
     return;
   }
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { GrammyError } from "grammy";
 import { handleAllerta, handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero, handleGestisciComuni, handleCredits, handleAiuto } from "../../src/bot/handlers.js";
-import { previsioniCompleteInlineKeyboard } from "../../src/bot/keyboards.js";
+import { previsioniCompleteInlineKeyboard, allertaInlineKeyboard } from "../../src/bot/keyboards.js";
 
 const grammyErrorNotModified = () =>
   new GrammyError(
@@ -619,7 +619,7 @@ describe("handleAllerta", () => {
               { text: "🌤️ Meteo Firenze", url: "https://www.lamma.toscana.it/meteo/meteo-firenze" },
             ],
             [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
-            [{ text: "🔗 Altre risorse", callback_data: "risorse:allerta:Firenze:firenze" }],
+            [{ text: "🔗 Altre risorse", callback_data: "risorse:allerta:firenze" }],
           ],
         }),
       }),
@@ -681,7 +681,7 @@ describe("handlePrevisioni", () => {
             { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
             { text: "🌤️ Meteo Firenze", url: "https://www.lamma.toscana.it/meteo/meteo-firenze" },
           ],
-          [{ text: "🔗 Altre risorse", callback_data: "risorse:previsioni:Firenze:firenze" }]],
+          [{ text: "🔗 Altre risorse", callback_data: "risorse:previsioni:firenze" }]],
         }),
       }),
     );
@@ -1003,7 +1003,7 @@ describe("handleCallbackQuery risorse", () => {
     const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
     const editMessageReplyMarkup = vi.fn().mockResolvedValue(undefined);
     const ctx = {
-      callbackQuery: { data: "risorse:allerta:Cascina:cascina" },
+      callbackQuery: { data: "risorse:allerta:cascina" },
       answerCallbackQuery,
       editMessageReplyMarkup,
     } as any;
@@ -1014,25 +1014,45 @@ describe("handleCallbackQuery risorse", () => {
     expect(editMessageReplyMarkup).toHaveBeenCalledWith({
       reply_markup: expect.objectContaining({
         inline_keyboard: expect.arrayContaining([
-          [{ text: "← Indietro", callback_data: "risorse-back:allerta:Cascina:cascina" }],
+          [{ text: "← Indietro", callback_data: "risorse-back:allerta:cascina" }],
         ]),
       }),
     });
   });
 
-  it("risorse-back: ripristina la keyboard del tipo", async () => {
+  it("risorse-back: ripristina la keyboard del tipo recuperando il comune dal DB", async () => {
     const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
     const editMessageReplyMarkup = vi.fn().mockResolvedValue(undefined);
     const ctx = {
-      callbackQuery: { data: "risorse-back:previsioni:Cascina:cascina" },
+      callbackQuery: { data: "risorse-back:previsioni:cascina" },
       answerCallbackQuery,
       editMessageReplyMarkup,
     } as any;
+    const services = {
+      comuni: { findByUrl: vi.fn().mockResolvedValue({ nome: "Cascina", url: "cascina" }) },
+    } as any;
 
-    await handleCallbackQuery(ctx, {} as any);
+    await handleCallbackQuery(ctx, services);
 
     expect(editMessageReplyMarkup).toHaveBeenCalledWith({
       reply_markup: previsioniCompleteInlineKeyboard("Cascina", "cascina"),
     });
+  });
+
+  it("risorse-back: nessun edit se findByUrl non trova il comune", async () => {
+    const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
+    const editMessageReplyMarkup = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "risorse-back:allerta:inesistente" },
+      answerCallbackQuery,
+      editMessageReplyMarkup,
+    } as any;
+    const services = {
+      comuni: { findByUrl: vi.fn().mockResolvedValue(undefined) },
+    } as any;
+
+    await handleCallbackQuery(ctx, services);
+
+    expect(editMessageReplyMarkup).not.toHaveBeenCalled();
   });
 });

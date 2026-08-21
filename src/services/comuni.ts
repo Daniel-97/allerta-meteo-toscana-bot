@@ -6,6 +6,7 @@ import type { Comune } from "../types/index.js";
 export interface ArchivioComuni {
   searchByPrefix(prefix: string): Promise<Comune[]>;
   findByNome(nome: string): Promise<Comune | undefined>;
+  findByUrl(url: string): Promise<Comune | undefined>;
   all(): Promise<Comune[]>;
 }
 
@@ -31,6 +32,14 @@ export function createArchivioComuni(db: LibSQLDatabase): ArchivioComuni {
         .select()
         .from(comuni)
         .where(eq(comuni.nome, nome))
+        .limit(1)
+        .then((rows) => (rows[0] ? rowToComune(rows[0]) : undefined)),
+
+    findByUrl: (url) =>
+      db
+        .select()
+        .from(comuni)
+        .where(eq(comuni.url, url))
         .limit(1)
         .then((rows) => (rows[0] ? rowToComune(rows[0]) : undefined)),
 
