@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { GrammyError } from "grammy";
 import { handleAllerta, handleCallbackQuery, handlePrevisioni, handleRichiestaTestoLibero, handleGestisciComuni, handleCredits, handleAiuto } from "../../src/bot/handlers.js";
+import { previsioniCompleteInlineKeyboard } from "../../src/bot/keyboards.js";
 
 const grammyErrorNotModified = () =>
   new GrammyError(
@@ -994,5 +995,44 @@ describe("handleAiuto", () => {
 
     expect(reply).toHaveBeenCalledWith(expect.stringContaining("/allerta"));
     expect(reply).toHaveBeenCalledWith(expect.stringContaining("/aiuto"));
+  });
+});
+
+describe("handleCallbackQuery risorse", () => {
+  it("risorse: mostra la lista risorse con Indietro", async () => {
+    const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
+    const editMessageReplyMarkup = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "risorse:allerta:Cascina:cascina" },
+      answerCallbackQuery,
+      editMessageReplyMarkup,
+    } as any;
+
+    await handleCallbackQuery(ctx, {} as any);
+
+    expect(answerCallbackQuery).toHaveBeenCalled();
+    expect(editMessageReplyMarkup).toHaveBeenCalledWith({
+      reply_markup: expect.objectContaining({
+        inline_keyboard: expect.arrayContaining([
+          [{ text: "← Indietro", callback_data: "risorse-back:allerta:Cascina:cascina" }],
+        ]),
+      }),
+    });
+  });
+
+  it("risorse-back: ripristina la keyboard del tipo", async () => {
+    const answerCallbackQuery = vi.fn().mockResolvedValue(undefined);
+    const editMessageReplyMarkup = vi.fn().mockResolvedValue(undefined);
+    const ctx = {
+      callbackQuery: { data: "risorse-back:previsioni:Cascina:cascina" },
+      answerCallbackQuery,
+      editMessageReplyMarkup,
+    } as any;
+
+    await handleCallbackQuery(ctx, {} as any);
+
+    expect(editMessageReplyMarkup).toHaveBeenCalledWith({
+      reply_markup: previsioniCompleteInlineKeyboard("Cascina", "cascina"),
+    });
   });
 });

@@ -31,6 +31,7 @@ const publicCommands: BotCommand[] = [
   { command: "allerta", description: "Richiedi le allerte meteo" },
   { command: "previsioni", description: "Richiedi le previsioni meteo" },
   { command: "comuni", description: "Gestisci i comuni monitorati" },
+  { command: "risorse", description: "Link utili: radar, fulminazioni, temperature" },
   { command: "credits", description: "Informazioni sul bot" },
   { command: "aiuto", description: "Elenco comandi disponibili" },
 ];

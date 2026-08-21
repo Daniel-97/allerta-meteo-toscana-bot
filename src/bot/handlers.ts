@@ -9,7 +9,7 @@ import type { HeatWaveService } from "../services/heatwave.js";
 import type { AlertStateService } from "../services/alert-state.js";
 import type { RateLimiterService } from "../services/rate-limiter.js";
 import { messages, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
-import { previsioniCompleteInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, comuniGestioneInlineKeyboard, comuneDettaglioInlineKeyboard, confermaEliminaInlineKeyboard, caloreInlineKeyboard, allertaInlineKeyboard } from "./keyboards.js";
+import { previsioniCompleteInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, comuniGestioneInlineKeyboard, comuneDettaglioInlineKeyboard, confermaEliminaInlineKeyboard, caloreInlineKeyboard, allertaInlineKeyboard, risorseInlineKeyboard, keyboardMeteoPerTipo } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
@@ -191,6 +191,10 @@ export function registerHandlers(bot: Bot, services: BotServices, adminChatId?: 
   bot.command("credits", handleCredits);
   bot.command("aiuto", handleAiuto);
 
+  bot.command("risorse", async (ctx) => {
+    await ctx.reply(messages.risorse, { reply_markup: risorseInlineKeyboard() });
+  });
+
   bot.on("callback_query:data", (ctx) => handleCallbackQuery(ctx, services, adminChatId));
 }
 
@@ -306,6 +310,20 @@ export async function handleCallbackQuery(
     if (!idTelegram) return;
     await services.users.removeComune(idTelegram, url);
     await renderListaComuni(ctx, services, idTelegram);
+    return;
+  }
+
+  if (action === "risorse") {
+    const [, tipo, nome, url] = parts;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageReplyMarkup({ reply_markup: risorseInlineKeyboard(tipo, nome, url) });
+    return;
+  }
+
+  if (action === "risorse-back") {
+    const [, tipo, nome, url] = parts;
+    await ctx.answerCallbackQuery();
+    await ctx.editMessageReplyMarkup({ reply_markup: keyboardMeteoPerTipo(tipo, nome, url) });
     return;
   }
 

@@ -155,11 +155,14 @@ export const messages = {
     "🚨 /allerta — Richiedi le allerte meteo (e ondate di calore) per i tuoi comuni\n\n" +
     "🌤️ /previsioni — Richiedi le previsioni meteo per i tuoi comuni\n\n" +
     "📋 /comuni — Gestisci i comuni monitorati (aggiungi, modifica, elimina, lista)\n\n" +
+    "🔗 /risorse — Link utili (radar, fulminazioni, temperature)\n\n" +
     "ℹ️ /credits — Informazioni sul bot e le fonti dati\n\n" +
     "❓ /aiuto — Mostra questo messaggio",
 
   nessunComune:
     "Non hai ancora impostato comuni. Premi il pulsante <b>➕ Aggiungi</b> per iniziare.",
+
+  risorse: "🔗 <b>Risorse utili</b>",
 
   nessunComunePrevisioni:
     "Imposta almeno un comune da monitorare prima con il comando /comuni",

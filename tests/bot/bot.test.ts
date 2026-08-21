@@ -131,4 +131,31 @@ describe("createBot - ordinamento middleware", () => {
 
     expect(services.users.findByTelegramId).toHaveBeenCalledWith(123);
   });
+
+  it("/risorse risponde con il testo e le 3 risorse", async () => {
+    const services = makeServices();
+    const bot = createBot(makeConfig("999"), services);
+    const sent: any[] = [];
+    bot.api.config.use(async (_prev: any, method: string, payload: any) => {
+      if (method === "getMe") {
+        return {
+          ok: true,
+          result: { id: 1, is_bot: true, first_name: "TestBot", username: "testbot", can_join_groups: false, can_read_all_group_messages: false, supports_inline_queries: false },
+        } as any;
+      }
+      if (method === "sendMessage") sent.push(payload);
+      return { ok: true, result: { message_id: 2, date: 0, chat: { id: payload?.chat_id ?? 0, type: "private" }, text: payload?.text ?? "" } } as any;
+    });
+    await bot.init();
+    await bot.handleUpdate(textUpdate("/risorse", 111));
+
+    const message = sent.find((p: any) => typeof p.text === "string" && p.text.includes("Risorse"));
+    expect(message).toBeDefined();
+    const urls = (message?.reply_markup?.inline_keyboard ?? []).flat().map((b: any) => b.url);
+    expect(urls).toEqual(expect.arrayContaining([
+      "https://map.blitzortung.org/#5.26/41.709/13.462",
+      "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/radar",
+      "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/temperature-tempo-reale",
+    ]));
+  });
 });
