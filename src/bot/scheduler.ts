@@ -79,11 +79,11 @@ export async function broadcastNotifiche(
       }
     }
 
-    if (msgCalore && !skipCalore) {
+    if (!r.errore && msgCalore && !skipCalore) {
       try {
         await bot.api.sendMessage(user.idTelegram, msgCalore, {
           link_preview_options: { is_disabled: true },
-          reply_markup: caloreInlineKeyboard(),
+          reply_markup: caloreInlineKeyboard(r.oggi?.url ?? r.domani?.url ?? ""),
         });
         inviati++;
 

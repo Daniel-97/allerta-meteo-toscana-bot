@@ -518,7 +518,10 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Ondata di calore"),
-      expect.objectContaining({ reply_markup: expect.objectContaining({ inline_keyboard: [[{ text: "📋 Cosa fare", url: expect.any(String) }]] }) }),
+      expect.objectContaining({ reply_markup: expect.objectContaining({ inline_keyboard: [[
+        { text: "📋 Cosa fare", url: expect.any(String) },
+        { text: "📄 Bollettino", url: "https://salute.gov.it/bol.pdf" },
+      ]] }) }),
     );
   });
 
@@ -548,7 +551,10 @@ describe("handleAllerta", () => {
     );
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Ondata di calore"),
-      expect.objectContaining({ reply_markup: expect.objectContaining({ inline_keyboard: [[{ text: "📋 Cosa fare", url: expect.any(String) }]] }) }),
+      expect.objectContaining({ reply_markup: expect.objectContaining({ inline_keyboard: [[
+        { text: "📋 Cosa fare", url: expect.any(String) },
+        { text: "📄 Bollettino", url: "https://salute.gov.it/bol.pdf" },
+      ]] }) }),
     );
   });
 

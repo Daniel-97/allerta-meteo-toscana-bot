@@ -74,7 +74,7 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
   }
   if (msgCalore) {
     const extra: Record<string, unknown> = { link_preview_options: { is_disabled: true } };
-    if (!r.errore) extra.reply_markup = caloreInlineKeyboard();
+    if (!r.errore) extra.reply_markup = caloreInlineKeyboard(r.oggi?.url ?? r.domani?.url ?? "");
     await ctx.reply(msgCalore, extra);
   }
 }

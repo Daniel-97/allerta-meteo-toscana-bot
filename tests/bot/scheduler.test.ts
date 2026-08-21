@@ -208,4 +208,25 @@ describe("broadcastNotifiche", () => {
       }),
     );
   });
+
+  it("broadcast calore: keyboard con Cosa fare e Bollettino", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const services = mockServices() as any;
+
+    await broadcastNotifiche(bot, services, true, 999);
+
+    expect(sendMessage).toHaveBeenCalledWith(
+      1,
+      expect.stringContaining("Ondata di calore"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({
+          inline_keyboard: [[
+            { text: "📋 Cosa fare", url: expect.any(String) },
+            { text: "📄 Bollettino", url: "https://salute.gov.it/bol.pdf" },
+          ]],
+        }),
+      }),
+    );
+  });
 });

@@ -67,10 +67,13 @@ export function mappeMeteoInlineKeyboard() {
   };
 }
 
-export function caloreInlineKeyboard() {
+export function caloreInlineKeyboard(url: string) {
   return {
     inline_keyboard: [
-      [{ text: "📋 Cosa fare", url: "https://www.salute.gov.it/new/it/tema/ondate-di-calore/livelli-di-rischio-cosa-fare/" }],
+      [
+        { text: "📋 Cosa fare", url: "https://www.salute.gov.it/new/it/tema/ondate-di-calore/livelli-di-rischio-cosa-fare/" },
+        { text: "📄 Bollettino", url },
+      ],
     ],
   };
 }

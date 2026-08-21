@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { allertaInlineKeyboard, allertaConMappeInlineKeyboard } from "../../src/bot/keyboards.js";
+import { allertaInlineKeyboard, allertaConMappeInlineKeyboard, caloreInlineKeyboard } from "../../src/bot/keyboards.js";
 
 const URL_MAPPE = "https://www.regione.toscana.it/allertameteo";
 const URL_COSA_FARE = "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento";
@@ -25,6 +25,18 @@ describe("allertaConMappeInlineKeyboard", () => {
         { text: "📋 Cosa fare", url: URL_COSA_FARE },
       ],
       [{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }],
+    ]);
+  });
+});
+
+describe("caloreInlineKeyboard", () => {
+  it("restituisce Cosa fare e Bollettino con l'url parametro", () => {
+    const kb = caloreInlineKeyboard("https://salute.gov.it/bol.pdf");
+    expect(kb.inline_keyboard).toEqual([
+      [
+        { text: "📋 Cosa fare", url: "https://www.salute.gov.it/new/it/tema/ondate-di-calore/livelli-di-rischio-cosa-fare/" },
+        { text: "📄 Bollettino", url: "https://salute.gov.it/bol.pdf" },
+      ],
     ]);
   });
 });
