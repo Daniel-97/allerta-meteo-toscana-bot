@@ -178,7 +178,7 @@ describe("messages.previsioni", () => {
     expect(msg).toContain("Percepita: 21°");
   });
 
-  it("include link bollettino del giorno", () => {
+  it("non include link bollettino del giorno nel testo", () => {
     const msg = messages.previsioni(datiFixture);
     expect(msg).not.toContain("Bollettino del giorno");
   });
@@ -210,7 +210,7 @@ describe("messages.completo", () => {
     expect(msg).toContain("Temperatura: 22°");
   });
 
-  it("include link bollettino del giorno", () => {
+  it("non include link bollettino del giorno nel testo", () => {
     const msg = messages.completo(datiFixture);
     expect(msg).not.toContain("Bollettino del giorno");
   });
