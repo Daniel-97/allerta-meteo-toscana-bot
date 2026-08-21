@@ -75,6 +75,26 @@ export function caloreInlineKeyboard() {
   };
 }
 
+export function allertaInlineKeyboard() {
+  return {
+    inline_keyboard: [
+      [
+        { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
+        { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
+      ],
+    ],
+  };
+}
+
+export function allertaConMappeInlineKeyboard() {
+  return {
+    inline_keyboard: [
+      ...allertaInlineKeyboard().inline_keyboard,
+      ...mappeMeteoInlineKeyboard().inline_keyboard,
+    ],
+  };
+}
+
 export function confermaInlineKeyboard(url: string, nome: string) {
   return {
     inline_keyboard: [
