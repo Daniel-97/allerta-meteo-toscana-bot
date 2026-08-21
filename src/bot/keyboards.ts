@@ -102,10 +102,12 @@ export function allertaConMeteoToscanaInlineKeyboard(nome: string, url: string) 
     inline_keyboard: [
       [
         { text: "🗺️ Mappe allerta", url: LINKS.mappeAllerta },
+        { text: "📋 Cosa fare", url: LINKS.cosaFare },
+      ],
+      [
+        { text: "🌤️ Meteo Toscana", url: LINKS.meteoToscana },
         { text: `🌤️ Meteo ${nome}`, url: LINKS.meteoComune(url) },
       ],
-      [{ text: "🌤️ Meteo Toscana", url: LINKS.meteoToscana }],
-      [{ text: "📋 Cosa fare", url: LINKS.cosaFare }],
       rigaAltreRisorse("completo", url),
     ],
   };

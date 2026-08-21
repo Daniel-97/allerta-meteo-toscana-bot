@@ -34,15 +34,17 @@ describe("previsioniCompleteInlineKeyboard", () => {
 });
 
 describe("allertaConMeteoToscanaInlineKeyboard", () => {
-  it("3 righe: Mappe allerta+Meteo Cascina, Meteo Toscana, Cosa fare", () => {
+  it("3 righe: Mappe allerta+Cosa fare, Meteo Toscana+Meteo Cascina, Altre risorse", () => {
     const kb = allertaConMeteoToscanaInlineKeyboard("Cascina", "cascina");
     expect(kb.inline_keyboard).toEqual([
       [
         { text: "🗺️ Mappe allerta", url: URL_MAPPE },
+        { text: "📋 Cosa fare", url: URL_COSA_FARE },
+      ],
+      [
+        { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
         { text: "🌤️ Meteo Cascina", url: "https://www.lamma.toscana.it/meteo/meteo-cascina" },
       ],
-      [{ text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" }],
-      [{ text: "📋 Cosa fare", url: URL_COSA_FARE }],
       [{ text: "🔗 Altre risorse", callback_data: "risorse:completo:cascina" }],
     ]);
   });

@@ -204,10 +204,12 @@ describe("broadcastNotifiche", () => {
           inline_keyboard: [
             [
               { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
+              { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
+            ],
+            [
+              { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
               { text: "🌤️ Meteo Firenze", url: "https://www.lamma.toscana.it/meteo/meteo-firenze" },
             ],
-            [{ text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" }],
-            [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
             [{ text: "🔗 Altre risorse", callback_data: "risorse:completo:firenze" }],
           ],
         }),
