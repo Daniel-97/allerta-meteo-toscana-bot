@@ -76,11 +76,9 @@ export function messaggioCalore(r: RisultatoAllertaCalore): string | null {
   }
   if (righe.length === 0) return null;
 
-  const url = r.oggi?.url ?? r.domani?.url ?? "";
   return (
     `🌡️ <b>Ondata di calore — Toscana</b>\n\n` +
     righe.join("\n") + "\n\n" +
-    `📄 <a href="${url}">Bollettino calore</a>\n\n` +
     `<i>Aggiornamento: ${r.dataEstrazione}</i>`
   );
 }

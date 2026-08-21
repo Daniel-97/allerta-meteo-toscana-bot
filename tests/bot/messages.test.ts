@@ -345,8 +345,7 @@ describe("messaggioCalore", () => {
     expect(msg).toContain("Ondata di calore");
     expect(msg).toContain("Oggi: 🟠 Arancione");
     expect(msg).toContain("Domani: 🔴 Rossa");
-    expect(msg).toContain("Bollettino calore");
-    expect(msg).toContain("salute.gov.it/bol.pdf");
+    expect(msg).not.toContain("Bollettino calore");
     expect(msg).toContain("2026-06-25");
   });
 
