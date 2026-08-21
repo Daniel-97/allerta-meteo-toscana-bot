@@ -153,4 +153,59 @@ describe("broadcastNotifiche", () => {
     expect(sendMessage).toHaveBeenCalledWith(999, expect.stringContaining("Recupero dati meteo fallito"));
     expect(sendMessage.mock.calls.filter((c: any[]) => c[0] === 999)).toHaveLength(1);
   });
+
+  it("broadcast alert-only: il messaggio meteo ha la keyboard allerta", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const services = {
+      ...mockServices({
+        users: {
+          findAllWithComuni: vi.fn().mockResolvedValue([
+            { idTelegram: 1, comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: false }] },
+          ]),
+        },
+      }),
+    } as any;
+
+    await broadcastNotifiche(bot, services, true, 999);
+
+    expect(sendMessage).toHaveBeenCalledWith(
+      1,
+      expect.stringContaining("Allerta meteo"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({
+          inline_keyboard: [
+            [
+              { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
+              { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
+            ],
+          ],
+        }),
+      }),
+    );
+  });
+
+  it("broadcast completo (notificheMeteo): keyboard allerta + album", async () => {
+    const sendMessage = vi.fn().mockResolvedValue(undefined);
+    const bot = { api: { sendMessage } } as any;
+    const services = mockServices() as any; // notificheMeteo: true di default
+
+    await broadcastNotifiche(bot, services, true, 999);
+
+    expect(sendMessage).toHaveBeenCalledWith(
+      1,
+      expect.stringContaining("Dati meteo"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({
+          inline_keyboard: [
+            [
+              { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
+              { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
+            ],
+            [{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }],
+          ],
+        }),
+      }),
+    );
+  });
 });
