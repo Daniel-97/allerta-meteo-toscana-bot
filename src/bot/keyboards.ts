@@ -1,3 +1,5 @@
+import { LINKS, RISORSE } from "./links.js";
+
 export function comuniGestioneInlineKeyboard(
   comuni: Array<{ nome: string; url: string }>
 ) {
@@ -61,9 +63,10 @@ export function previsioniCompleteInlineKeyboard(nome: string, url: string) {
   return {
     inline_keyboard: [
       [
-        { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
-        { text: `🌤️ Meteo ${nome}`, url: `https://www.lamma.toscana.it/meteo/meteo-${url}` },
+        { text: "🌤️ Meteo Toscana", url: LINKS.meteoToscana },
+        { text: `🌤️ Meteo ${nome}`, url: LINKS.meteoComune(url) },
       ],
+      rigaAltreRisorse("previsioni", nome, url),
     ],
   };
 }
@@ -72,7 +75,7 @@ export function caloreInlineKeyboard(url: string) {
   return {
     inline_keyboard: [
       [
-        { text: "📋 Cosa fare", url: "https://www.salute.gov.it/new/it/tema/ondate-di-calore/livelli-di-rischio-cosa-fare/" },
+        { text: "📋 Cosa fare", url: LINKS.cosaFareCalore },
         { text: "📄 Bollettino", url },
       ],
     ],
@@ -83,10 +86,11 @@ export function allertaInlineKeyboard(nome: string, url: string) {
   return {
     inline_keyboard: [
       [
-        { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
-        { text: `🌤️ Meteo ${nome}`, url: `https://www.lamma.toscana.it/meteo/meteo-${url}` },
+        { text: "🗺️ Mappe allerta", url: LINKS.mappeAllerta },
+        { text: `🌤️ Meteo ${nome}`, url: LINKS.meteoComune(url) },
       ],
-      [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
+      [{ text: "📋 Cosa fare", url: LINKS.cosaFare }],
+      rigaAltreRisorse("allerta", nome, url),
     ],
   };
 }
@@ -95,11 +99,12 @@ export function allertaConMeteoToscanaInlineKeyboard(nome: string, url: string) 
   return {
     inline_keyboard: [
       [
-        { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
-        { text: `🌤️ Meteo ${nome}`, url: `https://www.lamma.toscana.it/meteo/meteo-${url}` },
+        { text: "🗺️ Mappe allerta", url: LINKS.mappeAllerta },
+        { text: `🌤️ Meteo ${nome}`, url: LINKS.meteoComune(url) },
       ],
-      [{ text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" }],
-      [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
+      [{ text: "🌤️ Meteo Toscana", url: LINKS.meteoToscana }],
+      [{ text: "📋 Cosa fare", url: LINKS.cosaFare }],
+      rigaAltreRisorse("completo", nome, url),
     ],
   };
 }
@@ -113,4 +118,24 @@ export function confermaInlineKeyboard(url: string, nome: string) {
       ],
     ],
   };
+}
+
+function rigaAltreRisorse(tipo: string, nome: string, url: string) {
+  return [{ text: "🔗 Altre risorse", callback_data: `risorse:${tipo}:${nome}:${url}` }];
+}
+
+export function risorseInlineKeyboard(tipo?: string, nome?: string, url?: string) {
+  const kb: {
+    inline_keyboard: Array<Array<{ text: string; url: string } | { text: string; callback_data: string }>>;
+  } = { inline_keyboard: RISORSE.map((r) => [{ text: r.text, url: r.url }]) };
+  if (tipo) {
+    kb.inline_keyboard.push([{ text: "← Indietro", callback_data: `risorse-back:${tipo}:${nome}:${url}` }]);
+  }
+  return kb;
+}
+
+export function keyboardMeteoPerTipo(tipo: string, nome: string, url: string) {
+  if (tipo === "completo") return allertaConMeteoToscanaInlineKeyboard(nome, url);
+  if (tipo === "previsioni") return previsioniCompleteInlineKeyboard(nome, url);
+  return allertaInlineKeyboard(nome, url);
 }

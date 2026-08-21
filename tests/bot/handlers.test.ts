@@ -618,6 +618,7 @@ describe("handleAllerta", () => {
               { text: "🌤️ Meteo Firenze", url: "https://www.lamma.toscana.it/meteo/meteo-firenze" },
             ],
             [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
+            [{ text: "🔗 Altre risorse", callback_data: "risorse:allerta:Firenze:firenze" }],
           ],
         }),
       }),
@@ -678,7 +679,8 @@ describe("handlePrevisioni", () => {
           inline_keyboard: [[
             { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
             { text: "🌤️ Meteo Firenze", url: "https://www.lamma.toscana.it/meteo/meteo-firenze" },
-          ]],
+          ],
+          [{ text: "🔗 Altre risorse", callback_data: "risorse:previsioni:Firenze:firenze" }]],
         }),
       }),
     );

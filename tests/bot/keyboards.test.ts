@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { allertaInlineKeyboard, caloreInlineKeyboard, previsioniCompleteInlineKeyboard, allertaConMeteoToscanaInlineKeyboard } from "../../src/bot/keyboards.js";
+import { allertaInlineKeyboard, caloreInlineKeyboard, previsioniCompleteInlineKeyboard, allertaConMeteoToscanaInlineKeyboard, risorseInlineKeyboard, keyboardMeteoPerTipo } from "../../src/bot/keyboards.js";
 
 const URL_MAPPE = "https://www.regione.toscana.it/allertameteo";
 const URL_COSA_FARE = "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento";
@@ -13,6 +13,7 @@ describe("allertaInlineKeyboard", () => {
         { text: "🌤️ Meteo Cascina", url: "https://www.lamma.toscana.it/meteo/meteo-cascina" },
       ],
       [{ text: "📋 Cosa fare", url: URL_COSA_FARE }],
+      [{ text: "🔗 Altre risorse", callback_data: "risorse:allerta:Cascina:cascina" }],
     ]);
   });
 });
@@ -25,6 +26,7 @@ describe("previsioniCompleteInlineKeyboard", () => {
         { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
         { text: "🌤️ Meteo Cascina", url: "https://www.lamma.toscana.it/meteo/meteo-cascina" },
       ],
+      [{ text: "🔗 Altre risorse", callback_data: "risorse:previsioni:Cascina:cascina" }],
     ]);
   });
 });
@@ -39,6 +41,7 @@ describe("allertaConMeteoToscanaInlineKeyboard", () => {
       ],
       [{ text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" }],
       [{ text: "📋 Cosa fare", url: URL_COSA_FARE }],
+      [{ text: "🔗 Altre risorse", callback_data: "risorse:completo:Cascina:cascina" }],
     ]);
   });
 });
@@ -52,5 +55,32 @@ describe("caloreInlineKeyboard", () => {
         { text: "📄 Bollettino", url: "https://salute.gov.it/bol.pdf" },
       ],
     ]);
+  });
+});
+
+describe("risorseInlineKeyboard", () => {
+  it("senza tipo: solo le 3 risorse", () => {
+    const kb = risorseInlineKeyboard();
+    expect(kb.inline_keyboard).toEqual([
+      [{ text: "⚡ Fulminazioni (tempo reale)", url: "https://map.blitzortung.org/#5.26/41.709/13.462" }],
+      [{ text: "📡 Radar meteo", url: "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/radar" }],
+      [{ text: "🌡️ Temperature stazioni", url: "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/temperature-tempo-reale" }],
+    ]);
+  });
+
+  it("con tipo/nome/url: riga finale Indietro", () => {
+    const kb = risorseInlineKeyboard("allerta", "Cascina", "cascina");
+    expect(kb.inline_keyboard).toHaveLength(4);
+    expect(kb.inline_keyboard[3]).toEqual([
+      { text: "← Indietro", callback_data: "risorse-back:allerta:Cascina:cascina" },
+    ]);
+  });
+});
+
+describe("keyboardMeteoPerTipo", () => {
+  it("restituisce la factory giusta per ogni tipo", () => {
+    expect(keyboardMeteoPerTipo("allerta", "Cascina", "cascina")).toEqual(allertaInlineKeyboard("Cascina", "cascina"));
+    expect(keyboardMeteoPerTipo("completo", "Cascina", "cascina")).toEqual(allertaConMeteoToscanaInlineKeyboard("Cascina", "cascina"));
+    expect(keyboardMeteoPerTipo("previsioni", "Cascina", "cascina")).toEqual(previsioniCompleteInlineKeyboard("Cascina", "cascina"));
   });
 });
