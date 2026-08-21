@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
 import { messages, messaggioCalore, haAllertaMeteo, fingerprintMeteo, fingerprintCalore, isStessoGiornoIt, escHtml } from "./messages.js";
-import { caloreInlineKeyboard, allertaInlineKeyboard } from "./keyboards.js";
+import { caloreInlineKeyboard, allertaInlineKeyboard, allertaConMeteoToscanaInlineKeyboard } from "./keyboards.js";
 
 function isUtenteHaBloccatoBot(err: unknown): boolean {
   return err instanceof Error && err.message.includes("blocked by the user");
@@ -60,7 +60,9 @@ export async function broadcastNotifiche(
         const msg = comune.notificheMeteo
           ? messages.completo(dati)
           : messages.allerta(dati);
-        const reply_markup = allertaInlineKeyboard(comune.nome, comune.url);
+        const reply_markup = comune.notificheMeteo
+          ? allertaConMeteoToscanaInlineKeyboard(comune.nome, comune.url)
+          : allertaInlineKeyboard(comune.nome, comune.url);
         await bot.api.sendMessage(user.idTelegram, msg, { link_preview_options: { is_disabled: true }, reply_markup });
         inviati++;
 

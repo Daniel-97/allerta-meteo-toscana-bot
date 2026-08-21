@@ -186,7 +186,7 @@ describe("broadcastNotifiche", () => {
     );
   });
 
-  it("broadcast completo: stessa keyboard allerta", async () => {
+  it("broadcast completo (notificheMeteo): keyboard con Meteo Toscana", async () => {
     const sendMessage = vi.fn().mockResolvedValue(undefined);
     const bot = { api: { sendMessage } } as any;
     const services = mockServices() as any; // notificheMeteo: true di default
@@ -203,6 +203,7 @@ describe("broadcastNotifiche", () => {
               { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
               { text: "🌤️ Meteo Firenze", url: "https://www.lamma.toscana.it/meteo/meteo-firenze" },
             ],
+            [{ text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" }],
             [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
           ],
         }),
