@@ -1,7 +1,7 @@
 import type { Bot } from "grammy";
 import type { BotServices } from "./handlers.js";
 import { messages, messaggioCalore, haAllertaMeteo, fingerprintMeteo, fingerprintCalore, isStessoGiornoIt, escHtml } from "./messages.js";
-import { mappeMeteoInlineKeyboard, caloreInlineKeyboard, allertaInlineKeyboard, allertaConMappeInlineKeyboard } from "./keyboards.js";
+import { caloreInlineKeyboard, allertaInlineKeyboard, allertaConMappeInlineKeyboard } from "./keyboards.js";
 
 function isUtenteHaBloccatoBot(err: unknown): boolean {
   return err instanceof Error && err.message.includes("blocked by the user");
