@@ -127,7 +127,10 @@ function rigaAltreRisorse(tipo: string, url: string) {
 export function risorseInlineKeyboard(tipo?: string, url?: string) {
   const kb: {
     inline_keyboard: Array<Array<{ text: string; url: string } | { text: string; callback_data: string }>>;
-  } = { inline_keyboard: RISORSE.map((r) => [{ text: r.text, url: r.url }]) };
+  } = { inline_keyboard: [] };
+  for (let i = 0; i < RISORSE.length; i += 2) {
+    kb.inline_keyboard.push(RISORSE.slice(i, i + 2).map((r) => ({ text: r.text, url: r.url })));
+  }
   if (tipo) {
     kb.inline_keyboard.push([{ text: "← Indietro", callback_data: `risorse-back:${tipo}:${url}` }]);
   }

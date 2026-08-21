@@ -59,20 +59,24 @@ describe("caloreInlineKeyboard", () => {
 });
 
 describe("risorseInlineKeyboard", () => {
-  it("senza tipo: solo le risorse", () => {
+  it("senza tipo: risorse a 2 righe x 2 colonne", () => {
     const kb = risorseInlineKeyboard();
     expect(kb.inline_keyboard).toEqual([
-      [{ text: "⚡ Fulminazioni (tempo reale)", url: "https://map.blitzortung.org/#5.26/41.709/13.462" }],
-      [{ text: "📡 Radar meteo", url: "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/radar" }],
-      [{ text: "🌡️ Temperature stazioni", url: "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/temperature-tempo-reale" }],
-      [{ text: "🛰️ Satellite Meteosat", url: "https://www.lamma.toscana.it/meteo/osservazioni-satellite/meteosat" }],
+      [
+        { text: "⚡ Fulminazioni", url: "https://map.blitzortung.org/#5.26/41.709/13.462" },
+        { text: "📡 Radar meteo", url: "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/radar" },
+      ],
+      [
+        { text: "🌡️ Temperature stazioni", url: "https://www.lamma.toscana.it/meteo/osservazioni-e-dati/temperature-tempo-reale" },
+        { text: "🛰️ Satellite Meteosat", url: "https://www.lamma.toscana.it/meteo/osservazioni-satellite/meteosat" },
+      ],
     ]);
   });
 
   it("con tipo/url: riga finale Indietro", () => {
     const kb = risorseInlineKeyboard("allerta", "cascina");
-    expect(kb.inline_keyboard).toHaveLength(5);
-    expect(kb.inline_keyboard[4]).toEqual([
+    expect(kb.inline_keyboard).toHaveLength(3);
+    expect(kb.inline_keyboard[2]).toEqual([
       { text: "← Indietro", callback_data: "risorse-back:allerta:cascina" },
     ]);
   });
