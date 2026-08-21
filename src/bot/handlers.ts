@@ -8,7 +8,7 @@ import type { HeatWaveService } from "../services/heatwave.js";
 import type { AlertStateService } from "../services/alert-state.js";
 import type { RateLimiterService } from "../services/rate-limiter.js";
 import { messages, costruisciAlbumImmagini, escHtml, messaggioCalore, haAllertaMeteo } from "./messages.js";
-import { mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, comuniGestioneInlineKeyboard, comuneDettaglioInlineKeyboard, confermaEliminaInlineKeyboard, caloreInlineKeyboard } from "./keyboards.js";
+import { mappeMeteoInlineKeyboard, comuniInlineKeyboard, confermaInlineKeyboard, comuniGestioneInlineKeyboard, comuneDettaglioInlineKeyboard, confermaEliminaInlineKeyboard, caloreInlineKeyboard, allertaInlineKeyboard } from "./keyboards.js";
 
 export interface BotServices {
   comuni: ArchivioComuni;
@@ -70,7 +70,7 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
     return;
   }
   for (const dati of comuniConAllerta) {
-    await ctx.reply(messages.allerta(dati));
+    await ctx.reply(messages.allerta(dati), { reply_markup: allertaInlineKeyboard() });
   }
   if (msgCalore) {
     const extra: Record<string, unknown> = { link_preview_options: { is_disabled: true } };

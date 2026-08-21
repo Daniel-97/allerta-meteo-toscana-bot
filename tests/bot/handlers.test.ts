@@ -492,6 +492,9 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Allerta meteo"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({ inline_keyboard: expect.any(Array) }),
+      }),
     );
   });
 
@@ -539,6 +542,9 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(2);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Allerta meteo"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({ inline_keyboard: expect.any(Array) }),
+      }),
     );
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Ondata di calore"),
@@ -573,6 +579,41 @@ describe("handleAllerta", () => {
     expect(reply).toHaveBeenCalledTimes(1);
     expect(reply).toHaveBeenCalledWith(
       expect.stringContaining("Firenze"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({ inline_keyboard: expect.any(Array) }),
+      }),
+    );
+  });
+
+  it("messaggio di allerta meteo include i 2 link allerta", async () => {
+    const reply = vi.fn().mockResolvedValue(undefined);
+    const ctx = { from: { id: 123 }, reply } as any;
+    const services = {
+      users: {
+        findByTelegramId: vi.fn().mockResolvedValue({
+          idTelegram: 123,
+          comuni: [{ nome: "Firenze", url: "firenze", notificheMeteo: true }],
+        }),
+      },
+      meteo: { fetchDatiMeteo: vi.fn().mockResolvedValue(mockDatiMeteo("basso")) },
+      heatwave: { fetchAllertaCalore: caloreNull },
+      rateLimiter: { isAllowed: vi.fn().mockResolvedValue(true) },
+    } as any;
+
+    await handleAllerta(ctx, services);
+
+    expect(reply).toHaveBeenCalledWith(
+      expect.stringContaining("Allerta meteo"),
+      expect.objectContaining({
+        reply_markup: expect.objectContaining({
+          inline_keyboard: [
+            [
+              { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
+              { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
+            ],
+          ],
+        }),
+      }),
     );
   });
 });
