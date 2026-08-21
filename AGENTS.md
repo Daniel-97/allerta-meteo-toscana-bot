@@ -45,9 +45,11 @@ il README.md di conseguenza (sezioni "Comandi bot", "Menu a bottoni", "Pannello 
 - Admin handlers filtrati da middleware che controlla `ADMIN_CHAT_ID`
 - Gestione errori: `safeEditMessageText` per GrammyError, catch generici per notifiche, `process.exit(1)` per config mancante in dev
 
-## URL Meteo
+## URL Meteo e risorse
 
-I pulsanti nei messaggi meteo puntano a:
+Tutti gli URL usati dalle inline keyboard (link meteo `Meteo Toscana` / `Meteo {comune}` e
+link delle risorse utili) sono centralizzati in `src/bot/links.ts` (`LINKS` + `RISORSE`),
+unica fonte di verità. Per modificare o aggiungere un link, intervenire lì:
 - `Meteo Toscana`: `https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana`
 - `Meteo {comune}`: `https://www.lamma.toscana.it/meteo/meteo-{url}` (url è lo slug del comune)
 
