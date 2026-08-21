@@ -89,8 +89,10 @@ export function allertaInlineKeyboard(nome: string, url: string) {
         { text: "🗺️ Mappe allerta", url: LINKS.mappeAllerta },
         { text: `🌤️ Meteo ${nome}`, url: LINKS.meteoComune(url) },
       ],
-      [{ text: "📋 Cosa fare", url: LINKS.cosaFare }],
-      rigaAltreRisorse("allerta", url),
+      [
+        { text: "📋 Cosa fare", url: LINKS.cosaFare },
+        ...rigaAltreRisorse("allerta", url),
+      ],
     ],
   };
 }

@@ -5,15 +5,17 @@ const URL_MAPPE = "https://www.regione.toscana.it/allertameteo";
 const URL_COSA_FARE = "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento";
 
 describe("allertaInlineKeyboard", () => {
-  it("riga 1: Mappe allerta + Meteo Cascina; riga 2: Cosa fare", () => {
+  it("riga 1: Mappe allerta + Meteo Cascina; riga 2: Cosa fare + Altre risorse", () => {
     const kb = allertaInlineKeyboard("Cascina", "cascina");
     expect(kb.inline_keyboard).toEqual([
       [
         { text: "🗺️ Mappe allerta", url: URL_MAPPE },
         { text: "🌤️ Meteo Cascina", url: "https://www.lamma.toscana.it/meteo/meteo-cascina" },
       ],
-      [{ text: "📋 Cosa fare", url: URL_COSA_FARE }],
-      [{ text: "🔗 Altre risorse", callback_data: "risorse:allerta:cascina" }],
+      [
+        { text: "📋 Cosa fare", url: URL_COSA_FARE },
+        { text: "🔗 Altre risorse", callback_data: "risorse:allerta:cascina" },
+      ],
     ]);
   });
 });
@@ -87,7 +89,10 @@ describe("callback_data entro 64 byte", () => {
     const nome = "Castello di Sambuca Pistoiese";
     const url = "castellodisambucapse";
     const kb = allertaInlineKeyboard(nome, url);
-    const data = kb.inline_keyboard.at(-1)[0].callback_data as string;
+    const data = kb.inline_keyboard
+      .flat()
+      .find((b) => "callback_data" in b && b.callback_data.startsWith("risorse:"))!
+      .callback_data as string;
     expect(Buffer.byteLength(data, "utf8")).toBeLessThanOrEqual(64);
   });
 });
