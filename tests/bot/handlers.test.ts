@@ -615,7 +615,7 @@ describe("handleAllerta", () => {
           inline_keyboard: [
             [
               { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
-              { text: "🌤️ Meteo", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
+              { text: "🌤️ Meteo Firenze", url: "https://www.lamma.toscana.it/meteo/meteo-firenze" },
             ],
             [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
           ],
@@ -676,7 +676,8 @@ describe("handlePrevisioni", () => {
       expect.objectContaining({
         reply_markup: expect.objectContaining({
           inline_keyboard: [[
-            { text: "🖼️ Previsioni complete", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
+            { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
+            { text: "🌤️ Meteo Firenze", url: "https://www.lamma.toscana.it/meteo/meteo-firenze" },
           ]],
         }),
       }),

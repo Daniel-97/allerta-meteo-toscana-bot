@@ -57,10 +57,13 @@ export function comuniInlineKeyboard(
   };
 }
 
-export function previsioniCompleteInlineKeyboard() {
+export function previsioniCompleteInlineKeyboard(nome: string, url: string) {
   return {
     inline_keyboard: [
-      [{ text: "🖼️ Previsioni complete", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" }],
+      [
+        { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
+        { text: `🌤️ Meteo ${nome}`, url: `https://www.lamma.toscana.it/meteo/meteo-${url}` },
+      ],
     ],
   };
 }
@@ -76,12 +79,12 @@ export function caloreInlineKeyboard(url: string) {
   };
 }
 
-export function allertaInlineKeyboard() {
+export function allertaInlineKeyboard(nome: string, url: string) {
   return {
     inline_keyboard: [
       [
         { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
-        { text: "🌤️ Meteo", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
+        { text: `🌤️ Meteo ${nome}`, url: `https://www.lamma.toscana.it/meteo/meteo-${url}` },
       ],
       [{ text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" }],
     ],

@@ -3,6 +3,7 @@ import { GrammyError } from "grammy";
 import type { DatiMeteo } from "../types/index.js";
 import type { ArchivioComuni } from "../services/comuni.js";
 import type { UsersRepository } from "../services/users.js";
+import type { UserComune } from "../services/users.js";
 import type { MeteoService } from "../services/meteo.js";
 import type { HeatWaveService } from "../services/heatwave.js";
 import type { AlertStateService } from "../services/alert-state.js";
@@ -52,11 +53,11 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
   const r = await services.heatwave.fetchAllertaCalore();
   const msgCalore = messaggioCalore(r);
 
-  const comuniConAllerta: DatiMeteo[] = [];
+  const comuniConAllerta: Array<{ dati: DatiMeteo; comune: UserComune }> = [];
   for (const c of user.comuni) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
-      if (haAllertaMeteo(dati)) comuniConAllerta.push(dati);
+      if (haAllertaMeteo(dati)) comuniConAllerta.push({ dati, comune: c });
     } catch {
       await ctx.reply(messages.errore);
     }
@@ -69,8 +70,8 @@ export async function handleAllerta(ctx: Context, services: BotServices) {
     await ctx.reply(messages.nessunaAllerta);
     return;
   }
-  for (const dati of comuniConAllerta) {
-    await ctx.reply(messages.allerta(dati), { reply_markup: allertaInlineKeyboard() });
+  for (const { dati, comune } of comuniConAllerta) {
+    await ctx.reply(messages.allerta(dati), { reply_markup: allertaInlineKeyboard(comune.nome, comune.url) });
   }
   if (msgCalore) {
     const extra: Record<string, unknown> = { link_preview_options: { is_disabled: true } };
@@ -101,7 +102,7 @@ export async function handlePrevisioni(ctx: Context, services: BotServices) {
   for (const c of user.comuni) {
     try {
       const dati = await services.meteo.fetchDatiMeteo(c.url);
-      await ctx.reply(messages.previsioni(dati), { reply_markup: previsioniCompleteInlineKeyboard(), link_preview_options: { is_disabled: true } });
+      await ctx.reply(messages.previsioni(dati), { reply_markup: previsioniCompleteInlineKeyboard(c.nome, c.url), link_preview_options: { is_disabled: true } });
     } catch {
       await ctx.reply(messages.errore);
     }

@@ -3,15 +3,14 @@ import { allertaInlineKeyboard, caloreInlineKeyboard, previsioniCompleteInlineKe
 
 const URL_MAPPE = "https://www.regione.toscana.it/allertameteo";
 const URL_COSA_FARE = "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento";
-const URL_PREVISIONI_COMPLETE = "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana";
 
 describe("allertaInlineKeyboard", () => {
-  it("riga 1: Mappe allerta + Meteo; riga 2: Cosa fare", () => {
-    const kb = allertaInlineKeyboard();
+  it("riga 1: Mappe allerta + Meteo Cascina; riga 2: Cosa fare", () => {
+    const kb = allertaInlineKeyboard("Cascina", "cascina");
     expect(kb.inline_keyboard).toEqual([
       [
         { text: "🗺️ Mappe allerta", url: URL_MAPPE },
-        { text: "🌤️ Meteo", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
+        { text: "🌤️ Meteo Cascina", url: "https://www.lamma.toscana.it/meteo/meteo-cascina" },
       ],
       [{ text: "📋 Cosa fare", url: URL_COSA_FARE }],
     ]);
@@ -19,10 +18,13 @@ describe("allertaInlineKeyboard", () => {
 });
 
 describe("previsioniCompleteInlineKeyboard", () => {
-  it("restituisce il pulsante Previsioni complete", () => {
-    const kb = previsioniCompleteInlineKeyboard();
+  it("riga con Meteo Toscana e Meteo Cascina", () => {
+    const kb = previsioniCompleteInlineKeyboard("Cascina", "cascina");
     expect(kb.inline_keyboard).toEqual([
-      [{ text: "🖼️ Previsioni complete", url: URL_PREVISIONI_COMPLETE }],
+      [
+        { text: "🌤️ Meteo Toscana", url: "https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana" },
+        { text: "🌤️ Meteo Cascina", url: "https://www.lamma.toscana.it/meteo/meteo-cascina" },
+      ],
     ]);
   });
 });

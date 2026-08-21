@@ -45,10 +45,11 @@ il README.md di conseguenza (sezioni "Comandi bot", "Menu a bottoni", "Pannello 
 - Admin handlers filtrati da middleware che controlla `ADMIN_CHAT_ID`
 - Gestione errori: `safeEditMessageText` per GrammyError, catch generici per notifiche, `process.exit(1)` per config mancante in dev
 
-## URL Previsioni complete
+## URL Meteo
 
-Il pulsante "🖼️ Previsioni complete" nei messaggi di previsioni punta a
-`https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana`.
+I pulsanti nei messaggi meteo puntano a:
+- `Meteo Toscana`: `https://www.lamma.toscana.it/meteo/bollettini-meteo/toscana`
+- `Meteo {comune}`: `https://www.lamma.toscana.it/meteo/meteo-{url}` (url è lo slug del comune)
 
 ## Errori comuni da evitare
 

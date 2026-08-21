@@ -60,7 +60,7 @@ export async function broadcastNotifiche(
         const msg = comune.notificheMeteo
           ? messages.completo(dati)
           : messages.allerta(dati);
-        const reply_markup = allertaInlineKeyboard();
+        const reply_markup = allertaInlineKeyboard(comune.nome, comune.url);
         await bot.api.sendMessage(user.idTelegram, msg, { link_preview_options: { is_disabled: true }, reply_markup });
         inviati++;
 
