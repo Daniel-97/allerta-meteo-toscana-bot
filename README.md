@@ -14,7 +14,7 @@
 - 🌤️ **Previsioni** — temperatura, umidità, pioggia, UV, quota neve, alba/tramonto
 - 🖼️ **Mappe meteo** — 9 immagini (3 giorni × 3 fasce orarie)
 - 🔔 **Notifiche** — 2 volte al giorno (09:00 e 15:00 ora italiana); inviate solo per i comuni con allerta in corso; il messaggio delle 15:00 è soppresso se i dati sono invariati rispetto alle 09:00
-- 🌡️ **Ondata di calore** — messaggio autonomo "Ondata di calore — Toscana" insieme alle allerte meteo, con link al bollettino del Ministero della Salute
+- 🌡️ **Ondata di calore** — messaggio autonomo "Ondata di calore — Toscana" insieme alle allerte meteo, con pulsanti inline "📋 Cosa fare" e "📄 Bollettino" (quest'ultimo rimanda al bollettino del Ministero della Salute)
 - 💬 **Messaggio generico** — se non ci sono allerte (meteo o calore), l'on-demand mostra un unico messaggio "Nessuna allerta in corso o prevista per i prossimi giorni"
 - 📍 **Comuni multipli** — aggiungi, elimina e gestisci più comuni
 - ⚙️ **Notifiche meteo on/off** — per singolo comune
