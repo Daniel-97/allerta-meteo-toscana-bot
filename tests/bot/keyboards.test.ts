@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { allertaInlineKeyboard, allertaConMappeInlineKeyboard, caloreInlineKeyboard } from "../../src/bot/keyboards.js";
+import { allertaInlineKeyboard, allertaConMappeInlineKeyboard, caloreInlineKeyboard, mappeMeteoInlineKeyboard } from "../../src/bot/keyboards.js";
 
 const URL_MAPPE = "https://www.regione.toscana.it/allertameteo";
 const URL_COSA_FARE = "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento";
@@ -24,7 +24,22 @@ describe("allertaConMappeInlineKeyboard", () => {
         { text: "🗺️ Mappe allerta", url: URL_MAPPE },
         { text: "📋 Cosa fare", url: URL_COSA_FARE },
       ],
-      [{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }],
+      [
+        { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
+        { text: "📄 Bollettino del giorno", url: "https://www.lamma.toscana.it/previ/ita/bollettino.pdf" },
+      ],
+    ]);
+  });
+});
+
+describe("mappeMeteoInlineKeyboard", () => {
+  it("riga con Mostra mappe meteo e Bollettino del giorno", () => {
+    const kb = mappeMeteoInlineKeyboard();
+    expect(kb.inline_keyboard).toEqual([
+      [
+        { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
+        { text: "📄 Bollettino del giorno", url: "https://www.lamma.toscana.it/previ/ita/bollettino.pdf" },
+      ],
     ]);
   });
 });

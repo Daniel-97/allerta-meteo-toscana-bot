@@ -202,7 +202,10 @@ describe("broadcastNotifiche", () => {
               { text: "🗺️ Mappe allerta", url: "https://www.regione.toscana.it/allertameteo" },
               { text: "📋 Cosa fare", url: "https://www.regione.toscana.it/allertameteo/rischi-e-norme-di-comportamento" },
             ],
-            [{ text: "🖼️ Mostra mappe meteo", callback_data: "img" }],
+            [
+              { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
+              { text: "📄 Bollettino del giorno", url: "https://www.lamma.toscana.it/previ/ita/bollettino.pdf" },
+            ],
           ],
         }),
       }),

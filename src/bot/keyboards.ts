@@ -62,6 +62,7 @@ export function mappeMeteoInlineKeyboard() {
     inline_keyboard: [
       [
         { text: "🖼️ Mostra mappe meteo", callback_data: "img" },
+        { text: "📄 Bollettino del giorno", url: "https://www.lamma.toscana.it/previ/ita/bollettino.pdf" },
       ],
     ],
   };
